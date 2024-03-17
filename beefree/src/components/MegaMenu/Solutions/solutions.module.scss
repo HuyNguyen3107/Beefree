@@ -1,0 +1,31 @@
+.mega_menu {
+    position: absolute;
+    background-color: #fff;
+    top: 100%;
+    // display: flex;
+    box-shadow: 0 1px 2px 1px #e1e0e0;
+    border-radius: 4px;
+    display: none;
+    width: 200px;
+    transform: translate(-14%, 10px);
+
+    >div {
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+        padding: 10px;
+
+        >a {
+            display: flex;
+            align-items: center;
+            column-gap: 8px;
+            font-weight: 700;
+            padding: 6px 16px 6px 6px;
+            border-radius: 2px;
+
+            &:hover {
+                background-color: #e1e0e0;
+            }
+        }
+    }
+}

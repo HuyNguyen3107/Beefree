@@ -1,0 +1,42 @@
+.nav {
+    .nav_list {
+        display: flex;
+        column-gap: 20px;
+
+        .nav_item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            column-gap: 8px;
+            position: relative;
+            padding: 5px;
+            border-radius: 4px;
+
+            &::after {
+                content: "";
+                width: 100%;
+                height: 10px;
+                background-color: transparent;
+                bottom: -30%;
+                left: 0;
+                position: absolute;
+            }
+
+            &:hover {
+                >svg {
+                    transform: rotateZ(180deg)
+                }
+
+                >div {
+                    display: flex;
+                }
+
+                background-color: rgba(236, 234, 234, 0.706);
+            }
+
+            >svg {
+                transition: transform .2s linear;
+            }
+        }
+    }
+}

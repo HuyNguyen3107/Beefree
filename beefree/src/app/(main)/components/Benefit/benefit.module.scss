@@ -1,0 +1,40 @@
+.benefit {
+    >div {
+        padding: 150px 60px 80px;
+
+        >h2 {
+            font-size: 40px;
+            font-weight: 700;
+            text-align: center;
+
+            >span {
+                color: rgb(119, 71, 255);
+            }
+        }
+
+        >div {
+            margin-top: 40px;
+
+            >div:nth-of-type(1) {
+                margin-top: 50px;
+
+                >div {
+                    display: flex;
+                    column-gap: 20px;
+                    padding: 30px;
+
+                    >span {
+                        color: #7747FF;
+                        font-size: 24px;
+                        font-weight: 600;
+                    }
+
+                    >p {
+                        font-size: 20px;
+                        font-weight: 600;
+                    }
+                }
+            }
+        }
+    }
+}

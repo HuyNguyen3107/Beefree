@@ -1,0 +1,12 @@
+.banner {
+    background-color: #7747FF;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+
+    &:hover {
+        a {
+            text-decoration: underline;
+        }
+    }
+}

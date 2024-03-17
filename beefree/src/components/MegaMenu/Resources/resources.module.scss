@@ -1,0 +1,96 @@
+.mega_menu {
+    position: absolute;
+    background-color: #fff;
+    top: 100%;
+    // display: flex;
+    box-shadow: 0 1px 2px 1px #e1e0e0;
+    border-radius: 4px;
+    display: none;
+    width: 100vw;
+    transform: translate(-51%, 10px);
+
+    .resources {
+        padding: 40px 10px 40px 40px;
+        width: 70%;
+
+        >span {
+            font-size: 15px;
+            font-weight: 700;
+            color: #7747FF;
+        }
+
+        >div {
+            margin-top: 20px;
+            display: flex;
+            column-gap: 100px;
+
+            >ul {
+                display: flex;
+                flex-direction: column;
+                row-gap: 20px;
+
+                >li {
+                    border-radius: 4px;
+
+                    &:hover {
+                        background-color: #f6f6f6;
+                    }
+
+                    >a {
+                        padding: 10px;
+                        display: flex;
+                        align-items: center;
+                        column-gap: 20px;
+
+                        >svg {
+                            font-size: 18px;
+                            color: #7747FF;
+                        }
+
+                        >span {
+                            display: flex;
+                            align-items: center;
+                            column-gap: 10px;
+                            font-size: 18px;
+                            font-weight: 700;
+
+                            >svg {
+                                font-size: 12px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .stories {
+        background-color: #f0f0f0;
+        padding: 40px;
+        width: 30%;
+
+        >div {
+            display: flex;
+            margin-top: 20px;
+            column-gap: 20px;
+
+            >div {
+                display: flex;
+                flex-direction: column;
+                row-gap: 20px;
+
+                >span:nth-of-type(1) {
+                    font-weight: 700;
+                }
+
+                >span:nth-of-type(2) {
+                    color: #7747FF;
+                    display: flex;
+                    align-items: center;
+                    column-gap: 20px;
+                }
+            }
+
+        }
+    }
+}
