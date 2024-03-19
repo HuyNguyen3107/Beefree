@@ -1,0 +1,35 @@
+.beefree_sdk {
+    background-color: #26045D;
+
+    >div {
+        padding: 80px 50px;
+
+        >div {
+            >div:nth-of-type(2) {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+
+                >span {
+                    font-size: 32px;
+                    color: #fff;
+                }
+
+                >p {
+                    font-size: 32px;
+                    font-weight: 700;
+                    color: rgb(130, 237, 168);
+                    margin-bottom: 50px;
+                }
+
+                >a {
+                    background-color: #82EDA8;
+                    color: #26045D;
+                    width: fit-content;
+                    padding: 15px 30px;
+                    border-radius: 5px;
+                }
+            }
+        }
+    }
+}

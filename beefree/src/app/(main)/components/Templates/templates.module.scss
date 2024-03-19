@@ -1,0 +1,52 @@
+.templates {
+    >div {
+        >div {
+            >div:nth-of-type(2) {
+                padding: 40px;
+
+                >h2 {
+                    font-size: 40px;
+                    font-weight: 700;
+                    margin-bottom: 50px;
+                }
+
+                >div {
+                    display: flex;
+                    flex-direction: column;
+                    row-gap: 40px;
+
+                    >p {
+                        font-size: 24px;
+                        font-weight: 700;
+                        color: rgb(119, 71, 255);
+                    }
+
+                    >div {
+                        display: flex;
+                        flex-direction: column;
+                        row-gap: 10px;
+
+                        >p {
+                            display: flex;
+                            align-items: center;
+                            column-gap: 10px;
+
+                            >svg {
+                                color: rgb(119, 71, 255);
+                            }
+                        }
+                    }
+
+                    >a {
+                        background-color: #926CFF;
+                        color: #fff;
+                        font-weight: 700;
+                        width: fit-content;
+                        padding: 15px 30px;
+                        border-radius: 5px;
+                    }
+                }
+            }
+        }
+    }
+}
