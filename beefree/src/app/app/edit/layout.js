@@ -2,6 +2,8 @@ import { Inter } from "next/font/google";
 import { Providers } from "@/components/Provider/Providers";
 const inter = Inter({ subsets: ["latin"] });
 import "../app.css";
+import Header from "./components/Header/Header";
+// import Sidebar from "./components/Sidebar/Sidebar";
 
 export const metadata = {
   title: "Free Drag & Drop HTML Email Template Builder | Beefree",
@@ -14,17 +16,8 @@ export default function EditLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          {/* <div className="app grid grid-cols-8">
-            <div className="side-bar shadow-lg h-full">
-              <SideBar />
-            </div>
-            <div className="app-main col-span-7">
-              <Header />
-              <main className="main">{children}</main>
-              <Footer />
-            </div>
-          </div> */}
-          <main className="main">{children}</main>
+          <Header />
+          {children}
         </Providers>
       </body>
     </html>

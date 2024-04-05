@@ -1,0 +1,28 @@
+.builder {
+    >div {
+        >div {
+            &:hover {
+                &::after {
+                    display: block;
+                    color: #fff !important;
+                }
+
+                >.move-icon {
+                    display: block;
+                }
+            }
+
+            >div {
+                &:hover {
+                    .tag_name {
+                        display: block;
+                    }
+
+                    >.move-icon {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+}
