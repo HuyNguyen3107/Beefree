@@ -20,13 +20,8 @@ import { FaInstagram } from "react-icons/fa";
 export const contents = [
   {
     id: "title",
-    icon: <CiText />,
-    content: `<h1 style="font-size: 36px;
-    font-weight: 700;
-    color: blueviolet;
-    text-align: left;
-    width: 100%;
-    padding: 0.5rem;">
+    icon: <CiText className="opacity-50" />,
+    content: `<h1 style="font-size: 36px; font-weight: 700; color: blueviolet; text-align: left; width: 100%; padding: 0.5rem;">
       I'm a new block title
     </h1>`,
     contentCode: (
@@ -48,10 +43,8 @@ export const contents = [
   },
   {
     id: "paragraph",
-    icon: <FaParagraph />,
-    content: `<p style="font-size: 16px;
-    font-weight: 400;
-    text-align: left;
+    icon: <FaParagraph className="opacity-50" />,
+    content: `<p style="text-align: left;
     width: 100%;
     padding-left: 0.5rem;
     padding-right: 0.5rem;">
@@ -76,7 +69,7 @@ export const contents = [
   },
   {
     id: "list",
-    icon: <FaList />,
+    icon: <FaList className="opacity-50" />,
     content: `<ul style="font-size: 16px;
     font-weight: 400;
     text-align: left;
@@ -104,21 +97,55 @@ export const contents = [
   },
   {
     id: "image",
-    icon: <CiImageOn />,
+    icon: <CiImageOn className="opacity-50" />,
     content: `<input type="file" style="padding: 0.5rem;"/>`,
     contentCode: (
-      <input
-        type="file"
+      <div
         style={{
-          padding: "0.5rem",
+          padding: "1rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: "10px",
+          backgroundColor: "#f3f3f3",
+          border: "1px dashed #000",
         }}
-      />
+      >
+        <i
+          className="pi pi-images"
+          style={{
+            fontSize: "40px",
+            color: "#93989A",
+          }}
+        ></i>
+        <span
+          style={{
+            fontSize: "14px",
+            color: "#93989A",
+          }}
+        >
+          Drop your file here
+        </span>
+        <button
+          id="upload_image"
+          style={{
+            backgroundColor: "#93989A",
+            color: "#fff",
+            fontWeight: "700",
+            fontSize: "15px",
+            padding: "4px 8px",
+            borderRadius: "4px",
+          }}
+        >
+          Browse
+        </button>
+      </div>
     ),
     editable: false,
   },
   {
     id: "button",
-    icon: <BsFillUsbFill />,
+    icon: <BsFillUsbFill className="opacity-50" />,
     content: `<button style="font-size: 16px;
     font-weight: 400;
     background-color: blueviolet;
@@ -147,7 +174,7 @@ export const contents = [
   },
   {
     id: "divider",
-    icon: <LuAlignVerticalSpaceAround />,
+    icon: <LuAlignVerticalSpaceAround className="opacity-50" />,
     content: `<div style="padding: 1rem;">
       <hr style="background-color: "#9CA3AF";
       width: 100%;
@@ -172,7 +199,7 @@ export const contents = [
   },
   {
     id: "spacer",
-    icon: <FaArrowsAltH />,
+    icon: <FaArrowsAltH className="opacity-50" />,
     content: `<div style="height: 60px;
     width: 100%;"></div>`,
     contentCode: (
@@ -187,7 +214,7 @@ export const contents = [
   },
   {
     id: "social",
-    icon: <CiCirclePlus />,
+    icon: <CiCirclePlus className="opacity-50" />,
     content: `<div style="width: 100%;
     display: flex;
     justify-content: center;
@@ -220,7 +247,7 @@ export const contents = [
   },
   {
     id: "html",
-    icon: <IoCodeSlash />,
+    icon: <IoCodeSlash className="opacity-50" />,
     content: `<div style="width: 100%;
     font-size: 16px;
     text-align: center;
@@ -243,7 +270,7 @@ export const contents = [
   },
   {
     id: "video",
-    icon: <TfiVideoClapper />,
+    icon: <TfiVideoClapper className="opacity-50" />,
     content: `<input type="file" style="padding: 0.5rem;"/>`,
     contentCode: (
       <input
@@ -257,7 +284,7 @@ export const contents = [
   },
   {
     id: "icons",
-    icon: <FaRegStar />,
+    icon: <FaRegStar className="opacity-50" />,
     content: `<div style="display: flex;
     flex-direction: column;
     justify-content: center;
@@ -294,7 +321,7 @@ export const contents = [
   },
   {
     id: "menu",
-    icon: <IoMenu />,
+    icon: <IoMenu className="opacity-50" />,
     content: `<div style="display: flex;
     flex-direction: column;
     justify-content: center;
@@ -331,7 +358,7 @@ export const contents = [
   },
   {
     id: "sticker",
-    icon: <RiEmojiStickerLine />,
+    icon: <RiEmojiStickerLine className="opacity-50" />,
     content: `<input type="file" style="padding: 0.5rem;" />`,
     contentCode: (
       <input
@@ -345,7 +372,7 @@ export const contents = [
   },
   {
     id: "gif",
-    icon: <GiFilmStrip />,
+    icon: <GiFilmStrip className="opacity-50" />,
     content: `<input type="file" style="padding: 0.5rem;" />`,
     contentCode: (
       <input

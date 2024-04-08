@@ -10,9 +10,12 @@ import { contents } from "@/utils/content";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 const { addContent } = builderSlice.actions;
+import "primeicons/primeicons.css";
+import FileMange from "../../components/FileManage/FileMange";
 
 function EditPage() {
   const contentList = useSelector((state) => state.builder.contentList);
+  const isUploadFile = useSelector((state) => state.builder.isUploadFile);
   const dispatch = useDispatch();
   // const [code, setCode] = useState([]);
   const [style, setStyle] = useState("");
@@ -85,33 +88,43 @@ function EditPage() {
     }
   };
   return (
-    <DndContext
-      onDragEnd={handleDragEnd}
-      onDragOver={handleDragOver}
-      onDragMove={handleDragMove}
-      id="dnd-context"
-    >
-      <div className="grid grid-cols-10">
-        <div className="col-span-7">
-          <main className="main">
-            <div className="relative">
-              <div className="absolute top-5 left-5 flex items-center shadow-md z-50">
-                <div className="bg-violet-500 text-white px-2 py-2 cursor-pointer">
-                  <FaDesktop />
+    <>
+      {!isUploadFile ? (
+        <DndContext
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDragMove={handleDragMove}
+          id="dnd-context"
+        >
+          <div className="grid grid-cols-10">
+            <div className="col-span-7">
+              <main className="main">
+                <div className="relative">
+                  <div className="absolute top-5 left-5 flex items-center shadow-md z-50">
+                    <div className="bg-violet-500 text-white px-2 py-2 cursor-pointer">
+                      <FaDesktop />
+                    </div>
+                    <div className="px-2 py-2 cursor-pointer bg-white">
+                      <MdPhoneAndroid />
+                    </div>
+                  </div>
+                  <Builder
+                    style={style}
+                    dropStyle={dropStyle}
+                    dropId={dropId}
+                  />
                 </div>
-                <div className="px-2 py-2 cursor-pointer bg-white">
-                  <MdPhoneAndroid />
-                </div>
-              </div>
-              <Builder style={style} dropStyle={dropStyle} dropId={dropId} />
+              </main>
             </div>
-          </main>
-        </div>
-        <div className="col-span-3">
-          <Sidebar />
-        </div>
-      </div>
-    </DndContext>
+            <div className="col-span-3">
+              <Sidebar />
+            </div>
+          </div>
+        </DndContext>
+      ) : (
+        <FileMange />
+      )}
+    </>
   );
 }
 

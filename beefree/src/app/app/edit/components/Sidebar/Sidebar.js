@@ -6,22 +6,26 @@ import { RiPagesLine } from "react-icons/ri";
 import React from "react";
 import { Draggable } from "../Draggable/Draggable";
 import { contents } from "@/utils/content";
+import TitleToolEdit from "./components/TitleToolEdit/TitleToolEdit";
 
 function Sidebar() {
   return (
     <aside className="sidebar shadow-md">
       <div className="grid grid-cols-3">
-        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer border-black">
-          <AiOutlineAppstore className="text-3xl" /> CONTENT
+        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer">
+          <AiOutlineAppstore className="text-2xl" />{" "}
+          <span className="font-normal">CONTENT</span>
         </div>
-        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer border-black bg-zinc-200">
-          <GoRows className="text-3xl" /> ROWS
+        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer bg-zinc-200">
+          <GoRows className="text-2xl" />{" "}
+          <span className="font-normal">ROWS</span>
         </div>
-        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer border-black bg-zinc-200">
-          <RiPagesLine className="text-3xl" /> SETTINGS
+        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer bg-zinc-200">
+          <RiPagesLine className="text-2xl" />{" "}
+          <span className="font-normal">SETTINGS</span>
         </div>
       </div>
-      <div className="grid grid-cols-3 px-4 py-4 gap-3 bg-slate-50">
+      {/* <div className="grid grid-cols-3 px-4 py-4 gap-3 bg-slate-50">
         {contents.map((item, index) => {
           return (
             <Draggable id={item.id} key={index}>
@@ -32,7 +36,8 @@ function Sidebar() {
             </Draggable>
           );
         })}
-      </div>
+      </div> */}
+      <TitleToolEdit />
     </aside>
   );
 }

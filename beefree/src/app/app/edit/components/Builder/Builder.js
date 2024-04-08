@@ -14,7 +14,7 @@ const TextEditor = dynamic(() => import("../TextEditor/TextEditor"), {
 });
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
-const { updateContent } = builderSlice.actions;
+const { updateContent, changeUploadFileStatus } = builderSlice.actions;
 
 function Builder({ style, dropStyle, dropId }) {
   const dispatch = useDispatch();
@@ -80,7 +80,14 @@ function Builder({ style, dropStyle, dropId }) {
                     id={"content_" + index}
                     onClick={(e) => {
                       e.stopPropagation();
-                      const contentId = e.target.parentElement.id;
+                      if (e.target.id === "upload_image") {
+                        dispatch(changeUploadFileStatus(true));
+                        return;
+                      }
+                      let contentId = e.target.parentElement.id;
+                      if (!contentId) {
+                        contentId = e.target.parentElement.parentElement.id;
+                      }
                       const contentIndex = contentId.slice(
                         contentId.indexOf("_") + 1
                       );
@@ -139,7 +146,11 @@ function Builder({ style, dropStyle, dropId }) {
           </Droppable>
         </div>
       </Droppable>
-      {/* <TextEditor /> */}
+      {/* <TextEditor
+        tagContent={`<h1>Hello world</h1>`}
+        tagIndex={"1"}
+        styleEditor={"opacity-100 visible"}
+      /> */}
     </div>
   );
 }

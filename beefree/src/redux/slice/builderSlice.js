@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   contentList: [],
+  isUploadFile: false,
 };
 
 export const builderSlice = createSlice({
@@ -61,6 +62,9 @@ export const builderSlice = createSlice({
         });
       }
       if (temp) state.contentList = temp;
+    },
+    changeUploadFileStatus: (state, action) => {
+      state.isUploadFile = action.payload;
     },
   },
 });

@@ -38,6 +38,69 @@ const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
     }
   }, []);
 
+  const handleChange = (newContent) => {
+    if (newContent === "") {
+      newContent = tag;
+    }
+    if (newContent.includes("<h")) {
+      if (newContent.lastIndexOf("<h") !== newContent.indexOf("<h")) {
+        const temp = [];
+        let tempContent = newContent;
+        while (tempContent !== "") {
+          const preContent = tempContent.slice(
+            0,
+            tempContent.indexOf("</h") + 5
+          );
+          tempContent = tempContent.slice(tempContent.indexOf("</h") + 5);
+          temp.push(preContent);
+        }
+        const contentList = temp.map((item) => {
+          const styleContent = item.slice(
+            item.indexOf(`"`) + 1,
+            item.lastIndexOf(`"`)
+          );
+          let styleList = styleContent.split("; ");
+          styleList = styleList.map((item, index) => {
+            if (index !== styleList.length - 1) {
+              return item.concat(";");
+            }
+            return item;
+          });
+          const arr = [
+            "font-weight: 700;",
+            "text-align: left;",
+            "width: 100%;",
+            "padding: 0.5rem;",
+          ];
+          styleList = styleList.filter((item) => {
+            if (arr.includes(item)) {
+              return false;
+            }
+            return true;
+          });
+          return `<span style="${styleList.join(" ")}">${item
+            .slice(item.indexOf(">") + 1, item.lastIndexOf("<"))
+            .replaceAll(`\n`, "")
+            .trim()}</span>`;
+        });
+        newContent = `<h1 style="font-weight: 700; text-align: left; width: 100%; padding: 0.5rem;">${contentList.join(
+          ""
+        )}</h1>`;
+      } else {
+        if (newContent.slice(newContent.indexOf("</h") + 5)) {
+          newContent = newContent.slice(0, newContent.indexOf("</h") + 5);
+        }
+      }
+    }
+    setContent(newContent);
+    dispatch(
+      updateContent({
+        tagIndex,
+        code: HTMLReactParser(newContent),
+      })
+    );
+  };
+
   return (
     <div className={"w-full " + styleEditor} id={"text_editor_" + tagIndex}>
       <JoditEditor
@@ -46,19 +109,7 @@ const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
         tabIndex={1}
         onBlur={(newContent) => setContent(newContent)}
         onChange={(newContent) => {
-          if (newContent === "") {
-            newContent = tag;
-          }
-          if (newContent.includes("<h")) {
-            newContent = newContent.slice(0, newContent.indexOf("</h1>") + 5);
-          }
-          setContent(newContent);
-          dispatch(
-            updateContent({
-              tagIndex,
-              code: HTMLReactParser(newContent),
-            })
-          );
+          handleChange(newContent);
         }}
       />
     </div>
