@@ -5,39 +5,72 @@ import { GoRows } from "react-icons/go";
 import { RiPagesLine } from "react-icons/ri";
 import React from "react";
 import { Draggable } from "../Draggable/Draggable";
-import { contents } from "@/utils/content";
-import TitleToolEdit from "./components/TitleToolEdit/TitleToolEdit";
+import { contents } from "@/core/content";
+import ContentSidebar from "./components/ContentSidebar/ContentSidebar";
+import { useSelector, useDispatch } from "react-redux";
+import { editorSlice } from "@/redux/slice/editorSlice";
+import { builderSlice } from "@/redux/slice/builderSlice";
+const { updateContent, updateContentIndex } = builderSlice.actions;
+const { updateSidebar, updateEditor } = editorSlice.actions;
 
 function Sidebar() {
+  const sidebar = useSelector((state) => state.editor.sidebar);
+  const dispatch = useDispatch();
+  const handleClick = (e) => {
+    let type = e.target.id;
+    if (!type) {
+      type = e.target.parentElement.id;
+    }
+    if (!type) {
+      type = e.target.parentElement.parentElement;
+    }
+    dispatch(updateSidebar(type));
+    dispatch(updateEditor(null));
+    dispatch(
+      updateContent({
+        hideEditor: true,
+      })
+    );
+    dispatch(updateContentIndex(null));
+  };
   return (
-    <aside className="sidebar shadow-md">
+    <aside className="sidebar shadow-md h-3/5">
       <div className="grid grid-cols-3">
-        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer">
+        <div
+          className={
+            "flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer" +
+            (sidebar.type === "contents" ? "" : " bg-zinc-200")
+          }
+          onClick={(e) => handleClick(e)}
+          id="contents"
+        >
           <AiOutlineAppstore className="text-2xl" />{" "}
-          <span className="font-normal">CONTENT</span>
+          <span className="text-[14px] font-semibold">CONTENT</span>
         </div>
-        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer bg-zinc-200">
+        <div
+          className={
+            "flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer" +
+            (sidebar.type === "rows" ? "" : " bg-zinc-200")
+          }
+          onClick={(e) => handleClick(e)}
+          id="rows"
+        >
           <GoRows className="text-2xl" />{" "}
-          <span className="font-normal">ROWS</span>
+          <span className="text-[14px] font-semibold">ROWS</span>
         </div>
-        <div className="flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer bg-zinc-200">
+        <div
+          className={
+            "flex items-center gap-x-3 px-4 py-4 col-span-1 border cursor-pointer" +
+            (sidebar.type === "settings" ? "" : " bg-zinc-200")
+          }
+          onClick={(e) => handleClick(e)}
+          id="settings"
+        >
           <RiPagesLine className="text-2xl" />{" "}
-          <span className="font-normal">SETTINGS</span>
+          <span className="text-[14px] font-semibold">SETTINGS</span>
         </div>
       </div>
-      {/* <div className="grid grid-cols-3 px-4 py-4 gap-3 bg-slate-50">
-        {contents.map((item, index) => {
-          return (
-            <Draggable id={item.id} key={index}>
-              <div className="col-span-1 shadow-md bg-white px-1 py-3 text-sm flex flex-col justify-center items-center gap-y-3 cursor-pointer hover:scale-110">
-                <div className="text-5xl">{item.icon}</div>{" "}
-                {item.id.toLocaleUpperCase()}
-              </div>
-            </Draggable>
-          );
-        })}
-      </div> */}
-      <TitleToolEdit />
+      {sidebar.sidebar}
     </aside>
   );
 }

@@ -3,28 +3,17 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import { Select, SelectItem } from "@nextui-org/react";
-import { BsChatSquare } from "react-icons/bs";
-import { CiTrash } from "react-icons/ci";
-import { IoCopySharp } from "react-icons/io5";
-import { IoIosArrowDown } from "react-icons/io";
-import { FaMagic } from "react-icons/fa";
-import { TfiAlignLeft } from "react-icons/tfi";
-import { TfiAlignRight } from "react-icons/tfi";
-import { TfiAlignCenter } from "react-icons/tfi";
-import { TfiAlignJustify } from "react-icons/tfi";
-import { IoMdMenu } from "react-icons/io";
-import { HiMenu } from "react-icons/hi";
-import { AiOutlineMenu } from "react-icons/ai";
-import { CiMenuBurger } from "react-icons/ci";
-import { MdFormatTextdirectionLToR } from "react-icons/md";
-import { MdFormatTextdirectionRToL } from "react-icons/md";
 import { Switch } from "@nextui-org/react";
 import letterImg from "../../../../../../../assets/images/letter.png";
 import { MdPhoneAndroid } from "react-icons/md";
 import { FaDesktop } from "react-icons/fa";
+import { CiAlignLeft } from "react-icons/ci";
+import { CiAlignRight } from "react-icons/ci";
+import { CiAlignCenterH } from "react-icons/ci";
+import { FaPlusCircle } from "react-icons/fa";
+import EditOptions from "../EditOptions/EditOptions";
 
-function TitleToolEdit() {
-  const headTagList = ["H1", "H2", "H3", "H4", "H5", "H6"];
+function IconToolEditor() {
   const fontFamilyList = [
     "Default",
     "Arial",
@@ -39,49 +28,17 @@ function TitleToolEdit() {
     "Verdana",
   ];
   const fontWeightList = ["Bold", "Regular"];
+  const iconSizeList = ["16px", "32px", "64px", "128px"];
+  const iconSpaceList = ["0", "5", "10", "15", "20"];
   return (
-    <div className="title_tool">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-1 px-5 py-3 text-[12px] font-bold opacity-80">
-          CONTENT PROPERTIES
-        </div>
-        <div className="flex items-center">
-          <div className="px-4 py-2 border-l text-[18px] cursor-pointer">
-            <BsChatSquare />
-          </div>
-          <div className="px-4 py-2 border-l text-[18px] cursor-pointer">
-            <CiTrash />
-          </div>
-          <div className="px-4 py-2 border-l text-[18px] cursor-pointer">
-            <IoCopySharp />
-          </div>
-          <div className="px-4 py-2 border-l text-[18px] cursor-pointer">
-            <IoIosArrowDown />
-          </div>
-        </div>
-      </div>
-      <div className="bg-gray-50">
-        <div className="px-5 py-3">
-          <Button color="secondary" className="font-bold text-[14px]">
-            <FaMagic /> Write with AI
+    <div className="icon_tool h-[82%]">
+      <EditOptions />
+      <div className="bg-gray-50 h-full overflow-auto">
+        <div className="px-5 py-5 flex flex-col text-[14px] opacity-70 font-semibold gap-y-3">
+          <span>Configure icon collection</span>
+          <Button color="secondary" className="font-bold">
+            <FaPlusCircle className="text-white" /> ADD NEW ICON
           </Button>
-        </div>
-        <hr />
-        <div className="px-5 py-2 flex justify-between items-center">
-          <span className="text-[14px] opacity-70 font-semibold">Title</span>
-          <div className="flex-1 flex justify-end">
-            <Select
-              label="Select head tag"
-              className="max-w-xs"
-              color="secondary"
-            >
-              {headTagList.map((headTag, index) => (
-                <SelectItem key={index} value={index}>
-                  {headTag}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
         </div>
         <hr />
         <div className="px-5 py-2 flex justify-between items-center">
@@ -122,6 +79,29 @@ function TitleToolEdit() {
           </div>
         </div>
         <hr />
+        <div className="px-5 py-3 flex justify-between items-center">
+          <span className="text-[14px] opacity-70 font-semibold">
+            Font size
+          </span>
+          <div className="flex-1 flex justify-end gap-x-3 text-[22px]">
+            <div className="flex border rounded-sm">
+              <div className="bg-white px-2 border text-[14px] cursor-pointer">
+                -
+              </div>
+              <div className="bg-gray-200 border text-[15px] ">
+                <input
+                  type="text"
+                  defaultValue={"0"}
+                  className="w-[40px] text-center outline-none"
+                />
+              </div>
+              <div className="bg-white px-2 border text-[14px] cursor-pointer">
+                +
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
         <div className="px-5 py-2 flex justify-between items-center">
           <span className="text-[14px] opacity-70 font-semibold">
             Text color
@@ -133,36 +113,12 @@ function TitleToolEdit() {
           </div>
         </div>
         <hr />
-        <div className="px-5 py-2 flex justify-between items-center">
-          <span className="text-[14px] opacity-70 font-semibold">
-            Link color
-          </span>
-          <div className="flex-1 flex justify-end">
-            <div className="bg-white px-2 py-1 rounded-md border">
-              <input type="color" />
-            </div>
-          </div>
-        </div>
-        <hr />
         <div className="px-5 py-3 flex justify-between items-center">
           <span className="text-[14px] opacity-70 font-semibold">Align</span>
           <div className="flex-1 flex justify-end gap-x-3 text-[22px]">
-            <TfiAlignLeft />
-            <TfiAlignRight />
-            <TfiAlignCenter />
-            <TfiAlignJustify />
-          </div>
-        </div>
-        <hr />
-        <div className="px-5 py-3 flex justify-between items-center">
-          <span className="text-[14px] opacity-70 font-semibold">
-            Line height
-          </span>
-          <div className="flex-1 flex justify-end gap-x-3 text-[22px]">
-            <IoMdMenu />
-            <HiMenu />
-            <AiOutlineMenu />
-            <CiMenuBurger />
+            <CiAlignLeft />
+            <CiAlignCenterH />
+            <CiAlignRight />
           </div>
         </div>
         <hr />
@@ -178,7 +134,7 @@ function TitleToolEdit() {
               <div className="bg-gray-200 border text-[15px] ">
                 <input
                   type="text"
-                  value={"0"}
+                  defaultValue={"0"}
                   className="w-[40px] text-center outline-none"
                 />
               </div>
@@ -189,16 +145,76 @@ function TitleToolEdit() {
           </div>
         </div>
         <hr />
-        <div className="px-5 py-3 flex justify-between items-center">
-          <span className="text-[14px] opacity-70 font-semibold">
-            Text direction
-          </span>
-          <div className="flex-1 flex justify-end gap-x-3 text-[24px]">
-            <MdFormatTextdirectionLToR />
-            <MdFormatTextdirectionRToL />
+        <div className="px-5 py-5 flex flex-col gap-y-4">
+          <div className="flex items-center justify-between text-[14px] opacity-70 font-semibold">
+            <span>Icon Padding</span>
+            <div className="flex items-center gap-x-2">
+              <span>More options</span>
+              <Switch defaultSelected color="secondary" />
+            </div>
+          </div>
+          <div className="flex justify-between text-[14px] opacity-70 font-semibold">
+            <div className="flex flex-col gap-y-2">
+              <span>All sides</span>
+              <div className="flex border rounded-sm">
+                <div className="bg-white px-2 border text-[14px] cursor-pointer">
+                  -
+                </div>
+                <div className="bg-gray-200 border text-[15px] ">
+                  <input
+                    type="text"
+                    defaultValue={"0"}
+                    className="w-[40px] text-center outline-none"
+                  />
+                </div>
+                <div className="bg-white px-2 border text-[14px] cursor-pointer">
+                  +
+                </div>
+              </div>
+            </div>
+            <div>
+              <Image src={letterImg} alt="letter" />
+            </div>
           </div>
         </div>
         <hr />
+        <div className="px-5 py-2 flex justify-between items-center">
+          <span className="text-[14px] opacity-70 font-semibold">
+            Icon size
+          </span>
+          <div className="flex-1 flex justify-end">
+            <Select
+              label="Select icon size"
+              className="max-w-xs"
+              color="secondary"
+            >
+              {iconSizeList.map((size, index) => (
+                <SelectItem key={index} value={index}>
+                  {size}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+        </div>
+        <hr />
+        <div className="px-5 py-2 gap-x-2 flex justify-between items-center">
+          <span className="text-[14px] opacity-70 font-semibold">
+            Icon spacing
+          </span>
+          <div className="flex-1 flex justify-end">
+            <Select
+              label="Select icon spacing"
+              className="max-w-xs"
+              color="secondary"
+            >
+              {iconSpaceList.map((space, index) => (
+                <SelectItem key={index} value={index}>
+                  {space}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+        </div>
         <div className="flex flex-1 px-5 py-3 text-[12px] font-bold opacity-80 bg-gray-200">
           BLOCK OPTIONS
         </div>
@@ -220,7 +236,7 @@ function TitleToolEdit() {
                 <div className="bg-gray-200 border text-[15px] ">
                   <input
                     type="text"
-                    value={"0"}
+                    defaultValue={"0"}
                     className="w-[40px] text-center outline-none"
                   />
                 </div>
@@ -230,7 +246,7 @@ function TitleToolEdit() {
               </div>
             </div>
             <div>
-              <Image src={letterImg} alt="letter" width={100} height={100} />
+              <Image src={letterImg} alt="letter" />
             </div>
           </div>
         </div>
@@ -251,4 +267,4 @@ function TitleToolEdit() {
   );
 }
 
-export default TitleToolEdit;
+export default IconToolEditor;

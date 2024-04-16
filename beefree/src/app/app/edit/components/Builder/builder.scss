@@ -9,18 +9,19 @@
 
                 >.move-icon {
                     display: block;
-
                 }
             }
 
             >div {
-                &:hover {
-                    .tag_name {
-                        display: block;
-                    }
+                >div {
+                    &:hover {
+                        .tag_name {
+                            display: block;
+                        }
 
-                    >.move-icon {
-                        display: block;
+                        >.move-icon {
+                            display: block;
+                        }
                     }
                 }
             }

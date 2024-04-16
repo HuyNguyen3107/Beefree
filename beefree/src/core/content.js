@@ -44,14 +44,15 @@ export const contents = [
   {
     id: "paragraph",
     icon: <FaParagraph className="opacity-50" />,
-    content: `<p style="text-align: left;
+    content: `<div style="text-align: left;
     width: 100%;
     padding-left: 0.5rem;
-    padding-right: 0.5rem;">
+    padding-right: 0.5rem; display: flex; flex-direction: column;">
+    <p>
       I'm a new paragraph block.
-    </p>`,
+    </p></div>`,
     contentCode: (
-      <p
+      <div
         style={{
           fontSize: "16px",
           fontWeight: "400",
@@ -61,8 +62,8 @@ export const contents = [
           paddingRight: "0.5rem",
         }}
       >
-        I'm a new paragraph block.
-      </p>
+        <p>I'm a new paragraph block.</p>
+      </div>
     ),
     editable: true,
     isShow: false,
@@ -75,7 +76,7 @@ export const contents = [
     text-align: left;
     list-style-type: disc;
     width: 100%;
-    padding: 0.5rem;">
+    padding: 0.5rem; list-style-position: inside; display: flex; flex-direction: column;">
       <li>This is an unordered list</li>
     </ul>`,
     contentCode: (
@@ -87,6 +88,9 @@ export const contents = [
           listStyleType: "disc",
           width: "100%",
           padding: "0.5rem",
+          listStylePosition: "inside",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <li>This is an unordered list</li>
@@ -98,7 +102,27 @@ export const contents = [
   {
     id: "image",
     icon: <CiImageOn className="opacity-50" />,
-    content: `<input type="file" style="padding: 0.5rem;"/>`,
+    content: `
+    <div
+    style="padding: 1rem; display: flex; flex-direction: column; align-items: center; row-gap: 10px; background-color: #f3f3f3; border: 1px dashed #000;"
+  >
+    <i
+      className="pi pi-images"
+      style="font-size: 40px; color: #93989A;"
+    ></i>
+    <span
+      style="font-size: 14px; color: #93989A;"
+    >
+      Drop your file here
+    </span>
+    <button
+      id="upload_image"
+      style="background-color: #93989A; color: #fff; font-weight: 700; font-size: 15px; padding: 4px 8px; border-radius: 4px;"
+    >
+      Browse
+    </button>
+  </div>
+    `,
     contentCode: (
       <div
         style={{
@@ -149,10 +173,10 @@ export const contents = [
     content: `<button style="font-size: 16px;
     font-weight: 400;
     background-color: blueviolet;
-    text-align: left;
+    text-align: center;
     padding: 0.5rem 1rem;
     color: #fff;
-    border-radius: 0.375rem;">
+    border-radius: 0.375rem; margin: 10px auto; display: block;">
       Button
     </button>`,
     contentCode: (
@@ -161,10 +185,12 @@ export const contents = [
           fontSize: "16px",
           fontWeight: "400",
           backgroundColor: "blueviolet",
-          textAlign: "left",
+          textAlign: "center",
           padding: "0.5rem 1rem",
           color: "#fff",
           borderRadius: "0.375rem",
+          margin: "10px auto",
+          display: "block",
         }}
       >
         Button
@@ -271,14 +297,50 @@ export const contents = [
   {
     id: "video",
     icon: <TfiVideoClapper className="opacity-50" />,
-    content: `<input type="file" style="padding: 0.5rem;"/>`,
+    content: `
+    <div
+    style="padding: 1rem; display: flex; flex-direction: column; align-items: center; row-gap: 10px; background-color: #f3f3f3; border: 1px dashed #000;"
+  >
+    <i
+      className="pi pi-video"
+      style="font-size: 50px; color: #93989A;"
+    ></i>
+    <span
+      style="font-size: 14px; color: #93989A; font-weight: 700;"
+    >
+      Video
+    </span>
+  </div>
+    `,
     contentCode: (
-      <input
-        type="file"
+      <div
         style={{
-          padding: "0.5rem",
+          padding: "1rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: "10px",
+          backgroundColor: "#f3f3f3",
+          border: "1px dashed #000",
         }}
-      />
+      >
+        <i
+          className="pi pi-video"
+          style={{
+            fontSize: "50px",
+            color: "#93989A",
+          }}
+        ></i>
+        <span
+          style={{
+            fontSize: "14px",
+            color: "#93989A",
+            fontWeight: "700",
+          }}
+        >
+          Video
+        </span>
+      </div>
     ),
     editable: false,
   },
@@ -292,10 +354,10 @@ export const contents = [
     row-gap: 0.5rem;
     color: #9CA3AF;
     font-weight: 600;
-    background-color: rgb(212 212 216);;
+    background-color: #f3f3f3;
     width: 100%;
-    padding: 0.25rem;">
-      <FaRegStar className="text-[36px]" />
+    padding: 0.25rem; border: 1px dashed #000;">
+      <i className="pi pi-star" style="font-size: 50px;"></i>
       Icons
     </div>`,
     contentCode: (
@@ -308,12 +370,18 @@ export const contents = [
           rowGap: "0.5rem",
           color: "#9CA3AF",
           fontWeight: "600",
-          backgroundColor: "rgb(212 212 216);",
+          backgroundColor: "#f3f3f3",
           width: "100%",
           padding: "0.25rem",
+          border: "1px dashed #000",
         }}
       >
-        <FaRegStar className="text-[36px]" />
+        <i
+          className="pi pi-star"
+          style={{
+            fontSize: "50px",
+          }}
+        ></i>
         Icons
       </div>
     ),
@@ -329,10 +397,10 @@ export const contents = [
     row-gap: 0.5rem;
     color: #9CA3AF;
     font-weight: 600;
-    background-color: rgb(212 212 216);;
+    background-color: #f3f3f3;
     width: 100%;
-    padding: 0.25rem;">
-      <IoMenu className="text-[36px]" />
+    padding: 0.25rem; border: 1px dashed #000;">
+      <i className="pi pi-bars" style="font-size: 40px;"></i>
       Icons
     </div>`,
     contentCode: (
@@ -345,13 +413,19 @@ export const contents = [
           rowGap: "0.5rem",
           color: "#9CA3AF",
           fontWeight: "600",
-          backgroundColor: "rgb(212 212 216);",
+          backgroundColor: "#f3f3f3",
           width: "100%",
           padding: "0.25rem",
+          border: "1px dashed #000",
         }}
       >
-        <IoMenu className="text-[36px]" />
-        Icons
+        <i
+          className="pi pi-bars"
+          style={{
+            fontSize: "40px",
+          }}
+        ></i>
+        Menu
       </div>
     ),
     editable: false,
@@ -359,28 +433,110 @@ export const contents = [
   {
     id: "sticker",
     icon: <RiEmojiStickerLine className="opacity-50" />,
-    content: `<input type="file" style="padding: 0.5rem;" />`,
+    content: `
+    <div
+    style="padding: 1rem; display: flex; flex-direction: column; align-items: center; row-gap: 10px; background-color: #f3f3f3; border: 1px dashed #000;"
+  >
+    <i
+      className="pi pi-prime"
+      style="font-size: 40px; color: #93989A;"
+    ></i>
+    <button
+      id="upload_sticker"
+      style="background-color: #93989A; color: #fff; font-weight: 700; font-size: 15px; padding: 4px 8px; border-radius: 4px;"
+    >
+      Browse Stickers
+    </button>
+  </div>
+    `,
     contentCode: (
-      <input
-        type="file"
+      <div
         style={{
-          padding: "0.5rem",
+          padding: "1rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: "10px",
+          backgroundColor: "#f3f3f3",
+          border: "1px dashed #000",
         }}
-      />
+      >
+        <i
+          className="pi pi-prime"
+          style={{
+            fontSize: "40px",
+            color: "#93989A",
+          }}
+        ></i>
+        <button
+          id="upload_sticker"
+          style={{
+            backgroundColor: "#93989A",
+            color: "#fff",
+            fontWeight: "700",
+            fontSize: "15px",
+            padding: "4px 8px",
+            borderRadius: "4px",
+          }}
+        >
+          Browse Stickers
+        </button>
+      </div>
     ),
     editable: false,
   },
   {
     id: "gif",
     icon: <GiFilmStrip className="opacity-50" />,
-    content: `<input type="file" style="padding: 0.5rem;" />`,
+    content: `
+    <div
+    style="padding: 1rem; display: flex; flex-direction: column; align-items: center; row-gap: 10px; background-color: #f3f3f3; border: 1px dashed #000;"
+  >
+    <i
+      className="pi pi-prime"
+      style="font-size: 40px; color: #93989A;"
+    ></i>
+    <button
+      id="upload_gif"
+      style="background-color: #93989A; color: #fff; font-weight: 700; font-size: 15px; padding: 4px 8px; border-radius: 4px;"
+    >
+      Browse Stickers
+    </button>
+  </div>
+    `,
     contentCode: (
-      <input
-        type="file"
+      <div
         style={{
-          padding: "0.5rem",
+          padding: "1rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: "10px",
+          backgroundColor: "#f3f3f3",
+          border: "1px dashed #000",
         }}
-      />
+      >
+        <i
+          className="pi pi-file"
+          style={{
+            fontSize: "40px",
+            color: "#93989A",
+          }}
+        ></i>
+        <button
+          id="upload_gif"
+          style={{
+            backgroundColor: "#93989A",
+            color: "#fff",
+            fontWeight: "700",
+            fontSize: "15px",
+            padding: "4px 8px",
+            borderRadius: "4px",
+          }}
+        >
+          Browse Stickers
+        </button>
+      </div>
     ),
     editable: false,
   },

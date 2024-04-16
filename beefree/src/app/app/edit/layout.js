@@ -16,8 +16,10 @@ export default function EditLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Header />
-          {children}
+          <div className="overflow-hidden max-h-screen">
+            <Header />
+            {children}
+          </div>
         </Providers>
       </body>
     </html>

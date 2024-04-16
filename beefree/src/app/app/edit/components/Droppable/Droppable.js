@@ -8,11 +8,15 @@ export function Droppable(props) {
     id: props.id,
   });
   const style = {
-    color: isOver ? "green" : undefined,
+    color: isOver ? "green !important" : undefined,
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={props.style}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={props?.style ? props.style : ""}
+    >
       {props.children}
     </div>
   );

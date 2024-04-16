@@ -6,6 +6,7 @@ const { updateContent } = builderSlice.actions;
 import HTMLReactParser from "html-react-parser";
 
 const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
+  // console.log(tagContent);
   const dispatch = useDispatch();
   const editor = useRef(null);
   const [content, setContent] = useState(tagContent);
@@ -22,21 +23,27 @@ const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
         text-align: left;
         list-style-type: disc;
         width: 100%;
-        padding: 0.5rem;">
+        padding: 0.5rem; list-style-position: inside; display: flex; flex-direction: column;">
         <li>Empty content is not allowed</li>
         </ul>`
       );
     } else if (tagContent.includes("<p")) {
       setTag(
-        `<p style="font-size: 16px;
+        `<div style="font-size: 16px;
         font-weight: 400;
         text-align: left;
         width: 100%;
         padding-left: 0.5rem;
-        padding-right: 0.5rem;"></p>`
+        padding-right: 0.5rem; display: flex; flex-direction: column;">
+        <p></p>
+        </div>`
       );
     }
   }, []);
+
+  useEffect(() => {
+    setContent(tagContent);
+  }, [tagContent]);
 
   const handleChange = (newContent) => {
     if (newContent === "") {
@@ -44,6 +51,7 @@ const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
     }
     if (newContent.includes("<h")) {
       if (newContent.lastIndexOf("<h") !== newContent.indexOf("<h")) {
+        const headTag = newContent.slice(1, 3);
         const temp = [];
         let tempContent = newContent;
         while (tempContent !== "") {
@@ -83,9 +91,9 @@ const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
             .replaceAll(`\n`, "")
             .trim()}</span>`;
         });
-        newContent = `<h1 style="font-weight: 700; text-align: left; width: 100%; padding: 0.5rem;">${contentList.join(
+        newContent = `<${headTag} style="font-weight: 700; text-align: left; width: 100%; padding: 0.5rem;">${contentList.join(
           ""
-        )}</h1>`;
+        )}</${headTag}>`;
       } else {
         if (newContent.slice(newContent.indexOf("</h") + 5)) {
           newContent = newContent.slice(0, newContent.indexOf("</h") + 5);
@@ -95,6 +103,7 @@ const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
     setContent(newContent);
     dispatch(
       updateContent({
+        content: newContent,
         tagIndex,
         code: HTMLReactParser(newContent),
       })

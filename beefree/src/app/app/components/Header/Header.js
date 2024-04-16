@@ -3,7 +3,7 @@ import { FaRegBell } from "react-icons/fa";
 import Image from "next/image";
 import myAvatar from "../../../../assets/images/myAvatar.jpg";
 import { FaAngleDown } from "react-icons/fa";
-import styles from "./header.module.scss";
+import "./header.module.scss";
 
 function Header() {
   return (
