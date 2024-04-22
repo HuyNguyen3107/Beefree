@@ -1,29 +1,116 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Switch } from "@nextui-org/react";
+import { Switch, Select, SelectItem } from "@nextui-org/react";
 import letterImg from "../../../../../../../assets/images/letter.png";
 import { MdPhoneAndroid } from "react-icons/md";
 import { FaDesktop } from "react-icons/fa";
 import { Input } from "@nextui-org/react";
 import EditOptions from "../EditOptions/EditOptions";
+import { useSelector, useDispatch } from "react-redux";
+import { builderSlice } from "@/redux/slice/builderSlice";
+const {
+  updatePadding,
+  updatePaddingLeft,
+  updatePaddingRight,
+  updatePaddingTop,
+  updatePaddingBottom,
+  updateVideo,
+  updatePlayIconColor,
+  updatePlayIconSize,
+  updateVideoTitle,
+} = builderSlice.actions;
+import { isYoutubeLink, getYoutubeVideoId } from "@/utils/regex";
 
 function VideoToolEditor() {
+  const dispatch = useDispatch();
+  const contentList = useSelector((state) => state.builder.contentList);
+  const contentIndex = useSelector((state) => state.builder.contentIndex);
+  const [url, setUrl] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [check, setCheck] = useState(false);
+  const [urlStatus, setUrlStatus] = useState(true);
+  const [titleStatus, setTitleStatus] = useState(true);
+  const [isCheck, setIsCheck] = useState(false);
+  const [padding, setPadding] = useState(0);
+  const [paddingLeft, setPaddingLeft] = useState(0);
+  const [paddingRight, setPaddingRight] = useState(0);
+  const [paddingTop, setPaddingTop] = useState(0);
+  const [paddingBottom, setPaddingBottom] = useState(0);
+  const colorList = ["Dark", "Light"];
+  const fontSizeList = ["50px", "55px", "60px", "65px", "70px", "75px", "80px"];
+  useEffect(() => {
+    const content = contentList.find(
+      (content, index) => index === +contentIndex
+    );
+    let code = content.content;
+    if (code.includes("<a")) {
+      const url = code.slice(
+        code.indexOf(`id="`) + 4,
+        code.indexOf(`href="`) - 2
+      );
+      const title = code.slice(
+        code.indexOf(`title="`) + 7,
+        code.indexOf(`src="`) - 2
+      );
+      setUrl(url);
+      setTitle(title);
+      setCheck(true);
+    } else {
+      setCheck(false);
+    }
+  }, [contentList]);
   return (
     <div className="video_tool h-screen">
       <EditOptions />
-      <div className="bg-gray-50 h-full overflow-auto">
+      <div className="bg-gray-50 h-[78%] overflow-auto">
         <div className="px-5 py-5 flex flex-col gap-y-3">
-          <Input
-            key="secondary"
-            type="text"
-            color="secondary"
-            placeholder="Enter your URL"
-            label="URL"
-            defaultValue="https://www.youtube.com/watch?v=jrVhUjiB9Pk"
-            className="w-full"
-          />
+          {url && urlStatus ? (
+            <Input
+              key="primary"
+              type="text"
+              color="secondary"
+              placeholder="Enter your URL"
+              label="URL"
+              className="w-full"
+              value={url}
+              onClick={() => {
+                setUrlStatus(false);
+              }}
+            />
+          ) : (
+            <Input
+              key="primary"
+              type="text"
+              color="secondary"
+              placeholder="Enter your URL"
+              label="URL"
+              className="w-full"
+              defaultValue={url}
+              onBlur={async (e) => {
+                const url = e.target.value;
+                if (isYoutubeLink(url)) {
+                  const response = await fetch(
+                    `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${getYoutubeVideoId(
+                      url
+                    )}&fields=items(id%2Csnippet)&key=AIzaSyDdeoRB9QA08j7vMG1E2ovKkQjgxk4-69I`
+                  );
+                  const info = await response.json();
+                  const title = info?.items[0]?.snippet?.localized?.title;
+                  const link = info?.items[0]?.snippet?.thumbnails?.maxres?.url;
+                  dispatch(
+                    updateVideo({
+                      title,
+                      link,
+                      url,
+                    })
+                  );
+                }
+                setUrlStatus(true);
+              }}
+            />
+          )}
           <p className="text-[14px] opacity-60">
             Add a{" "}
             <Link
@@ -44,16 +131,97 @@ function VideoToolEditor() {
             URL to automatically generate a preview image. The image will link
             to the provided URL.
           </p>
-          <Input
-            key="secondary"
-            type="text"
-            color="secondary"
-            placeholder="Enter your Title"
-            label="Title"
-            defaultValue="https://www.youtube.com/watch?v=jrVhUjiB9Pk"
-            className="w-full"
-          />
+          {title && titleStatus ? (
+            <Input
+              key="secondary"
+              type="text"
+              color="secondary"
+              placeholder="Enter your Title"
+              label="Title"
+              className="w-full"
+              value={title}
+              onClick={() => {
+                setTitleStatus(false);
+              }}
+            />
+          ) : (
+            <Input
+              key="secondary"
+              type="text"
+              color="secondary"
+              placeholder="Enter your Title"
+              label="Title"
+              className="w-full"
+              defaultValue={title}
+              onBlur={(e) => {
+                if (check) {
+                  dispatch(updateVideoTitle(e.target.value));
+                }
+                setTitleStatus(true);
+              }}
+            />
+          )}
         </div>
+        <hr />
+        {check ? (
+          <>
+            <div className="px-5 py-2 flex justify-between items-center">
+              <span className="text-[14px] opacity-70 font-semibold">
+                Play icon <br /> color
+              </span>
+              <div className="flex-1 flex justify-end">
+                <Select
+                  label="Select play icon color"
+                  className="max-w-xs"
+                  color="secondary"
+                  onChange={(e) => {
+                    const color = colorList.find(
+                      (space, index) => index === +e.target.value
+                    );
+                    if (check) {
+                      dispatch(updatePlayIconColor(color));
+                    }
+                  }}
+                >
+                  {colorList.map((color, index) => (
+                    <SelectItem key={index} value={index}>
+                      {color}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+            </div>
+            <hr />
+            <div className="px-5 py-2 flex justify-between items-center">
+              <span className="text-[14px] opacity-70 font-semibold">
+                Play icon <br /> size
+              </span>
+              <div className="flex-1 flex justify-end">
+                <Select
+                  label="Select play icon size"
+                  className="max-w-xs"
+                  color="secondary"
+                  onChange={(e) => {
+                    const size = fontSizeList.find(
+                      (size, index) => index === +e.target.value
+                    );
+                    if (check) {
+                      dispatch(updatePlayIconSize(size));
+                    }
+                  }}
+                >
+                  {fontSizeList.map((size, index) => (
+                    <SelectItem key={index} value={index}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+            </div>
+          </>
+        ) : (
+          ""
+        )}
         <div className="flex flex-1 px-5 py-3 text-[12px] font-bold opacity-80 bg-gray-200">
           BLOCK OPTIONS
         </div>
@@ -62,28 +230,199 @@ function VideoToolEditor() {
             <span>Padding</span>
             <div className="flex items-center gap-x-2">
               <span>More options</span>
-              <Switch defaultSelected color="secondary" />
+              <Switch
+                defaultSelected={false}
+                color="secondary"
+                onClick={() => {
+                  let check = isCheck;
+                  setIsCheck(!check);
+                }}
+              />
             </div>
           </div>
-          <div className="flex justify-between text-[14px] opacity-70 font-semibold">
-            <div className="flex flex-col gap-y-2">
-              <span>All sides</span>
-              <div className="flex border rounded-sm">
-                <div className="bg-white px-2 border text-[14px] cursor-pointer">
-                  -
-                </div>
-                <div className="bg-gray-200 border text-[15px] ">
-                  <input
-                    type="text"
-                    defaultValue={"0"}
-                    className="w-[40px] text-center outline-none"
-                  />
-                </div>
-                <div className="bg-white px-2 border text-[14px] cursor-pointer">
-                  +
+          <div className="flex justify-between gap-x-5 text-[14px] opacity-70 font-semibold">
+            {!isCheck ? (
+              <div className="flex flex-col gap-y-2">
+                <span>All sides</span>
+                <div className="flex border rounded-sm">
+                  <div
+                    className="bg-white px-2 border text-[14px] cursor-pointer"
+                    onClick={() => {
+                      let value = padding;
+                      value = value - 1;
+                      if (value < 0) {
+                        value = 0;
+                      }
+                      setPadding(value);
+                      setPaddingLeft(value);
+                      setPaddingRight(value);
+                      setPaddingTop(value);
+                      setPaddingBottom(value);
+                      dispatch(updatePadding(value));
+                    }}
+                  >
+                    -
+                  </div>
+                  <div className="bg-white px-2 border text-[15px] ">
+                    {padding}
+                  </div>
+                  <div
+                    className="bg-white px-2 border text-[14px] cursor-pointer"
+                    onClick={() => {
+                      let value = padding;
+                      value = value + 1;
+                      setPadding(value);
+                      setPaddingLeft(value);
+                      setPaddingRight(value);
+                      setPaddingTop(value);
+                      setPaddingBottom(value);
+                      dispatch(updatePadding(value));
+                    }}
+                  >
+                    +
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-1 flex-col gap-y-2">
+                <div className="flex justify-between">
+                  <div className="flex flex-col gap-y-2">
+                    <span>Top</span>
+                    <div className="flex border rounded-sm">
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingTop;
+                          value = value - 1;
+                          if (value < 0) {
+                            value = 0;
+                          }
+                          setPaddingTop(value);
+                          dispatch(updatePaddingTop(value));
+                        }}
+                      >
+                        -
+                      </div>
+                      <div className="bg-white px-2 border text-[15px] ">
+                        {paddingTop}
+                      </div>
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingTop;
+                          value = value + 1;
+                          setPaddingTop(value);
+                          dispatch(updatePaddingTop(value));
+                        }}
+                      >
+                        +
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-y-2">
+                    <span>Right</span>
+                    <div className="flex border rounded-sm">
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingRight;
+                          value = value - 1;
+                          if (value < 0) {
+                            value = 0;
+                          }
+                          setPaddingRight(value);
+                          dispatch(updatePaddingRight(value));
+                        }}
+                      >
+                        -
+                      </div>
+                      <div className="bg-white px-2 border text-[15px] ">
+                        {paddingRight}
+                      </div>
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingRight;
+                          value = value + 1;
+                          setPaddingRight(value);
+                          dispatch(updatePaddingRight(value));
+                        }}
+                      >
+                        +
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="flex flex-col gap-y-2">
+                    <span>Bottom</span>
+                    <div className="flex border rounded-sm">
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingBottom;
+                          value = value - 1;
+                          if (value < 0) {
+                            value = 0;
+                          }
+                          setPaddingBottom(value);
+                          dispatch(updatePaddingBottom(value));
+                        }}
+                      >
+                        -
+                      </div>
+                      <div className="bg-white px-2 border text-[15px] ">
+                        {paddingBottom}
+                      </div>
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingRight;
+                          value = value + 1;
+                          setPaddingBottom(value);
+                          dispatch(updatePaddingBottom(value));
+                        }}
+                      >
+                        +
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-y-2">
+                    <span>Left</span>
+                    <div className="flex border rounded-sm">
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingLeft;
+                          value = value - 1;
+                          if (value < 0) {
+                            value = 0;
+                          }
+                          setPaddingLeft(value);
+                          dispatch(updatePaddingLeft(value));
+                        }}
+                      >
+                        -
+                      </div>
+                      <div className="bg-white px-2 border text-[15px] ">
+                        {paddingLeft}
+                      </div>
+                      <div
+                        className="bg-white px-2 border text-[14px] cursor-pointer"
+                        onClick={() => {
+                          let value = paddingLeft;
+                          value = value + 1;
+                          setPaddingLeft(value);
+                          dispatch(updatePaddingLeft(value));
+                        }}
+                      >
+                        +
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <div>
               <Image src={letterImg} alt="letter" />
             </div>

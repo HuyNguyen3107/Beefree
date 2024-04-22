@@ -170,13 +170,7 @@ export const contents = [
   {
     id: "button",
     icon: <BsFillUsbFill className="opacity-50" />,
-    content: `<button style="font-size: 16px;
-    font-weight: 400;
-    background-color: blueviolet;
-    text-align: center;
-    padding: 0.5rem 1rem;
-    color: #fff;
-    border-radius: 0.375rem; margin: 10px auto; display: block;">
+    content: `<button style="font-size: 16px; font-weight: 400; background-color: blueviolet; text-align: center; padding: 0.5rem 1rem; color: #fff; border-radius: 0.375rem; margin: 10px auto; display: block;">
       Button
     </button>`,
     contentCode: (
@@ -201,24 +195,26 @@ export const contents = [
   {
     id: "divider",
     icon: <LuAlignVerticalSpaceAround className="opacity-50" />,
-    content: `<div style="padding: 1rem;">
-      <hr style="background-color: "#9CA3AF";
-      width: 100%;
-      height: 1px;"/>
+    content: `<div style="padding: 1rem; display: flex; justify-content: center; align-items: center;">
+      <div style="border-color: #9CA3AF; width: 100%; border-width: 1px; border-style: solid;"></div>
     </div>`,
     contentCode: (
       <div
         style={{
           padding: "1rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <hr
+        <div
           style={{
-            backgroundColor: "#9CA3AF",
+            borderColor: "#9CA3AF",
             width: "100%",
-            height: "1px",
+            borderWidth: "1px",
+            borderStyle: "solid",
           }}
-        />
+        ></div>
       </div>
     ),
     editable: false,
@@ -226,12 +222,11 @@ export const contents = [
   {
     id: "spacer",
     icon: <FaArrowsAltH className="opacity-50" />,
-    content: `<div style="height: 60px;
-    width: 100%;"></div>`,
+    content: `<div style="height: 100px; width: 100%;"></div>`,
     contentCode: (
       <div
         style={{
-          height: "60px",
+          height: "100px",
           width: "100%",
         }}
       ></div>
@@ -241,16 +236,19 @@ export const contents = [
   {
     id: "social",
     icon: <CiCirclePlus className="opacity-50" />,
-    content: `<div style="width: 100%;
-    display: flex;
-    justify-content: center;
-    column-gap: 1.25rem;
-    font-size: 20px;
-    padding: 0.5rem;">
-      <FaFacebook />
-      <FaTwitter />
-      <FaLinkedin />
-      <FaInstagram />
+    content: `<div style="width: 100%; display: flex; justify-content: center; column-gap: 1.25rem; font-size: 20px; padding: 0.5rem;">
+    <a href="#" title="facebook">
+      <img src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Ffacebook.jpg?alt=media&token=80239c31-8894-410b-aed3-5de3a380520e" alt="" style="width: 32px; height: auto;"/>
+    </a>
+    <a href="#" title="twitter">
+      <img src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Ftwitter.png?alt=media&token=143c504a-35ab-4a51-8462-00ebd3337e59" alt="" style="width: 32px; height: auto;"/>
+    </a>
+    <a href="#" title="linkedin">
+      <img src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Flinkedin.png?alt=media&token=e4895aab-f382-43e0-abc7-16f95531554e" alt="" style="width: 32px; height: auto;"/>
+    </a>
+    <a href="#" title="instagram">
+      <img src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Finstagram.png?alt=media&token=72fddf44-3321-4bba-9c91-b509b9606081" alt="" style="width: 32px; height: auto;"/>
+    </a>
     </div>`,
     contentCode: (
       <div
@@ -263,23 +261,80 @@ export const contents = [
           padding: "0.5rem",
         }}
       >
-        <FaFacebook />
-        <FaTwitter />
-        <FaLinkedin />
-        <FaInstagram />
+        <a href="#" title="facebook">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Ffacebook.jpg?alt=media&token=80239c31-8894-410b-aed3-5de3a380520e"
+            alt=""
+            style={{
+              width: "32px",
+              height: "auto",
+            }}
+          />
+        </a>
+        <a href="#" title="twitter">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Ftwitter.png?alt=media&token=143c504a-35ab-4a51-8462-00ebd3337e59"
+            alt=""
+            style={{
+              width: "32px",
+              height: "auto",
+            }}
+          />
+        </a>
+        <a href="#" title="linkedin">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Flinkedin.png?alt=media&token=e4895aab-f382-43e0-abc7-16f95531554e"
+            alt=""
+            style={{
+              width: "32px",
+              height: "auto",
+            }}
+          />
+        </a>
+        <a href="#" title="instagram">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Finstagram.png?alt=media&token=72fddf44-3321-4bba-9c91-b509b9606081"
+            alt=""
+            style={{
+              width: "32px",
+              height: "auto",
+            }}
+          />
+        </a>
       </div>
     ),
     editable: false,
+    iconList: [
+      {
+        title: "facebook",
+        src: "https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Ffacebook.jpg?alt=media&token=80239c31-8894-410b-aed3-5de3a380520e",
+        alt: "",
+        url: "#",
+      },
+      {
+        title: "twitter",
+        src: "https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Ftwitter.png?alt=media&token=143c504a-35ab-4a51-8462-00ebd3337e59",
+        alt: "",
+        url: "#",
+      },
+      {
+        title: "linkedin",
+        src: "https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Flinkedin.png?alt=media&token=e4895aab-f382-43e0-abc7-16f95531554e",
+        alt: "",
+        url: "#",
+      },
+      {
+        title: "instagram",
+        src: "https://firebasestorage.googleapis.com/v0/b/beefree-6ba5d.appspot.com/o/icons%2Finstagram.png?alt=media&token=72fddf44-3321-4bba-9c91-b509b9606081",
+        alt: "",
+        url: "#",
+      },
+    ],
   },
   {
     id: "html",
     icon: <IoCodeSlash className="opacity-50" />,
-    content: `<div style="width: 100%;
-    font-size: 16px;
-    text-align: center;
-    padding: 0.5rem;">
-      I'm a new HTML block.
-    </div>`,
+    content: `<div style="width: 100%; font-size: 16px; text-align: center; padding: 0.5rem;"><p>I'm a new HTML block.</p></div>`,
     contentCode: (
       <div
         style={{
@@ -289,7 +344,7 @@ export const contents = [
           padding: "0.5rem",
         }}
       >
-        I'm a new HTML block.
+        <p>I'm a new HTML block.</p>
       </div>
     ),
     editable: false,
@@ -347,8 +402,7 @@ export const contents = [
   {
     id: "icons",
     icon: <FaRegStar className="opacity-50" />,
-    content: `<div style="display: flex;
-    flex-direction: column;
+    content: `<div style="display: flex; flex-direction: column;
     justify-content: center;
     align-items: center;
     row-gap: 0.5rem;
@@ -386,6 +440,7 @@ export const contents = [
       </div>
     ),
     editable: false,
+    iconList: [],
   },
   {
     id: "menu",
@@ -429,6 +484,8 @@ export const contents = [
       </div>
     ),
     editable: false,
+    itemList: [],
+    separator: "",
   },
   {
     id: "sticker",

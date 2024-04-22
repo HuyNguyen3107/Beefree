@@ -1,14 +1,86 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MdPhoneAndroid } from "react-icons/md";
 import { FaDesktop } from "react-icons/fa";
 import EditOptions from "../EditOptions/EditOptions";
+import Editor from "@monaco-editor/react";
+import { useSelector, useDispatch } from "react-redux";
+import { builderSlice } from "@/redux/slice/builderSlice";
+import { editorSlice } from "@/redux/slice/editorSlice";
+const { updateHTML } = builderSlice.actions;
 
 function HTMLToolEditor() {
+  const dispatch = useDispatch();
+  const contentList = useSelector((state) => state.builder.contentList);
+  const contentIndex = useSelector((state) => state.builder.contentIndex);
+  const [code, setCode] = useState(``);
+  useEffect(() => {
+    const content = contentList.find(
+      (content, index) => index === +contentIndex
+    );
+    let code = content.content;
+    code = code.slice(code.indexOf(">") + 1, code.lastIndexOf("</"));
+    setCode(code.trim());
+  }, [contentList]);
   return (
     <div className="html_tool h-screen">
       <EditOptions />
-      <div className="bg-gray-50 h-full overflow-auto">
+      <div className="bg-gray-50 h-[78%] overflow-auto">
+        <div className="py-5 px-5">
+          {code ? (
+            <Editor
+              height="400px"
+              language="html"
+              theme="vs-dark"
+              value={code}
+              options={{
+                inlineSuggest: true,
+                fontSize: "16px",
+                formatOnType: true,
+                autoClosingBrackets: true,
+                minimap: { scale: 2 },
+                autoClosingComments: true,
+                autoClosingDelete: true,
+                autoClosingOvertype: true,
+                autoClosingQuotes: true,
+                autoDetectHighContrast: true,
+                autoIndent: true,
+                automaticLayout: true,
+                autoSurround: true,
+                trimAutoWhitespace: true,
+              }}
+              onChange={(value) => {
+                dispatch(updateHTML(value));
+              }}
+            />
+          ) : (
+            <Editor
+              height="400px"
+              language="html"
+              theme="vs-dark"
+              value={``}
+              options={{
+                inlineSuggest: true,
+                fontSize: "16px",
+                formatOnType: true,
+                autoClosingBrackets: true,
+                minimap: { scale: 2 },
+                autoClosingComments: true,
+                autoClosingDelete: true,
+                autoClosingOvertype: true,
+                autoClosingQuotes: true,
+                autoDetectHighContrast: true,
+                autoIndent: true,
+                automaticLayout: true,
+                autoSurround: true,
+                trimAutoWhitespace: true,
+              }}
+              onChange={(value) => {
+                dispatch(updateHTML(value));
+              }}
+            />
+          )}
+        </div>
         <div className="py-5 px-5 flex flex-col gap-y-5">
           <span className="font-bold text-[24px] opacity-60">
             HTML experts only

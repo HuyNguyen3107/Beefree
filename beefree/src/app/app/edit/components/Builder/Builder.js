@@ -114,6 +114,9 @@ function Builder({ style, dropStyle, dropId }) {
                         let contentId = e.target.id;
                         if (!contentId || !contentId.includes("content_")) {
                           contentId = e.target.parentElement.id;
+                          if (contentId.includes("https://")) {
+                            contentId = "";
+                          }
                         }
                         if (!contentId) {
                           contentId = e.target.parentElement.parentElement.id;

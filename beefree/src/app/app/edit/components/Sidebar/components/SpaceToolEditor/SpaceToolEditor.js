@@ -1,10 +1,16 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { MdPhoneAndroid } from "react-icons/md";
 import { FaDesktop } from "react-icons/fa";
 import EditOptions from "../EditOptions/EditOptions";
+import { useSelector, useDispatch } from "react-redux";
+import { builderSlice } from "@/redux/slice/builderSlice";
+import { editorSlice } from "@/redux/slice/editorSlice";
+const { updateHeight } = builderSlice.actions;
 
 function SpaceToolEditor() {
+  const dispatch = useDispatch();
+  const [height, setHeight] = useState(100);
   return (
     <div className="space_tool h-screen">
       <EditOptions />
@@ -12,19 +18,36 @@ function SpaceToolEditor() {
         <div className="px-5 py-3 flex justify-between items-center">
           <span className="text-[14px] opacity-70 font-semibold">Height</span>
           <div className="flex-1 flex justify-end gap-x-3 text-[22px]">
-            <div className="flex border rounded-sm">
-              <div className="bg-white px-2 border text-[14px] cursor-pointer">
-                -
-              </div>
-              <div className="bg-gray-200 border text-[15px] ">
-                <input
-                  type="text"
-                  defaultValue={"0"}
-                  className="w-[40px] text-center outline-none"
-                />
-              </div>
-              <div className="bg-white px-2 border text-[14px] cursor-pointer">
-                +
+            <div className="flex-1 flex justify-end gap-x-3 text-[22px]">
+              <div className="flex border rounded-sm">
+                <div
+                  className="bg-white px-2 border text-[14px] cursor-pointer"
+                  onClick={() => {
+                    let value = height;
+                    value = value - 5;
+                    if (value < 0) {
+                      value = 0;
+                    }
+                    setHeight(value);
+                    dispatch(updateHeight(value));
+                  }}
+                >
+                  -
+                </div>
+                <div className="bg-white px-2 border text-[15px] ">
+                  {height}
+                </div>
+                <div
+                  className="bg-white px-2 border text-[14px] cursor-pointer"
+                  onClick={() => {
+                    let value = height;
+                    value = value + 5;
+                    setHeight(value);
+                    dispatch(updateHeight(value));
+                  }}
+                >
+                  +
+                </div>
               </div>
             </div>
           </div>
