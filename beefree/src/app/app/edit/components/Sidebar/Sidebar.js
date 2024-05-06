@@ -18,11 +18,19 @@ function Sidebar() {
   const dispatch = useDispatch();
   const handleClick = (e) => {
     let type = e.target.id;
-    if (!type) {
-      type = e.target.parentElement.id;
-    }
-    if (!type) {
-      type = e.target.parentElement.parentElement;
+    let target = e.target;
+    // if (!type) {
+    //   type = e.target.parentElement.id;
+    // }
+    // if (!type) {
+    //   type = e.target.parentElement.parentElement;
+    // }
+    while (!type) {
+      target = target.parentElement;
+      type = target.id;
+      if (type) {
+        break;
+      }
     }
     dispatch(updateSidebar(type));
     dispatch(updateEditor(null));

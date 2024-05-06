@@ -1,29 +1,25 @@
 .builder {
-    >div {
-        >div {
-            &:hover {
-                &::after {
-                    display: block;
-                    color: #fff !important;
-                }
-
-                >.move-icon {
-                    display: block;
-                }
+    .builder_content {
+        &:hover {
+            &::after {
+                display: block;
+                color: #fff !important;
             }
 
-            >div {
-                >div {
-                    &:hover {
-                        .tag_name {
-                            display: block;
-                        }
+            .move-icon-row {
+                display: block;
+            }
+        }
+    }
 
-                        >.move-icon {
-                            display: block;
-                        }
-                    }
-                }
+    .drag-handle {
+        &:hover {
+            .tag_name {
+                display: block;
+            }
+
+            .move-icon-content {
+                display: block;
             }
         }
     }

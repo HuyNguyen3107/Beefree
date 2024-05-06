@@ -17,11 +17,16 @@ export function DragHandle(props) {
     : undefined;
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} className={props.style}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={props.style + " drag-handle"}
+    >
       {props.children}
       <div
         className={
-          "move-icon absolute bg-violet-700 text-white z-50 rounded-full px-2 py-2 top-1/4 -right-4 cursor-pointer" +
+          "move-icon-content absolute bg-violet-700 text-white z-50 rounded-full px-2 py-2 top-1/4 -right-4 cursor-pointer" +
           (props.isShow ? "" : " hidden")
         }
         {...listeners}

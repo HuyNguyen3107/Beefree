@@ -9,7 +9,8 @@ import { DndContext } from "@dnd-kit/core";
 import { contents } from "@/core/content";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
-const { addContent, sortContentList } = builderSlice.actions;
+const { addContent, sortContentList, updateRowIndex, updateColumnIndex } =
+  builderSlice.actions;
 import "primeicons/primeicons.css";
 import FileMange from "../../components/FileManage/FileMange";
 
@@ -26,11 +27,17 @@ function EditPage() {
 
   const handleDragEnd = (e) => {
     if (!isDragHandle) {
+      console.log(e);
+      console.log(contentList);
       const tag = contents.find((content) => {
         return e?.active?.id === content?.id;
       });
-      const tagIndex = dropId.slice(dropId.indexOf("_") + 1);
-      if (e?.over?.id.includes("droppable")) {
+      const tagIndex = dropId.slice(dropId.indexOf("_content_") + 9);
+      if (
+        e?.over?.id.includes("_content_") ||
+        e?.over?.id.includes("droppable") ||
+        e?.over?.id.includes("builder_row_")
+      ) {
         dispatch(
           addContent({
             tag,
@@ -43,10 +50,11 @@ function EditPage() {
       setDropStyle("");
     } else {
       if (
-        e?.over?.id.includes("droppable_") &&
-        (indexDnd?.indexDrag || indexDnd?.indexDrop)
+        (e?.over?.id.includes("droppable") ||
+          e?.over?.id.includes("_content_")) &&
+        indexDnd?.activeId &&
+        indexDnd?.overId
       ) {
-        console.log("ok");
         dispatch(sortContentList(indexDnd));
       }
       setStyle("");
@@ -59,19 +67,54 @@ function EditPage() {
       const index = contents.findIndex((content) => {
         return e?.active?.id === content?.id;
       });
-      const tagIndex = e?.over?.id.slice(e?.over?.id.indexOf("_") + 1);
       if (e?.over?.id) {
         setDropId(e?.over?.id);
       }
-      if (e?.over?.id.includes("droppable")) {
+      if (
+        e?.over?.id.includes("_content_") ||
+        e?.over?.id.includes("droppable") ||
+        e?.over?.id.includes("builder_row_")
+      ) {
+        let tagIndex, column;
+        if (e?.over?.id.includes("_content_")) {
+          let id = e?.over?.id;
+          const rowIndex = id.slice(
+            id.indexOf("row_") + 4,
+            id.indexOf("_column")
+          );
+          const columnIndex = id.slice(
+            id.indexOf("column_") + 7,
+            id.indexOf("_content")
+          );
+          dispatch(updateColumnIndex(columnIndex));
+          dispatch(updateRowIndex(rowIndex));
+          tagIndex = id.slice(id.indexOf("content_") + 8);
+          const row = contentList.find((row, index) => index === +rowIndex);
+          column = row.find((column, index) => index === +columnIndex);
+        } else if (e?.over?.id?.includes("_column_")) {
+          let id = e?.over?.id;
+          const rowIndex = id.slice(
+            id.indexOf("row_") + 4,
+            id.indexOf("_column")
+          );
+          const columnIndex = id.slice(id.indexOf("column_") + 7);
+          dispatch(updateColumnIndex(columnIndex));
+          dispatch(updateRowIndex(rowIndex));
+          const row = contentList.find((row, index) => index === +rowIndex);
+          column = row.find((column, index) => index === +columnIndex);
+        } else if (e?.over?.id?.includes("_row_")) {
+          let id = e?.over?.id;
+          const rowIndex = id.slice(id.indexOf("row_") + 4);
+          dispatch(updateRowIndex(rowIndex));
+        }
         if (
-          contentList.length >= Math.ceil((index + 1) / 3) + 3 &&
-          +tagIndex !== 0
+          contentList?.length >= Math.ceil((index + 1) / 3) + 3 &&
+          +tagIndex
         ) {
           if (
             Math.abs(+e?.delta.y) >
             (Math.ceil((index + 1) / 3) +
-              (contentList.length - Math.ceil((index + 1) / 3) + 3)) *
+              (contentList?.length - Math.ceil((index + 1) / 3) + 3)) *
               100
           ) {
             setDropStyle("border-t-2 border-solid border-t-violet-700");
@@ -91,25 +134,26 @@ function EditPage() {
         }
       }
     } else {
-      const indexDrag = e?.active?.id.slice(e?.active?.id.lastIndexOf("_") + 1);
-      const indexDrop = e?.over?.id.slice(e?.over?.id.indexOf("_") + 1);
-      if (
-        +indexDrag !== +indexDrop &&
-        (+indexDrag || +indexDrag === 0) &&
-        (+indexDrop || +indexDrop === 0)
-      ) {
+      const activeId = e?.active?.id;
+      const overId = e?.over?.id;
+      // console.log(overId);
+      // console.log(activeId);
+      if (activeId && overId) {
         setIndexDnd({
-          indexDrag,
-          indexDrop,
+          activeId,
+          overId,
         });
       }
     }
   };
   const handleDragOver = (e) => {
-    if (e?.over?.id === "builder_row") {
+    if (
+      e?.over?.id.includes("builder_row_") &&
+      !e?.over?.id.includes("_column_")
+    ) {
       setStyle("border-violet-700 bg-zinc-100");
       setDropStyle("");
-    } else if (e?.over?.id.includes("droppable")) {
+    } else if (e?.over?.id.includes("_content_")) {
       setStyle("");
     } else {
       setStyle("");

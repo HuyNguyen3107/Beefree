@@ -27,6 +27,8 @@ function VideoToolEditor() {
   const dispatch = useDispatch();
   const contentList = useSelector((state) => state.builder.contentList);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
   const [url, setUrl] = useState(null);
   const [title, setTitle] = useState(null);
   const [check, setCheck] = useState(false);
@@ -41,9 +43,9 @@ function VideoToolEditor() {
   const colorList = ["Dark", "Light"];
   const fontSizeList = ["50px", "55px", "60px", "65px", "70px", "75px", "80px"];
   useEffect(() => {
-    const content = contentList.find(
-      (content, index) => index === +contentIndex
-    );
+    const row = contentList.find((row, index) => index === +rowIndex);
+    const column = row.find((column, index) => index === +columnIndex);
+    const content = column.find((content, index) => index === +contentIndex);
     let code = content.content;
     if (code.includes("<a")) {
       const url = code.slice(

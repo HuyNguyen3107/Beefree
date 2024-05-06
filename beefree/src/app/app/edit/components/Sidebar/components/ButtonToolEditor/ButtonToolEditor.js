@@ -56,6 +56,7 @@ const {
   updateBorderTopColor,
   updateBorderTopStyle,
   updateBorderTopWidth,
+  updateMargin,
 } = builderSlice.actions;
 
 function ButtonToolEditor() {
@@ -344,17 +345,17 @@ function ButtonToolEditor() {
           <div className="flex-1 flex justify-end gap-x-3 text-[22px]">
             <CiAlignLeft
               onClick={() => {
-                dispatch(updateJustifyContent("start"));
+                dispatch(updateMargin("10px auto 10px 0"));
               }}
             />
             <CiAlignCenterH
               onClick={() => {
-                dispatch(updateJustifyContent("center"));
+                dispatch(updateMargin("10px auto"));
               }}
             />
             <CiAlignRight
               onClick={() => {
-                dispatch(updateJustifyContent("end"));
+                dispatch(updateMargin("10px 0 10px auto"));
               }}
             />
           </div>

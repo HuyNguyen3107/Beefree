@@ -13,11 +13,13 @@ function HTMLToolEditor() {
   const dispatch = useDispatch();
   const contentList = useSelector((state) => state.builder.contentList);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
   const [code, setCode] = useState(``);
   useEffect(() => {
-    const content = contentList.find(
-      (content, index) => index === +contentIndex
-    );
+    const row = contentList.find((row, index) => index === +rowIndex);
+    const column = row.find((column, index) => index === +columnIndex);
+    const content = column.find((content, index) => index === +contentIndex);
     let code = content.content;
     code = code.slice(code.indexOf(">") + 1, code.lastIndexOf("</"));
     setCode(code.trim());

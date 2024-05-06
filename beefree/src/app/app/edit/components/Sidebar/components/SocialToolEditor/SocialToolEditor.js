@@ -46,6 +46,8 @@ function SocialToolEditor() {
   const dispatch = useDispatch();
   const contentList = useSelector((state) => state.builder.contentList);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
   const [isCheck, setCheck] = useState(false);
   const [padding, setPadding] = useState(0);
   const [paddingLeft, setPaddingLeft] = useState(0);
@@ -59,9 +61,9 @@ function SocialToolEditor() {
   const iconListRef = ref(storage, "icons");
 
   useEffect(() => {
-    const content = contentList.find(
-      (content, index) => index === +contentIndex
-    );
+    const row = contentList.find((row, index) => index === +rowIndex);
+    const column = row.find((column, index) => index === +columnIndex);
+    const content = column.find((content, index) => index === +contentIndex);
     setIconList(content.iconList);
     const icons = content.iconList;
     const newRestIcons = [];

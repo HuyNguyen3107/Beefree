@@ -35,7 +35,11 @@ function ImageToolEditor() {
   const dispatch = useDispatch();
   const contentList = useSelector((state) => state.builder.contentList);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
-  const contentTag = contentList.find(
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
+  const row = contentList.find((row, index) => index === +rowIndex);
+  const column = row.find((column, index) => index === +columnIndex);
+  const contentTag = column.find(
     (content, index) => index === +contentIndex
   ).content;
   const [padding, setPadding] = useState(0);
