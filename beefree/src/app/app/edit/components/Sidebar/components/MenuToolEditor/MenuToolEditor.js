@@ -87,7 +87,7 @@ function MenuToolEditor() {
       <div className="bg-gray-50 h-[78%] overflow-auto">
         <div className="px-5 py-5 flex flex-col text-[14px] opacity-70 font-semibold gap-y-3">
           <span>Configure icon collection</span>
-          {itemList.length
+          {itemList?.length
             ? itemList.map((item, index) => {
                 return (
                   <div
@@ -160,19 +160,21 @@ function MenuToolEditor() {
                             className="max-w-xs"
                             color="secondary"
                             onChange={(e) => {
+                              const valueItem = e.target.value;
                               const target = targetList.find(
-                                (target, index) => index === +e.target.value
+                                (target, index) =>
+                                  index === +valueItem.slice(0, 1)
                               );
                               dispatch(
                                 updateItem({
-                                  index: e.target.id,
+                                  index: +valueItem.slice(2),
                                   target: target === "New page" ? "_blank" : "",
                                 })
                               );
                             }}
                           >
-                            {targetList.map((target, index) => (
-                              <SelectItem key={index} value={index}>
+                            {targetList.map((target, i) => (
+                              <SelectItem key={i} value={i + "_" + index}>
                                 {target}
                               </SelectItem>
                             ))}

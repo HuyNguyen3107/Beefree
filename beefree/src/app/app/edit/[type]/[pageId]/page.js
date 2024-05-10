@@ -27,12 +27,18 @@ function EditPage() {
 
   const handleDragEnd = (e) => {
     if (!isDragHandle) {
-      console.log(e);
-      console.log(contentList);
       const tag = contents.find((content) => {
         return e?.active?.id === content?.id;
       });
-      const tagIndex = dropId.slice(dropId.indexOf("_content_") + 9);
+      let tagIndex;
+      if (dropId.includes("_content_")) {
+        tagIndex = dropId.slice(dropId.indexOf("_content_") + 9);
+      } else {
+        const temp = e.collisions.find((item) => item.id.includes("_content_"));
+        if (temp) {
+          tagIndex = temp.id.slice(temp.id.indexOf("_content_") + 9);
+        }
+      }
       if (
         e?.over?.id.includes("_content_") ||
         e?.over?.id.includes("droppable") ||
@@ -136,8 +142,6 @@ function EditPage() {
     } else {
       const activeId = e?.active?.id;
       const overId = e?.over?.id;
-      // console.log(overId);
-      // console.log(activeId);
       if (activeId && overId) {
         setIndexDnd({
           activeId,

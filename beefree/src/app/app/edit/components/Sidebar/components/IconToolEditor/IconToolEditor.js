@@ -84,7 +84,7 @@ function IconToolEditor() {
       <div className="bg-gray-50 h-[78%] overflow-auto">
         <div className="px-5 py-5 flex flex-col text-[14px] opacity-70 font-semibold gap-y-3">
           <span>Configure icon collection</span>
-          {iconList.length
+          {iconList?.length
             ? iconList.map((icon, index) => {
                 return (
                   <div

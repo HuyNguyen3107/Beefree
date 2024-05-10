@@ -4109,6 +4109,7 @@ export const builderSlice = createSlice({
                   if (action.payload?.target) {
                     itemList = content.itemList.map((item, index) => {
                       if (index === +action.payload.index) {
+                        console.log("ok");
                         item.target = action.payload.target;
                         return item;
                       } else {
@@ -4121,6 +4122,7 @@ export const builderSlice = createSlice({
                   const preCode = code.slice(0, code.indexOf(">") + 1);
                   const restCode = code.slice(code.indexOf("</div>"));
                   const codeArr = itemList?.map((item) => {
+                    console.log(item.url, item.title, item.target, item.text);
                     return `<a href="${item.url}" title="${item.title}" target="${item.target}">${item.text}</a>`;
                   });
                   code = codeArr.join(content.separator);
