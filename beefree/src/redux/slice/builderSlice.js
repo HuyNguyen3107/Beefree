@@ -9,6 +9,7 @@ const initialState = {
   rowIndex: null,
   columnIndex: null,
   isChangeIconImage: null,
+  isRowEdit: null,
 };
 
 export const builderSlice = createSlice({
@@ -139,6 +140,9 @@ export const builderSlice = createSlice({
     },
     updateColumnIndex: (state, action) => {
       state.columnIndex = action.payload;
+    },
+    changeRowEditStatus: (state, action) => {
+      state.isRowEdit = action.payload;
     },
     replicationContent: (state, action) => {
       let temp = state.contentList.map((row, index) => {

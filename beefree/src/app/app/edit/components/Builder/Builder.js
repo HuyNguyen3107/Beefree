@@ -26,8 +26,9 @@ const {
   deleteContent,
   updateRowIndex,
   updateColumnIndex,
+  changeRowEditStatus,
 } = builderSlice.actions;
-const { updateEditor } = editorSlice.actions;
+const { updateEditor, updateSidebar } = editorSlice.actions;
 
 function Builder({ style, dropStyle, dropId }) {
   const dispatch = useDispatch();
@@ -62,30 +63,21 @@ function Builder({ style, dropStyle, dropId }) {
   };
   const handleClick = (e) => {
     e.stopPropagation();
-    if (rowIndex && columnIndex) {
-      const idList = ["builder", "builder_content"];
-      if (idList.includes(e.target?.id)) {
-        const row = contentList.find((row, index) => index === +rowIndex);
-        const column = row.find((column, index) => index === +columnIndex);
-        const checkHideEditor = column.every((content) => {
-          if (content.isShow) {
-            return false;
-          } else {
-            return true;
-          }
-        });
-        if (!checkHideEditor) {
-          e.stopPropagation();
-          dispatch(
-            updateContent({
-              hideEditor: true,
-            })
-          );
-          dispatch(updateEditor(null));
-          dispatch(updateContentIndex(null));
-          dispatch(updateColumnIndex(null));
-          dispatch(updateRowIndex(null));
-        }
+    const id = e.target?.id;
+    if (id) {
+      if (id?.includes("builder_content")) {
+        const index = id.slice(id.lastIndexOf("_") + 1);
+        dispatch(
+          updateContent({
+            hideEditor: true,
+          })
+        );
+        dispatch(updateEditor(null));
+        dispatch(updateContentIndex(null));
+        dispatch(updateColumnIndex(null));
+        dispatch(updateRowIndex(+index));
+        dispatch(changeRowEditStatus(true));
+        dispatch(updateSidebar("rows"));
       }
     }
   };
@@ -104,7 +96,7 @@ function Builder({ style, dropStyle, dropId }) {
                   "builder_content after:content-['Row'] after:absolute after:-top-[20px] after:right-0 after:bg-violet-700 after:text-[12px] after:px-2 after:hidden relative border-transparent border-2 py-1 hover:border-violet-700 hover:bg-zinc-100 " +
                   (dropId === "builder_row_" + rowIndex ? style : "")
                 }
-                id="builder_content"
+                id={"builder_content_" + rowIndex}
               >
                 <div
                   className={
@@ -245,6 +237,8 @@ function Builder({ style, dropStyle, dropId }) {
                                             contentId: contentIndex,
                                           })
                                         );
+                                        dispatch(updateSidebar("contents"));
+                                        dispatch(changeRowEditStatus(null));
                                       }}
                                     >
                                       {tag?.contentCode}

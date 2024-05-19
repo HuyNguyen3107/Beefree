@@ -10,7 +10,13 @@ import ContentSidebar from "./components/ContentSidebar/ContentSidebar";
 import { useSelector, useDispatch } from "react-redux";
 import { editorSlice } from "@/redux/slice/editorSlice";
 import { builderSlice } from "@/redux/slice/builderSlice";
-const { updateContent, updateContentIndex } = builderSlice.actions;
+const {
+  updateContent,
+  updateContentIndex,
+  updateColumnIndex,
+  updateRowIndex,
+  changeRowEditStatus,
+} = builderSlice.actions;
 const { updateSidebar, updateEditor } = editorSlice.actions;
 
 function Sidebar() {
@@ -19,12 +25,6 @@ function Sidebar() {
   const handleClick = (e) => {
     let type = e.target.id;
     let target = e.target;
-    // if (!type) {
-    //   type = e.target.parentElement.id;
-    // }
-    // if (!type) {
-    //   type = e.target.parentElement.parentElement;
-    // }
     while (!type) {
       target = target.parentElement;
       type = target.id;
@@ -40,6 +40,9 @@ function Sidebar() {
       })
     );
     dispatch(updateContentIndex(null));
+    dispatch(updateColumnIndex(null));
+    dispatch(updateRowIndex(null));
+    dispatch(changeRowEditStatus(null));
   };
   return (
     <aside className="sidebar shadow-md h-3/5">
