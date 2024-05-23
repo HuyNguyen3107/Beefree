@@ -25,7 +25,7 @@ import { isYoutubeLink, getYoutubeVideoId } from "@/utils/regex";
 
 function VideoToolEditor() {
   const dispatch = useDispatch();
-  const contentList = useSelector((state) => state.builder.contentList);
+  const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
   const columnIndex = useSelector((state) => state.builder.columnIndex);
   const rowIndex = useSelector((state) => state.builder.rowIndex);
@@ -43,9 +43,13 @@ function VideoToolEditor() {
   const colorList = ["Dark", "Light"];
   const fontSizeList = ["50px", "55px", "60px", "65px", "70px", "75px", "80px"];
   useEffect(() => {
-    const row = contentList.find((row, index) => index === +rowIndex);
-    const column = row.find((column, index) => index === +columnIndex);
-    const content = column.find((content, index) => index === +contentIndex);
+    const row = data?.rows?.find((row, index) => index === +rowIndex);
+    const column = row?.columns?.find(
+      (column, index) => index === +columnIndex
+    );
+    const content = column?.contents?.find(
+      (content, index) => index === +contentIndex
+    );
     let code = content.content;
     if (code.includes("<a")) {
       const url = code.slice(
@@ -62,7 +66,7 @@ function VideoToolEditor() {
     } else {
       setCheck(false);
     }
-  }, [contentList]);
+  }, [data]);
   return (
     <div className="video_tool h-screen">
       <EditOptions />

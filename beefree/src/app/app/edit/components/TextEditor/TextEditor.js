@@ -6,7 +6,6 @@ const { updateContent } = builderSlice.actions;
 import HTMLReactParser from "html-react-parser";
 
 const TextEditor = ({ tagContent, tagIndex, styleEditor }) => {
-  // console.log(tagContent);
   const dispatch = useDispatch();
   const editor = useRef(null);
   const [content, setContent] = useState(tagContent);

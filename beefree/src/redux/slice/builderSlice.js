@@ -3,7 +3,11 @@ import HTMLReactParser from "html-react-parser";
 import { isImageLink } from "@/utils/regex";
 
 const initialState = {
-  contentList: [],
+  data: {
+    generalStyle: "",
+    contentAreaStyle: "",
+    rows: [],
+  },
   isUploadFile: false,
   contentIndex: null,
   rowIndex: null,
@@ -17,16 +21,16 @@ export const builderSlice = createSlice({
   initialState,
   reducers: {
     addContent: (state, action) => {
-      let temp = state.contentList;
-      if (state.contentList.length) {
-        temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows;
+      if (state.data.rows.length) {
+        temp = state.data.rows.map((row, index) => {
           if (index === +state.rowIndex) {
-            if (row.length) {
-              return row.map((column, index) => {
+            if (row.columns.length) {
+              const arr = row.columns.map((column, index) => {
                 if (index === +state.columnIndex) {
-                  if (column.length) {
+                  if (column.contents.length) {
                     const arr = [];
-                    column.forEach((item, index) => {
+                    column.contents.forEach((item, index) => {
                       if (+action.payload.tagIndex === +index) {
                         if (!action.payload.isAppend) {
                           arr.push(action.payload.tag);
@@ -39,34 +43,65 @@ export const builderSlice = createSlice({
                         arr.push(item);
                       }
                     });
-                    return arr;
+                    return {
+                      ...column,
+                      contents: arr,
+                    };
                   } else {
-                    return [action.payload.tag];
+                    return {
+                      columnStyle: "",
+                      contents: [action.payload.tag],
+                    };
                   }
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
-              return [[action.payload.tag]];
+              return {
+                rowStyle: "",
+                contentAreaStyle: "",
+                columns: [
+                  {
+                    columnStyle: "",
+                    contents: [action.payload.tag],
+                  },
+                ],
+              };
             }
           } else {
             return row;
           }
         });
       } else {
-        temp.push([[action.payload.tag]]);
+        temp.push({
+          rowStyle: "",
+          contentAreaStyle: "",
+          columns: [
+            {
+              columnStyle: "",
+              contents: [action.payload.tag],
+            },
+          ],
+        });
       }
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateContent: (state, action) => {
       let temp;
       if (action.payload?.tagIndex || +action.payload?.tagIndex === 0) {
-        temp = state.contentList.map((row, index) => {
+        temp = state.data.rows.map((row, index) => {
           if (index === +state.rowIndex) {
-            return row.map((column, index) => {
+            const arr = row.columns.map((column, index) => {
               if (index === +state.columnIndex) {
-                return column.map((content, index) => {
+                const arr = column.contents.map((content, index) => {
                   if (+index === +action.payload.tagIndex) {
                     content.content = action.payload.content;
                     content.contentCode = action.payload.code;
@@ -75,20 +110,28 @@ export const builderSlice = createSlice({
                     return content;
                   }
                 });
+                return {
+                  ...column,
+                  contents: arr,
+                };
               } else {
                 return column;
               }
             });
+            return {
+              ...row,
+              columns: arr,
+            };
           } else {
             return row;
           }
         });
       } else if (action.payload?.contentId) {
-        temp = state.contentList.map((row, index) => {
+        temp = state.data.rows.map((row, index) => {
           if (index === +state.rowIndex) {
-            return row.map((column, index) => {
+            const arr = row.columns.map((column, index) => {
               if (index === +state.columnIndex) {
-                return column.map((content, index) => {
+                const arr = column.contents.map((content, index) => {
                   if (+index === +action.payload.contentId) {
                     content.isShow = true;
                     return content;
@@ -99,35 +142,56 @@ export const builderSlice = createSlice({
                     return content;
                   }
                 });
+                return {
+                  ...column,
+                  contents: arr,
+                };
               } else {
                 return column;
               }
             });
+            return {
+              ...row,
+              columns: arr,
+            };
           } else {
             return row;
           }
         });
       } else if (action.payload?.hideEditor) {
-        temp = state.contentList.map((row, index) => {
+        temp = state.data.rows.map((row, index) => {
           if (index === +state.rowIndex) {
-            return row.map((column, index) => {
+            const arr = row.columns.map((column, index) => {
               if (index === +state.columnIndex) {
-                return column.map((content, index) => {
+                const arr = column.contents.map((content, index) => {
                   if (content.isShow) {
                     content.isShow = false;
                   }
                   return content;
                 });
+                return {
+                  ...column,
+                  contents: arr,
+                };
               } else {
                 return column;
               }
             });
+            return {
+              ...row,
+              columns: arr,
+            };
           } else {
             return row;
           }
         });
       }
-      if (temp) state.contentList = temp;
+      if (temp) {
+        state.data = {
+          ...state.data,
+          rows: temp,
+        };
+      }
     },
     changeUploadFileStatus: (state, action) => {
       state.isUploadFile = action.payload;
@@ -145,12 +209,12 @@ export const builderSlice = createSlice({
       state.isRowEdit = action.payload;
     },
     replicationContent: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
               const arr = [];
-              column.forEach((content, index) => {
+              column.contents.forEach((content, index) => {
                 const typeList = ["title", "paragraph", "list"];
                 if (+index === +state.contentIndex) {
                   arr.push(content);
@@ -167,38 +231,58 @@ export const builderSlice = createSlice({
                   arr.push(content);
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     deleteContent: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
               const arr = [];
-              column.forEach((content, index) => {
+              column.contents.forEach((content, index) => {
                 if (+index !== +state.contentIndex) {
                   arr.push(content);
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     sortContentList: (state, action) => {
       let temp;
@@ -230,24 +314,24 @@ export const builderSlice = createSlice({
           +columnActiveIndex === +columnOverIndex &&
           +contentActiveIndex !== +contentOverIndex
         ) {
-          const row = state.contentList.find(
+          const row = state.data.rows.find(
             (row, index) => index === +rowOverIndex
           );
-          const column = row.find(
+          const column = row.columns.find(
             (column, index) => index === +columnOverIndex
           );
-          const dragContent = column.find(
+          const dragContent = column.contents.find(
             (content, index) => index === +contentActiveIndex
           );
-          const dropContent = column.find(
+          const dropContent = column.contents.find(
             (content, index) => index === +contentOverIndex
           );
-          temp = state.contentList.map((row, index) => {
+          temp = state.data.rows.map((row, index) => {
             if (index === +rowOverIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnOverIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentOverIndex === index) {
                       arr.push(dragContent);
                     } else if (+contentActiveIndex === index) {
@@ -256,11 +340,18 @@ export const builderSlice = createSlice({
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
@@ -269,27 +360,27 @@ export const builderSlice = createSlice({
           +rowActiveIndex === +rowOverIndex &&
           +columnActiveIndex !== +columnOverIndex
         ) {
-          const row = state.contentList.find(
+          const row = state.data.rows.find(
             (row, index) => index === +rowOverIndex
           );
-          const columnOver = row.find(
+          const columnOver = row.columns.find(
             (column, index) => index === +columnOverIndex
           );
-          const columnActive = row.find(
+          const columnActive = row.columns.find(
             (column, index) => index === +columnActiveIndex
           );
-          const dragContent = columnActive.find(
+          const dragContent = columnActive.contents.find(
             (content, index) => index === +contentActiveIndex
           );
-          const dropContent = columnOver.find(
+          const dropContent = columnOver.contents.find(
             (content, index) => index === +contentOverIndex
           );
-          temp = state.contentList.map((row, index) => {
+          temp = state.data.rows.map((row, index) => {
             if (index === +rowOverIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnOverIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentOverIndex === index) {
                       arr.push(content);
                       arr.push(dragContent);
@@ -297,48 +388,58 @@ export const builderSlice = createSlice({
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else if (index === +columnActiveIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentActiveIndex !== index) {
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
           });
         } else if (+rowActiveIndex !== +rowOverIndex) {
-          const rowOver = state.contentList.find(
+          const rowOver = state.data.rows.find(
             (row, index) => index === +rowOverIndex
           );
-          const rowActive = state.contentList.find(
+          const rowActive = state.data.rows.find(
             (row, index) => index === +rowActiveIndex
           );
-          const columnOver = rowOver.find(
+          const columnOver = rowOver.columns.find(
             (column, index) => index === +columnOverIndex
           );
-          const columnActive = rowActive.find(
+          const columnActive = rowActive.columns.find(
             (column, index) => index === +columnActiveIndex
           );
-          const dragContent = columnActive.find(
+          const dragContent = columnActive.contents.find(
             (content, index) => index === +contentActiveIndex
           );
-          const dropContent = columnOver.find(
+          const dropContent = columnOver.contents.find(
             (content, index) => index === +contentOverIndex
           );
-          temp = state.contentList.map((row, index) => {
+          temp = state.data.rows.map((row, index) => {
             if (index === +rowOverIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnOverIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentOverIndex === index) {
                       arr.push(content);
                       arr.push(dragContent);
@@ -346,25 +447,39 @@ export const builderSlice = createSlice({
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else if (index === +rowActiveIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnActiveIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentActiveIndex !== index) {
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
@@ -377,69 +492,93 @@ export const builderSlice = createSlice({
         );
         const columnOverIndex = overId.slice(overId.indexOf("column_") + 7);
         if (+rowActiveIndex === +rowOverIndex) {
-          const row = state.contentList.find(
+          const row = state.data.rows.find(
             (row, index) => index === +rowOverIndex
           );
-          const columnActive = row.find(
+          const columnActive = row.columns.find(
             (column, index) => index === +columnActiveIndex
           );
-          const dragContent = columnActive.find(
+          const dragContent = columnActive.contents.find(
             (content, index) => index === +contentActiveIndex
           );
-          temp = state.contentList.map((row, index) => {
+          temp = state.data.rows.map((row, index) => {
             if (index === +rowOverIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnActiveIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentActiveIndex !== index) {
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else if (index === +columnOverIndex) {
-                  return [dragContent];
+                  return {
+                    columnStyle: "",
+                    contents: [dragContent],
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
           });
         } else if (+rowActiveIndex !== +rowOverIndex) {
-          const row = state.contentList.find(
+          const row = state.data.rows.find(
             (row, index) => index === +rowActiveIndex
           );
-          const columnActive = row.find(
+          const columnActive = row.columns.find(
             (column, index) => index === +columnActiveIndex
           );
-          const dragContent = columnActive.find(
+          const dragContent = columnActive.contents.find(
             (content, index) => index === +contentActiveIndex
           );
-          temp = state.contentList.map((row, index) => {
+          temp = state.data.rows.map((row, index) => {
             if (index === +rowActiveIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnActiveIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentActiveIndex !== index) {
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else if (index === +rowOverIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnOverIndex) {
-                  return [dragContent];
+                  return {
+                    columnStyle: "",
+                    contents: [dragContent],
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
@@ -448,23 +587,39 @@ export const builderSlice = createSlice({
       } else if (overId?.includes("_row_")) {
         const rowOverIndex = overId.slice(overId.indexOf("row_") + 4);
         if (+rowActiveIndex !== +rowOverIndex) {
-          temp = state.contentList.map((row, index) => {
+          temp = state.data.rows.map((row, index) => {
             if (index === +rowOverIndex) {
-              return [[dragContent]];
+              return {
+                rowStyle: "",
+                contentAreaStyle: "",
+                columns: [
+                  {
+                    columnStyle: "",
+                    contents: [dragContent],
+                  },
+                ],
+              };
             } else if (index === +rowActiveIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +columnActiveIndex) {
                   const arr = [];
-                  column.forEach((content, index) => {
+                  column.contents.forEach((content, index) => {
                     if (+contentActiveIndex !== index) {
                       arr.push(content);
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
@@ -472,15 +627,18 @@ export const builderSlice = createSlice({
         }
       }
       if (temp) {
-        state.contentList = temp;
+        state.data = {
+          ...state.data,
+          rows: temp,
+        };
       }
     },
     updateTitle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (+index === +state.contentIndex) {
                   let code = content.content;
                   code = code.replaceAll(code.slice(1, 3), action.payload);
@@ -491,23 +649,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateFontFamily: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -553,23 +721,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateFontWeight: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -631,23 +809,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateTextColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -699,23 +887,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateLinkColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   let newCode = "";
@@ -770,23 +968,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateAlign: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -830,23 +1038,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateLineHeight: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -890,23 +1108,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateLetterSpacing: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -950,23 +1178,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateFontSize: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1010,23 +1248,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateListStyleType: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1070,23 +1318,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateParagraphSpacing: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1130,23 +1388,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updatePadding: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1213,23 +1481,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updatePaddingLeft: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1273,23 +1551,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updatePaddingRight: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1333,23 +1621,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updatePaddingTop: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1393,23 +1691,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updatePaddingBottom: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1453,23 +1761,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     insertImage: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = `
                     <a href="#" style="display: flex; justify-content: center;">
@@ -1482,25 +1800,36 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateWidthImage: (state, action) => {
-      const row = state.contentList.find(
+      const row = state.data.rows.find(
         (row, index) => index === +state.rowIndex
       );
-      const column = row.find((column, index) => index === +state.columnIndex);
-      const check = column.every((content, index) => {
+      const column = row.columns.find(
+        (column, index) => index === +state.columnIndex
+      );
+      const check = column.contents.every((content, index) => {
         if (index === +state.contentIndex) {
-          console.log(content?.id);
           if (content?.content?.includes("<a")) {
             return true;
           } else {
@@ -1510,11 +1839,11 @@ export const builderSlice = createSlice({
         return true;
       });
       if (check) {
-        let temp = state.contentList.map((row, index) => {
+        let temp = state.data.rows.map((row, index) => {
           if (index === +state.rowIndex) {
-            return row.map((column, index) => {
+            const arr = row.columns.map((column, index) => {
               if (index === +state.columnIndex) {
-                const arr = column.map((content, index) => {
+                const arr = column.contents.map((content, index) => {
                   if (index === +state.contentIndex) {
                     let code = content.content;
                     const preCode = code.slice(
@@ -1571,24 +1900,34 @@ export const builderSlice = createSlice({
                     return content;
                   }
                 });
-                return arr;
+                return {
+                  ...column,
+                  contents: arr,
+                };
               } else {
                 return column;
               }
             });
+            return {
+              ...row,
+              columns: arr,
+            };
           } else {
             return row;
           }
         });
-        state.contentList = temp;
+        state.data = {
+          ...state.data,
+          rows: temp,
+        };
       }
     },
     updateJustifyContent: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1632,23 +1971,35 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateImageUrl: (state, action) => {
-      const row = state.contentList.find(
+      const row = state.data.rows.find(
         (row, index) => index === +state.rowIndex
       );
-      const column = row.find((column, index) => index === +state.columnIndex);
-      const check = column.every((content, index) => {
+      const column = row.columns.find(
+        (column, index) => index === +state.columnIndex
+      );
+      const check = column.contents.every((content, index) => {
         if (index === +state.contentIndex) {
           if (content.content.includes("<a")) {
             return true;
@@ -1660,11 +2011,11 @@ export const builderSlice = createSlice({
       });
       if (check) {
         if (action.payload === "") {
-          let temp = state.contentList.map((row, index) => {
+          let temp = state.data.rows.map((row, index) => {
             if (index === +state.rowIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +state.columnIndex) {
-                  const arr = column.map((content, index) => {
+                  const arr = column.contents.map((content, index) => {
                     if (index === +state.contentIndex) {
                       let code = `
                       <div
@@ -1693,22 +2044,32 @@ export const builderSlice = createSlice({
                       return content;
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
           });
-          state.contentList = temp;
+          state.data = {
+            ...state.data,
+            rows: temp,
+          };
         } else {
-          let temp = state.contentList.map((row, index) => {
+          let temp = state.data.rows.map((row, index) => {
             if (index === +state.rowIndex) {
-              return row.map((column, index) => {
+              const arr = row.columns.map((column, index) => {
                 if (index === +state.columnIndex) {
-                  const arr = column.map((content, index) => {
+                  const arr = column.contents.map((content, index) => {
                     if (index === +state.contentIndex) {
                       if (isImageLink(action.payload)) {
                         let code = content.content;
@@ -1727,28 +2088,40 @@ export const builderSlice = createSlice({
                       return content;
                     }
                   });
-                  return arr;
+                  return {
+                    ...column,
+                    contents: arr,
+                  };
                 } else {
                   return column;
                 }
               });
+              return {
+                ...row,
+                columns: arr,
+              };
             } else {
               return row;
             }
           });
-          state.contentList = temp;
+          state.data = {
+            ...state.data,
+            rows: temp,
+          };
         }
       }
     },
     updateImageAltText: (state, action) => {
-      const columnCheck = state.contentList.find((row, index) => {
+      const columnCheck = state.data.rows.find((row, index) => {
         if (index === +state.rowIndex) {
-          return row.find((column, index) => index === +state.columnIndex);
+          return row.columns.find(
+            (column, index) => index === +state.columnIndex
+          );
         } else {
           return false;
         }
       });
-      const check = columnCheck.every((content, index) => {
+      const check = columnCheck.contents.every((content, index) => {
         if (index === +state.contentIndex) {
           if (content.content.includes("<a")) {
             return true;
@@ -1759,11 +2132,11 @@ export const builderSlice = createSlice({
         return true;
       });
       if (check) {
-        let temp = state.contentList.map((row, index) => {
+        let temp = state.data.rows.map((row, index) => {
           if (index === +state.rowIndex) {
-            return row.map((column, index) => {
+            const arr = row.columns.map((column, index) => {
               if (index === +state.columnIndex) {
-                const arr = column.map((content, index) => {
+                const arr = column.contents.map((content, index) => {
                   if (index === +state.contentIndex) {
                     let code = content.content;
                     code =
@@ -1777,27 +2150,39 @@ export const builderSlice = createSlice({
                     return content;
                   }
                 });
-                return arr;
+                return {
+                  ...column,
+                  contents: arr,
+                };
               } else {
                 return column;
               }
             });
+            return {
+              ...row,
+              columns: arr,
+            };
           } else {
             return row;
           }
         });
-        state.contentList = temp;
+        state.data = {
+          ...state.data,
+          rows: temp,
+        };
       }
     },
     updateImageAction: (state, action) => {
-      const columnCheck = state.contentList.find((row, index) => {
+      const columnCheck = state.data.rows.find((row, index) => {
         if (index === +state.rowIndex) {
-          return row.find((column, index) => index === +state.columnIndex);
+          return row.columns.find(
+            (column, index) => index === +state.columnIndex
+          );
         } else {
           return false;
         }
       });
-      const check = columnCheck.every((content, index) => {
+      const check = columnCheck.contents.every((content, index) => {
         if (index === +state.contentIndex) {
           if (content.content.includes("<a")) {
             return true;
@@ -1808,14 +2193,13 @@ export const builderSlice = createSlice({
         return true;
       });
       if (check) {
-        let temp = state.contentList.map((row, index) => {
+        let temp = state.data.rows.map((row, index) => {
           if (index === +state.rowIndex) {
-            return row.map((column, index) => {
+            const arr = row.columns.map((column, index) => {
               if (index === +state.columnIndex) {
-                const arr = column.map((content, index) => {
+                const arr = column.contents.map((content, index) => {
                   if (index === +state.contentIndex) {
                     if (action.payload === "Open web page") {
-                      console.log("ok");
                       return content;
                     }
                     return content;
@@ -1823,24 +2207,34 @@ export const builderSlice = createSlice({
                     return content;
                   }
                 });
-                return arr;
+                return {
+                  ...column,
+                  contents: arr,
+                };
               } else {
                 return column;
               }
             });
+            return {
+              ...row,
+              columns: arr,
+            };
           } else {
             return row;
           }
         });
-        state.contentList = temp;
+        state.data = {
+          ...state.data,
+          rows: temp,
+        };
       }
     },
     updateButtonContent: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf(">") + 1);
@@ -1853,23 +2247,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateWidth: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1920,23 +2324,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBackgroundColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -1980,23 +2394,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderRadius: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2040,23 +2464,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderWidth: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2100,23 +2534,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderStyle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2160,23 +2604,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2220,23 +2674,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderLeftWidth: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2280,23 +2744,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderLeftStyle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2340,23 +2814,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderLeftColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2400,23 +2884,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderRightWidth: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2460,23 +2954,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderRightStyle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2520,23 +3024,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderRightColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2580,23 +3094,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderTopWidth: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2640,23 +3164,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderTopStyle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2700,23 +3234,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderTopColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2760,23 +3304,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderBottomWidth: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2820,23 +3374,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderBottomStyle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2880,23 +3444,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateBorderBottomColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -2940,23 +3514,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateDividerBackground: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.lastIndexOf("style=") + 7);
@@ -3003,23 +3587,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateDividerHeight: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.lastIndexOf("style=") + 7);
@@ -3066,23 +3660,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateDividerStyle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.lastIndexOf("style=") + 7);
@@ -3129,23 +3733,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateDividerWidth: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.lastIndexOf("style=") + 7);
@@ -3199,23 +3813,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateHeight: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -3266,23 +3890,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     addSocialIcons: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let src = action.payload;
                   let title = src.slice(
@@ -3318,23 +3952,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateSocialIcons: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let iconList = content.iconList;
                   if (action.payload?.title) {
@@ -3389,23 +4033,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     deleteSocialIcons: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let src = action.payload;
                   let iconList = content.iconList.filter((icon) => {
@@ -3435,23 +4089,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateColumnGap: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -3495,23 +4159,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateHTML: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   const code = `
                   <div style="width: 100%; font-size: 16px; text-align: center; padding: 0.5rem;">
@@ -3525,24 +4199,34 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateVideo: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
               const { url, link, title } = action.payload;
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = `
                 <a id="${url}" href="#" style="display: flex; justify-content: center; position: relative;">
@@ -3557,23 +4241,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updatePlayIconColor: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.lastIndexOf("style=") + 7);
@@ -3634,23 +4328,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updatePlayIconSize: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.lastIndexOf("style=") + 7);
@@ -3697,23 +4401,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateVideoTitle: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf(`title="`) + 7);
@@ -3726,23 +4440,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     addNewIcon: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf(">") + 1);
@@ -3787,23 +4511,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     deleteIcon: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let src = action.payload;
                   let iconList = content.iconList.filter((icon) => {
@@ -3847,23 +4581,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateIcon: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let iconList = content.iconList;
                   if (action.payload?.title) {
@@ -3914,26 +4658,36 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     changeImageIconStatus: (state, action) => {
       state.isChangeIconImage = action.payload;
     },
     insertImageIcon: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let iconList = [];
                   iconList = content.iconList.map((icon, index) => {
@@ -3960,24 +4714,34 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
       state.isChangeIconImage = null;
     },
     updateIconSize: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf(">") + 1);
@@ -3998,24 +4762,34 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
       state.isChangeIconImage = null;
     },
     addNewItem: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf(">") + 1);
@@ -4058,23 +4832,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateItem: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let itemList = content.itemList;
                   if (action.payload?.title) {
@@ -4138,23 +4922,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     deleteItem: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let itemList = content.itemList.filter((item, index) => {
                     if (index === +action.payload) {
@@ -4198,23 +4992,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateFlexDirection: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   if (action.payload === "column") {
                     content.separator = "";
@@ -4261,23 +5065,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     separateMenu: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   content.separator = action.payload;
                   let code = content.content;
@@ -4295,23 +5109,33 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
     updateMargin: (state, action) => {
-      let temp = state.contentList.map((row, index) => {
+      let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          return row.map((column, index) => {
+          const arr = row.columns.map((column, index) => {
             if (index === +state.columnIndex) {
-              const arr = column.map((content, index) => {
+              const arr = column.contents.map((content, index) => {
                 if (index === +state.contentIndex) {
                   let code = content.content;
                   const preCode = code.slice(0, code.indexOf("style=") + 7);
@@ -4378,16 +5202,26 @@ export const builderSlice = createSlice({
                   return content;
                 }
               });
-              return arr;
+              return {
+                ...column,
+                contents: arr,
+              };
             } else {
               return column;
             }
           });
+          return {
+            ...row,
+            columns: arr,
+          };
         } else {
           return row;
         }
       });
-      state.contentList = temp;
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
     },
   },
 });

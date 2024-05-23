@@ -39,7 +39,7 @@ const {
 
 function IconToolEditor() {
   const dispatch = useDispatch();
-  const contentList = useSelector((state) => state.builder.contentList);
+  const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
   const columnIndex = useSelector((state) => state.builder.columnIndex);
   const rowIndex = useSelector((state) => state.builder.rowIndex);
@@ -71,11 +71,15 @@ function IconToolEditor() {
   const iconSizeList = ["16px", "32px", "64px", "128px"];
   const iconSpaceList = ["5", "10", "15", "20", "25", "30", "35", "40"];
   useEffect(() => {
-    const row = contentList.find((row, index) => index === +rowIndex);
-    const column = row.find((column, index) => index === +columnIndex);
-    const content = column.find((content, index) => index === +contentIndex);
+    const row = data?.rows?.find((row, index) => index === +rowIndex);
+    const column = row?.columns?.find(
+      (column, index) => index === +columnIndex
+    );
+    const content = column?.contents?.find(
+      (content, index) => index === +contentIndex
+    );
     setIconList(content.iconList);
-  }, [contentList]);
+  }, [data]);
 
   return (
     <div className="icon_tool h-screen">

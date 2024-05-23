@@ -44,7 +44,7 @@ import { storage } from "@/utils/firebase";
 
 function SocialToolEditor() {
   const dispatch = useDispatch();
-  const contentList = useSelector((state) => state.builder.contentList);
+  const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
   const columnIndex = useSelector((state) => state.builder.columnIndex);
   const rowIndex = useSelector((state) => state.builder.rowIndex);
@@ -61,9 +61,13 @@ function SocialToolEditor() {
   const iconListRef = ref(storage, "icons");
 
   useEffect(() => {
-    const row = contentList.find((row, index) => index === +rowIndex);
-    const column = row.find((column, index) => index === +columnIndex);
-    const content = column.find((content, index) => index === +contentIndex);
+    const row = data?.rows?.find((row, index) => index === +rowIndex);
+    const column = row?.columns?.find(
+      (column, index) => index === +columnIndex
+    );
+    const content = column?.contents?.find(
+      (content, index) => index === +contentIndex
+    );
     setIconList(content.iconList);
     const icons = content.iconList;
     const newRestIcons = [];
@@ -101,7 +105,7 @@ function SocialToolEditor() {
         });
       });
     });
-  }, [contentList]);
+  }, [data]);
 
   return (
     <div className="social_tool h-screen">

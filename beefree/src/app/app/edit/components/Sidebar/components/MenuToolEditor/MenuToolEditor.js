@@ -39,7 +39,7 @@ const {
 
 function MenuToolEditor() {
   const dispatch = useDispatch();
-  const contentList = useSelector((state) => state.builder.contentList);
+  const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
   const columnIndex = useSelector((state) => state.builder.columnIndex);
   const rowIndex = useSelector((state) => state.builder.rowIndex);
@@ -75,11 +75,15 @@ function MenuToolEditor() {
   const targetList = ["New page", "Current page"];
 
   useEffect(() => {
-    const row = contentList.find((row, index) => index === +rowIndex);
-    const column = row.find((column, index) => index === +columnIndex);
-    const content = column.find((content, index) => index === +contentIndex);
-    setItemList(content.itemList);
-  }, [contentList]);
+    const row = data?.rows?.find((row, index) => index === +rowIndex);
+    const column = row?.columns?.find(
+      (column, index) => index === +columnIndex
+    );
+    const content = column?.contents?.find(
+      (content, index) => index === +contentIndex
+    );
+    setItemList(content?.itemList);
+  }, [data]);
 
   return (
     <div className="menu_tool h-screen">

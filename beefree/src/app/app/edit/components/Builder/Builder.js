@@ -32,7 +32,7 @@ const { updateEditor, updateSidebar } = editorSlice.actions;
 
 function Builder({ style, dropStyle, dropId }) {
   const dispatch = useDispatch();
-  const contentList = useSelector((state) => state.builder.contentList);
+  const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
   const rowIndex = useSelector((state) => state.builder.rowIndex);
   const columnIndex = useSelector((state) => state.builder.columnIndex);
@@ -87,8 +87,8 @@ function Builder({ style, dropStyle, dropId }) {
       id="builder"
       onClick={handleClick}
     >
-      {contentList.length ? (
-        contentList.map((row, rowIndex) => {
+      {data?.rows?.length ? (
+        data?.rows?.map((row, rowIndex) => {
           return (
             <Droppable id={"builder_row_" + rowIndex} key={rowIndex}>
               <div
@@ -100,11 +100,12 @@ function Builder({ style, dropStyle, dropId }) {
               >
                 <div
                   className={
-                    "w-4/5 m-auto" + (row.length > 1 ? " grid grid-cols-6" : "")
+                    "w-4/5 m-auto" +
+                    (row?.columns?.length > 1 ? " grid grid-cols-6" : "")
                   }
                 >
-                  {row.length ? (
-                    row.map((column, columnIndex) => {
+                  {row?.columns?.length ? (
+                    row?.columns?.map((column, columnIndex) => {
                       return (
                         <Droppable
                           id={
@@ -112,15 +113,15 @@ function Builder({ style, dropStyle, dropId }) {
                           }
                           key={columnIndex}
                           style={
-                            row.length > 1
+                            row?.columns?.length > 1
                               ? columnIndex === 0
-                                ? "col-span-" + (6 - row.length + 1)
+                                ? "col-span-" + (6 - row?.columns?.length + 1)
                                 : "col-span-1"
                               : ""
                           }
                         >
-                          {column.length ? (
-                            column.map((tag, index) => {
+                          {column?.contents?.length ? (
+                            column?.contents?.map((tag, index) => {
                               return (
                                 <Droppable
                                   id={
@@ -213,14 +214,14 @@ function Builder({ style, dropStyle, dropId }) {
                                         const contentIndex = id.slice(
                                           id.indexOf("content_") + 8
                                         );
-                                        const row = contentList.find(
+                                        const row = data?.rows?.find(
                                           (row, index) => index === +rowIndex
                                         );
-                                        const column = row.find(
+                                        const column = row?.columns?.find(
                                           (column, index) =>
                                             index === +columnIndex
                                         );
-                                        const tag = column.find(
+                                        const tag = column?.contents?.find(
                                           (content, index) =>
                                             index === +contentIndex
                                         );

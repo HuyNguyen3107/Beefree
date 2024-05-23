@@ -33,13 +33,13 @@ const {
 
 function ImageToolEditor() {
   const dispatch = useDispatch();
-  const contentList = useSelector((state) => state.builder.contentList);
+  const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
   const columnIndex = useSelector((state) => state.builder.columnIndex);
   const rowIndex = useSelector((state) => state.builder.rowIndex);
-  const row = contentList.find((row, index) => index === +rowIndex);
-  const column = row.find((column, index) => index === +columnIndex);
-  const contentTag = column.find(
+  const row = data?.rows?.find((row, index) => index === +rowIndex);
+  const column = row?.columns?.find((column, index) => index === +columnIndex);
+  const contentTag = column?.contents?.find(
     (content, index) => index === +contentIndex
   ).content;
   const [padding, setPadding] = useState(0);

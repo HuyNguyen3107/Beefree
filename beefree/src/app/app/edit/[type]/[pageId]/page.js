@@ -15,7 +15,7 @@ import "primeicons/primeicons.css";
 import FileMange from "../../components/FileManage/FileMange";
 
 function EditPage() {
-  const contentList = useSelector((state) => state.builder.contentList);
+  const data = useSelector((state) => state.builder.data);
   const isUploadFile = useSelector((state) => state.builder.isUploadFile);
   const dispatch = useDispatch();
   const [style, setStyle] = useState("");
@@ -95,8 +95,8 @@ function EditPage() {
           dispatch(updateColumnIndex(columnIndex));
           dispatch(updateRowIndex(rowIndex));
           tagIndex = id.slice(id.indexOf("content_") + 8);
-          const row = contentList.find((row, index) => index === +rowIndex);
-          column = row.find((column, index) => index === +columnIndex);
+          const row = data.rows.find((row, index) => index === +rowIndex);
+          column = row.columns.find((column, index) => index === +columnIndex);
         } else if (e?.over?.id?.includes("_column_")) {
           let id = e?.over?.id;
           const rowIndex = id.slice(
@@ -106,21 +106,18 @@ function EditPage() {
           const columnIndex = id.slice(id.indexOf("column_") + 7);
           dispatch(updateColumnIndex(columnIndex));
           dispatch(updateRowIndex(rowIndex));
-          const row = contentList.find((row, index) => index === +rowIndex);
-          column = row.find((column, index) => index === +columnIndex);
+          const row = data.rows.find((row, index) => index === +rowIndex);
+          column = row.columns.find((column, index) => index === +columnIndex);
         } else if (e?.over?.id?.includes("_row_")) {
           let id = e?.over?.id;
           const rowIndex = id.slice(id.indexOf("row_") + 4);
           dispatch(updateRowIndex(rowIndex));
         }
-        if (
-          contentList?.length >= Math.ceil((index + 1) / 3) + 3 &&
-          +tagIndex
-        ) {
+        if (data.rows?.length >= Math.ceil((index + 1) / 3) + 3 && +tagIndex) {
           if (
             Math.abs(+e?.delta.y) >
             (Math.ceil((index + 1) / 3) +
-              (contentList?.length - Math.ceil((index + 1) / 3) + 3)) *
+              (data.rows?.length - Math.ceil((index + 1) / 3) + 3)) *
               100
           ) {
             setDropStyle("border-t-2 border-solid border-t-violet-700");
