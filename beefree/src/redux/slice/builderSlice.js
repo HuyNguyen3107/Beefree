@@ -1,11 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import HTMLReactParser from "html-react-parser";
 import { isImageLink } from "@/utils/regex";
+import {
+  getStyleStringFromObject,
+  getStyleObjectFromString,
+} from "@/utils/convert";
 
 const initialState = {
   data: {
     generalStyle: "",
-    contentAreaStyle: "",
+    contentGeneralStyle: "width: 745px; margin-left: auto; margin-right: auto;",
     rows: [],
   },
   isUploadFile: false,
@@ -14,6 +18,9 @@ const initialState = {
   columnIndex: null,
   isChangeIconImage: null,
   isRowEdit: null,
+  isInsertRowImageBg: null,
+  isInsertGeneralImageBg: null,
+  backgroundImageArea: "ROW",
 };
 
 export const builderSlice = createSlice({
@@ -48,8 +55,16 @@ export const builderSlice = createSlice({
                       contents: arr,
                     };
                   } else {
+                    let value = 0;
+                    row?.columns?.forEach((column) => {
+                      if (+column?.colSpan) {
+                        value += +column.colSpan;
+                      }
+                    });
                     return {
                       columnStyle: "",
+                      colSpan: 6,
+                      ...column,
                       contents: [action.payload.tag],
                     };
                   }
@@ -68,6 +83,7 @@ export const builderSlice = createSlice({
                 columns: [
                   {
                     columnStyle: "",
+                    colSpan: 6,
                     contents: [action.payload.tag],
                   },
                 ],
@@ -84,6 +100,7 @@ export const builderSlice = createSlice({
           columns: [
             {
               columnStyle: "",
+              colSpan: 6,
               contents: [action.payload.tag],
             },
           ],
@@ -516,8 +533,16 @@ export const builderSlice = createSlice({
                     contents: arr,
                   };
                 } else if (index === +columnOverIndex) {
+                  let value = 0;
+                  row?.columns?.forEach((column) => {
+                    if (+column?.colSpan) {
+                      value += +column.colSpan;
+                    }
+                  });
                   return {
                     columnStyle: "",
+                    colSpan: 6 - value,
+                    ...column,
                     contents: [dragContent],
                   };
                 } else {
@@ -567,8 +592,16 @@ export const builderSlice = createSlice({
             } else if (index === +rowOverIndex) {
               const arr = row.columns.map((column, index) => {
                 if (index === +columnOverIndex) {
+                  let value = 0;
+                  row?.columns?.forEach((column) => {
+                    if (+column?.colSpan) {
+                      value += +column.colSpan;
+                    }
+                  });
                   return {
                     columnStyle: "",
+                    colSpan: 6 - value,
+                    ...column,
                     contents: [dragContent],
                   };
                 } else {
@@ -595,6 +628,7 @@ export const builderSlice = createSlice({
                 columns: [
                   {
                     columnStyle: "",
+                    colSpan: 6,
                     contents: [dragContent],
                   },
                 ],
@@ -4897,7 +4931,6 @@ export const builderSlice = createSlice({
                   if (action.payload?.target) {
                     itemList = content.itemList.map((item, index) => {
                       if (index === +action.payload.index) {
-                        console.log("ok");
                         item.target = action.payload.target;
                         return item;
                       } else {
@@ -4910,7 +4943,6 @@ export const builderSlice = createSlice({
                   const preCode = code.slice(0, code.indexOf(">") + 1);
                   const restCode = code.slice(code.indexOf("</div>"));
                   const codeArr = itemList?.map((item) => {
-                    console.log(item.url, item.title, item.target, item.text);
                     return `<a href="${item.url}" title="${item.title}" target="${item.target}">${item.text}</a>`;
                   });
                   code = codeArr.join(content.separator);
@@ -5221,6 +5253,815 @@ export const builderSlice = createSlice({
       state.data = {
         ...state.data,
         rows: temp,
+      };
+    },
+    updateRowBackgroundColor: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const check = row.rowStyle.includes("background-color");
+          if (check) {
+            const obj = getStyleObjectFromString(row.rowStyle);
+            obj.backgroundColor = action.payload;
+            row.rowStyle = getStyleStringFromObject(obj);
+          } else {
+            if (row.rowStyle) {
+              row.rowStyle = row.rowStyle.concat(
+                ` background-color: ${action.payload};`
+              );
+            } else {
+              row.rowStyle = row.rowStyle.concat(
+                `background-color: ${action.payload};`
+              );
+            }
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateContentAreaBackgroundColor: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const check = row.contentAreaStyle.includes("background-color");
+          if (check) {
+            const obj = getStyleObjectFromString(row.contentAreaStyle);
+            obj.backgroundColor = action.payload;
+            row.contentAreaStyle = getStyleStringFromObject(obj);
+          } else {
+            if (row.contentAreaStyle) {
+              row.contentAreaStyle = row.contentAreaStyle.concat(
+                ` background-color: ${action.payload};`
+              );
+            } else {
+              row.contentAreaStyle = row.contentAreaStyle.concat(
+                `background-color: ${action.payload};`
+              );
+            }
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateBackgroundImage: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          if (action.payload.area === "ROW") {
+            const check = row.rowStyle.includes("background-image");
+            if (check) {
+              const obj = getStyleObjectFromString(row.rowStyle);
+              obj.backgroundImage = action.payload.url;
+              row.rowStyle = getStyleStringFromObject(obj);
+            } else {
+              if (row.rowStyle) {
+                row.rowStyle = row.rowStyle.concat(
+                  ` background-image: ${action.payload.url}; background-size: auto; background-position: left top; background-repeat: no-repeat;`
+                );
+              } else {
+                row.rowStyle = row.rowStyle.concat(
+                  `background-image: ${action.payload.url}; background-size: auto; background-position: left top; background-repeat: no-repeat;`
+                );
+              }
+            }
+          } else if (action.payload.area === "CONTENT AREA") {
+            const check = row.contentAreaStyle.includes("background-image");
+            if (check) {
+              const obj = getStyleObjectFromString(row.contentAreaStyle);
+              obj.backgroundImage = action.payload.url;
+              row.contentAreaStyle = getStyleStringFromObject(obj);
+            } else {
+              if (row.contentAreaStyle) {
+                row.contentAreaStyle = row.contentAreaStyle.concat(
+                  ` background-image: ${action.payload.url}; background-size: auto; background-position: left top; background-repeat: no-repeat;`
+                );
+              } else {
+                row.contentAreaStyle = row.contentAreaStyle.concat(
+                  `background-image: ${action.payload.url}; background-size: auto; background-position: left top; background-repeat: no-repeat;`
+                );
+              }
+            }
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    changeInsertRowImageBgStatus: (state, action) => {
+      state.isInsertRowImageBg = action.payload;
+    },
+    removeBackgroundImage: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          if (action.payload === "ROW") {
+            if (row.rowStyle.includes("background-image")) {
+              const obj = getStyleObjectFromString(row.rowStyle);
+              delete obj.backgroundImage;
+              delete obj.backgroundSize;
+              delete obj.backgroundPosition;
+              delete obj.backgroundRepeat;
+              row.rowStyle = getStyleStringFromObject(obj);
+            }
+          } else if (action.payload === "CONTENT AREA") {
+            if (row.contentAreaStyle.includes("background-image")) {
+              const obj = getStyleObjectFromString(row.contentAreaStyle);
+              delete obj.backgroundImage;
+              delete obj.backgroundSize;
+              delete obj.backgroundPosition;
+              delete obj.backgroundRepeat;
+              row.contentAreaStyle = getStyleStringFromObject(obj);
+            }
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    changeBackgroundImageArea: (state, action) => {
+      state.backgroundImageArea = action.payload;
+    },
+    updateBackgroundSize: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          if (action.payload.area === "ROW") {
+            if (row.rowStyle.includes("background-size")) {
+              const obj = getStyleObjectFromString(row.rowStyle);
+              obj.backgroundSize = action.payload.size;
+              row.rowStyle = getStyleStringFromObject(obj);
+            }
+          } else if (action.payload.area === "CONTENT AREA") {
+            if (row.contentAreaStyle.includes("background-size")) {
+              const obj = getStyleObjectFromString(row.contentAreaStyle);
+              obj.backgroundSize = action.payload.size;
+              row.contentAreaStyle = getStyleStringFromObject(obj);
+            }
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateBackgroundRepeat: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          if (action.payload.area === "ROW") {
+            if (row.rowStyle.includes("background-repeat")) {
+              const obj = getStyleObjectFromString(row.rowStyle);
+              obj.backgroundRepeat = action.payload.repeat;
+              row.rowStyle = getStyleStringFromObject(obj);
+            }
+          } else if (action.payload.area === "CONTENT AREA") {
+            if (row.contentAreaStyle.includes("background-repeat")) {
+              const obj = getStyleObjectFromString(row.contentAreaStyle);
+              obj.backgroundRepeat = action.payload.repeat;
+              row.contentAreaStyle = getStyleStringFromObject(obj);
+            }
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateBackgroundPosition: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          if (action.payload.area === "ROW") {
+            if (row.rowStyle.includes("background-position")) {
+              const obj = getStyleObjectFromString(row.rowStyle);
+              obj.backgroundPosition = action.payload.position;
+              row.rowStyle = getStyleStringFromObject(obj);
+            }
+          } else if (action.payload.area === "CONTENT AREA") {
+            if (row.contentAreaStyle.includes("background-position")) {
+              const obj = getStyleObjectFromString(row.contentAreaStyle);
+              obj.backgroundPosition = action.payload.position;
+              row.contentAreaStyle = getStyleStringFromObject(obj);
+            }
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateContentAreaBorder: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const obj = getStyleObjectFromString(row.contentAreaStyle);
+          if (action.payload?.style) {
+            obj.borderStyle = action.payload.style;
+          }
+          if (action.payload?.color) {
+            obj.borderColor = action.payload.color;
+          }
+          if (action.payload?.width || action.payload?.width === 0) {
+            obj.borderWidth = `${action.payload.width}px`;
+          }
+          console.log(obj);
+          row.contentAreaStyle = getStyleStringFromObject(obj);
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateContentAreaBorderLeft: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const obj = getStyleObjectFromString(row.contentAreaStyle);
+          if (action.payload?.style) {
+            obj.borderLeftStyle = action.payload.style;
+          }
+          if (action.payload?.color) {
+            obj.borderLeftColor = action.payload.color;
+          }
+          if (action.payload?.width || action.payload?.width === 0) {
+            obj.borderLeftWidth = `${action.payload.width}px`;
+          }
+          row.contentAreaStyle = getStyleStringFromObject(obj);
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateContentAreaBorderRight: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const obj = getStyleObjectFromString(row.contentAreaStyle);
+          if (action.payload?.style) {
+            obj.borderRightStyle = action.payload.style;
+          }
+          if (action.payload?.color) {
+            obj.borderRightColor = action.payload.color;
+          }
+          if (action.payload?.width || action.payload?.width === 0) {
+            obj.borderRightWidth = `${action.payload.width}px`;
+          }
+          row.contentAreaStyle = getStyleStringFromObject(obj);
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateContentAreaBorderTop: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const obj = getStyleObjectFromString(row.contentAreaStyle);
+          if (action.payload?.style) {
+            obj.borderTopStyle = action.payload.style;
+          }
+          if (action.payload?.color) {
+            obj.borderTopColor = action.payload.color;
+          }
+          if (action.payload?.width || action.payload?.width === 0) {
+            obj.borderTopWidth = `${action.payload.width}px`;
+          }
+          row.contentAreaStyle = getStyleStringFromObject(obj);
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateContentAreaBorderBottom: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const obj = getStyleObjectFromString(row.contentAreaStyle);
+          if (action.payload?.style) {
+            obj.borderBottomStyle = action.payload.style;
+          }
+          if (action.payload?.color) {
+            obj.borderBottomColor = action.payload.color;
+          }
+          if (action.payload?.width || action.payload?.width === 0) {
+            obj.borderBottomWidth = `${action.payload.width}px`;
+          }
+          row.contentAreaStyle = getStyleStringFromObject(obj);
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateContentAreaBorderRadius: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          const obj = getStyleObjectFromString(row.contentAreaStyle);
+          if (action.payload?.all || action.payload?.all === 0) {
+            obj.borderRadius = `${action.payload.all}px`;
+          }
+          if (action.payload?.topLeft || action.payload?.topLeft === 0) {
+            obj.borderTopLeftRadius = `${action.payload.topLeft}px`;
+          }
+          if (action.payload?.topRight || action.payload?.topRight === 0) {
+            obj.borderTopRightRadius = `${action.payload.topRight}px`;
+          }
+          if (action.payload?.bottomLeft || action.payload?.bottomLeft === 0) {
+            obj.borderBottomLeftRadius = `${action.payload.bottomLeft}px`;
+          }
+          if (
+            action.payload?.bottomRight ||
+            action.payload?.bottomRight === 0
+          ) {
+            obj.borderBottomRightRadius = `${action.payload.bottomRight}px`;
+          }
+          row.contentAreaStyle = getStyleStringFromObject(obj);
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    addColumn: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          let column = {
+            columnStyle: "",
+            colSpan: 1,
+            contents: [],
+          };
+          if (row.columns.length && row.columns[0].colSpan > 1) {
+            row.columns[0].colSpan = row.columns[0].colSpan - 1;
+          }
+          if (row.columns[0].colSpan === 1 && row.columns.length !== 6) {
+            let check = true;
+            row.columns.forEach((column) => {
+              if (check) {
+                if (column?.colSpan > 1) {
+                  column.colSpan = column.colSpan - 1;
+                  check = false;
+                }
+              }
+            });
+          }
+          if (row.columns.length < 6) {
+            row.columns.push(column);
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    deleteColumn: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          if (row.columns.length > 1) {
+            if (+action.payload === 0) {
+              row.columns[1].colSpan =
+                +row.columns[1].colSpan + +row.columns[0].colSpan;
+            }
+            row.columns = row.columns.filter((column, index) => {
+              if (index === +action.payload) {
+                return false;
+              } else {
+                if (index === +action.payload - 1) {
+                  column.colSpan =
+                    row.columns[+action.payload].colSpan + column.colSpan;
+                }
+                return true;
+              }
+            });
+          }
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateColumnBackgroundColor: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          console.log(index);
+          row.columns.forEach((column, index) => {
+            if (index === +state.columnIndex) {
+              const obj = getStyleObjectFromString(column.columnStyle);
+              obj.backgroundColor = action.payload;
+              column.columnStyle = getStyleStringFromObject(obj);
+            }
+          });
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateColumnPadding: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          row.columns.forEach((column, index) => {
+            if (index === +state.columnIndex) {
+              const obj = getStyleObjectFromString(column.columnStyle);
+              if (action.payload?.all || action.payload?.all === 0) {
+                obj.padding = `${action.payload.all}px`;
+              }
+              if (action.payload?.top || action.payload?.top === 0) {
+                obj.paddingTop = `${action.payload.top}px`;
+              }
+              if (action.payload?.right || action.payload?.right === 0) {
+                obj.paddingRight = `${action.payload.right}px`;
+              }
+              if (action.payload?.bottom || action.payload?.bottom === 0) {
+                obj.paddingBottom = `${action.payload.bottom}px`;
+              }
+              if (action.payload?.left || action.payload?.left === 0) {
+                obj.paddingLeft = `${action.payload.left}px`;
+              }
+              column.columnStyle = getStyleStringFromObject(obj);
+            }
+          });
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateColumnBorder: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          row.columns.forEach((column, index) => {
+            if (index === +state.columnIndex) {
+              const obj = getStyleObjectFromString(column.columnStyle);
+              if (action.payload?.style) {
+                obj.borderStyle = action.payload.style;
+              }
+              if (action.payload?.color) {
+                obj.borderColor = action.payload.color;
+              }
+              if (action.payload?.width || action.payload?.width === 0) {
+                obj.borderWidth = `${action.payload.width}px`;
+              }
+              column.columnStyle = getStyleStringFromObject(obj);
+            }
+          });
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateColumnBorderLeft: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          row.columns.forEach((column, index) => {
+            if (index === +state.columnIndex) {
+              const obj = getStyleObjectFromString(column.columnStyle);
+              if (action.payload?.style) {
+                obj.borderLeftStyle = action.payload.style;
+              }
+              if (action.payload?.color) {
+                obj.borderLeftColor = action.payload.color;
+              }
+              if (action.payload?.width || action.payload?.width === 0) {
+                obj.borderLeftWidth = `${action.payload.width}px`;
+              }
+              column.columnStyle = getStyleStringFromObject(obj);
+            }
+          });
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateColumnBorderRight: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          row.columns.forEach((column, index) => {
+            if (index === +state.columnIndex) {
+              const obj = getStyleObjectFromString(column.columnStyle);
+              if (action.payload?.style) {
+                obj.borderRightStyle = action.payload.style;
+              }
+              if (action.payload?.color) {
+                obj.borderRightColor = action.payload.color;
+              }
+              if (action.payload?.width || action.payload?.width === 0) {
+                obj.borderRightWidth = `${action.payload.width}px`;
+              }
+              column.columnStyle = getStyleStringFromObject(obj);
+            }
+          });
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateColumnBorderTop: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          row.columns.forEach((column, index) => {
+            if (index === +state.columnIndex) {
+              const obj = getStyleObjectFromString(column.columnStyle);
+              if (action.payload?.style) {
+                obj.borderTopStyle = action.payload.style;
+              }
+              if (action.payload?.color) {
+                obj.borderTopColor = action.payload.color;
+              }
+              if (action.payload?.width || action.payload?.width === 0) {
+                obj.borderTopWidth = `${action.payload.width}px`;
+              }
+              column.columnStyle = getStyleStringFromObject(obj);
+            }
+          });
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateColumnBorderBottom: (state, action) => {
+      let temp = state.data.rows.map((row, index) => {
+        if (index === +state.rowIndex) {
+          row.columns.forEach((column, index) => {
+            if (index === +state.columnIndex) {
+              const obj = getStyleObjectFromString(column.columnStyle);
+              if (action.payload?.style) {
+                obj.borderBottomStyle = action.payload.style;
+              }
+              if (action.payload?.color) {
+                obj.borderBottomColor = action.payload.color;
+              }
+              if (action.payload?.width || action.payload?.width === 0) {
+                obj.borderBottomWidth = `${action.payload.width}px`;
+              }
+              column.columnStyle = getStyleStringFromObject(obj);
+            }
+          });
+          return row;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    duplicateRow: (state, action) => {
+      let temp = [];
+      state.data.rows.forEach((row, index) => {
+        if (index === +state.rowIndex) {
+          temp.push(row);
+          temp.push(row);
+        } else {
+          temp.push(row);
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    deleteRow: (state, action) => {
+      let temp = state.data.rows.filter((row, index) => {
+        if (index === +state.rowIndex) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    addRow: (state, action) => {
+      let row = {
+        rowStyle: "",
+        contentAreaStyle: "",
+        columns: [
+          {
+            columnStyle: "",
+            colSpan: 6,
+            contents: [],
+          },
+        ],
+      };
+      const temp = [...state.data.rows];
+      if (state.data.rows.length === 0) {
+        temp.push(row);
+        temp.push(row);
+      } else {
+        temp.push(row);
+      }
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    sortRow: (state, action) => {
+      const activeRow = state.data.rows[action.payload.activeIndex];
+      const overRow = state.data.rows[action.payload.overIndex];
+      let temp = state.data.rows.map((row, index) => {
+        if (index === action.payload.activeIndex) {
+          return overRow;
+        } else if (index === action.payload.overIndex) {
+          return activeRow;
+        } else {
+          return row;
+        }
+      });
+      state.data = {
+        ...state.data,
+        rows: temp,
+      };
+    },
+    updateWidthContentGeneral: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.contentGeneralStyle);
+      if (+action.payload || +action.payload === 0) {
+        obj.width = `${action.payload}px`;
+      }
+      state.data = {
+        ...state.data,
+        contentGeneralStyle: getStyleStringFromObject(obj),
+      };
+    },
+    updateContentGeneralAlignment: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.contentGeneralStyle);
+      if (action.payload === "left") {
+        if (obj.marginLeft) {
+          delete obj.marginLeft;
+        }
+      } else if (action.payload === "center") {
+        if (!obj?.marginLeft) {
+          obj.marginLeft = "auto";
+        }
+      }
+      state.data = {
+        ...state.data,
+        contentGeneralStyle: getStyleStringFromObject(obj),
+      };
+    },
+    updateGeneralBackgroundColor: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.generalStyle);
+      obj.backgroundColor = action.payload;
+      state.data = {
+        ...state.data,
+        generalStyle: getStyleStringFromObject(obj),
+      };
+    },
+    updateContentGeneralBackgroundColor: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.contentGeneralStyle);
+      obj.backgroundColor = action.payload;
+      state.data = {
+        ...state.data,
+        contentGeneralStyle: getStyleStringFromObject(obj),
+      };
+    },
+    changeInsertGeneralImageBgStatus: (state, action) => {
+      state.isInsertGeneralImageBg = action.payload;
+    },
+    updateGeneralBgImage: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.generalStyle);
+      if (obj?.backgroundImage) {
+        obj.backgroundImage = action.payload;
+      } else {
+        obj.backgroundImage = action.payload;
+        obj.backgroundSize = "auto";
+        obj.backgroundPosition = "left top";
+        obj.backgroundRepeat = "no-repeat";
+      }
+      state.data = {
+        ...state.data,
+        generalStyle: getStyleStringFromObject(obj),
+      };
+    },
+    removeGeneralBgImage: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.generalStyle);
+      delete obj.backgroundImage;
+      delete obj.backgroundSize;
+      delete obj.backgroundPosition;
+      delete obj.backgroundRepeat;
+      state.data = {
+        ...state.data,
+        generalStyle: getStyleStringFromObject(obj),
+      };
+    },
+    updateGeneralBgSize: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.generalStyle);
+      obj.backgroundSize = action.payload;
+      state.data = {
+        ...state.data,
+        generalStyle: getStyleStringFromObject(obj),
+      };
+    },
+    updateGeneralBgRepeat: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.generalStyle);
+      obj.backgroundRepeat = action.payload;
+      state.data = {
+        ...state.data,
+        generalStyle: getStyleStringFromObject(obj),
+      };
+    },
+    updateGeneralBgPosition: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.generalStyle);
+      obj.backgroundPosition = action.payload;
+      state.data = {
+        ...state.data,
+        generalStyle: getStyleStringFromObject(obj),
+      };
+    },
+    updateGeneralFontFamily: (state, action) => {
+      const obj = getStyleObjectFromString(state.data.generalStyle);
+      obj.fontFamily = action.payload;
+      console.log(getStyleStringFromObject(obj));
+      state.data = {
+        ...state.data,
+        generalStyle: getStyleStringFromObject(obj),
       };
     },
   },

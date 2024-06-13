@@ -9,8 +9,17 @@ import { DndContext } from "@dnd-kit/core";
 import { contents } from "@/core/content";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
-const { addContent, sortContentList, updateRowIndex, updateColumnIndex } =
-  builderSlice.actions;
+import { editorSlice } from "@/redux/slice/editorSlice";
+const {
+  addContent,
+  sortContentList,
+  updateRowIndex,
+  updateColumnIndex,
+  updateContentIndex,
+  changeRowEditStatus,
+  sortRow,
+} = builderSlice.actions;
+const { updateEditor } = editorSlice.actions;
 import "primeicons/primeicons.css";
 import FileMange from "../../components/FileManage/FileMange";
 
@@ -24,9 +33,30 @@ function EditPage() {
   const [dropId, setDropId] = useState("");
   const [isDragHandle, setDragHandle] = useState(false);
   const [indexDnd, setIndexDnd] = useState({});
+  const [isRowDrag, setIsRowDrag] = useState(false);
+  const [rowIndexDnd, setRowIndexDnd] = useState({});
 
   const handleDragEnd = (e) => {
-    if (!isDragHandle) {
+    if (isDragHandle) {
+      if (indexDnd?.activeId && indexDnd?.overId) {
+        dispatch(sortContentList(indexDnd));
+      }
+      setIndexDnd({});
+      setStyle("");
+      setDropStyle("");
+      setDragHandle(false);
+    } else if (isRowDrag) {
+      if (
+        (rowIndexDnd?.activeIndex || rowIndexDnd?.activeIndex === 0) &&
+        (rowIndexDnd?.overIndex || rowIndexDnd?.overIndex === 0)
+      ) {
+        dispatch(sortRow(rowIndexDnd));
+      }
+      setIsRowDrag(false);
+      setStyle("");
+      setDropStyle("");
+      setRowIndexDnd({});
+    } else {
       const tag = contents.find((content) => {
         return e?.active?.id === content?.id;
       });
@@ -54,22 +84,43 @@ function EditPage() {
       }
       setStyle("");
       setDropStyle("");
-    } else {
-      if (
-        (e?.over?.id.includes("droppable") ||
-          e?.over?.id.includes("_content_")) &&
-        indexDnd?.activeId &&
-        indexDnd?.overId
-      ) {
-        dispatch(sortContentList(indexDnd));
-      }
-      setStyle("");
-      setDropStyle("");
-      setDragHandle(false);
     }
+    dispatch(updateContentIndex(null));
+    dispatch(updateContentIndex(null));
+    dispatch(updateColumnIndex(null));
+    dispatch(updateRowIndex(null));
+    dispatch(changeRowEditStatus(null));
   };
   const handleDragMove = (e) => {
-    if (!isDragHandle) {
+    if (isDragHandle) {
+      const activeId = e?.active?.id;
+      const overId = e?.collisions.find(
+        (item) => item.id.includes("_content_") || item.id.includes("droppable")
+      )?.id;
+      if (activeId && overId) {
+        setIndexDnd({
+          activeId,
+          overId,
+        });
+      }
+    } else if (isRowDrag) {
+      const activeId = e?.active?.id;
+      const activeIndex = activeId?.slice(activeId.indexOf("row_") + 4);
+      const overId = e?.collisions.find(
+        (item) => !item.id.includes("_column_")
+      )?.id;
+      const overIndex = overId?.slice(overId.indexOf("row_") + 4);
+      if (
+        +activeIndex !== +overIndex &&
+        (+overIndex || +overIndex === 0) &&
+        (+activeIndex || +activeIndex === 0)
+      ) {
+        setRowIndexDnd({
+          activeIndex: +activeIndex,
+          overIndex: +overIndex,
+        });
+      }
+    } else {
       const index = contents.findIndex((content) => {
         return e?.active?.id === content?.id;
       });
@@ -136,15 +187,6 @@ function EditPage() {
           }
         }
       }
-    } else {
-      const activeId = e?.active?.id;
-      const overId = e?.over?.id;
-      if (activeId && overId) {
-        setIndexDnd({
-          activeId,
-          overId,
-        });
-      }
     }
   };
   const handleDragOver = (e) => {
@@ -162,8 +204,16 @@ function EditPage() {
     }
   };
   const handleDragStart = (e) => {
-    if (e?.active?.id.includes("drag_handle")) {
+    if (
+      e?.active?.id.includes("drag_handle") &&
+      e?.active?.id.includes("_content_")
+    ) {
       setDragHandle(true);
+    } else if (
+      e?.active?.id.includes("drag_handle") &&
+      !e?.active?.id.includes("_content_")
+    ) {
+      setIsRowDrag(true);
     }
   };
   return (

@@ -17,6 +17,11 @@ const {
   insertImage,
   changeImageIconStatus,
   insertImageIcon,
+  changeInsertRowImageBgStatus,
+  updateBackgroundImage,
+  removeBackgroundImage,
+  changeInsertGeneralImageBgStatus,
+  updateGeneralBgImage,
 } = builderSlice.actions;
 import { TbCaretUpDownFilled } from "react-icons/tb";
 import { v4 } from "uuid";
@@ -34,11 +39,22 @@ function FileMange() {
   const isChangeIconImage = useSelector(
     (state) => state.builder.isChangeIconImage
   );
+  const isInsertRowImageBg = useSelector(
+    (state) => state.builder.isInsertRowImageBg
+  );
+  const backgroundImageArea = useSelector(
+    (state) => state.builder.backgroundImageArea
+  );
+  const isInsertGeneralImageBg = useSelector(
+    (state) => state.builder.isInsertGeneralImageBg
+  );
   const [imageUrls, setImageUrls] = useState([]);
   const dispatch = useDispatch();
   const handleClick = () => {
     dispatch(changeUploadFileStatus(false));
     dispatch(changeImageIconStatus(null));
+    dispatch(changeInsertRowImageBgStatus(null));
+    dispatch(changeInsertGeneralImageBgStatus(null));
   };
   const imagesListRef = ref(storage, "images/user_id");
   const handleUpload = (e) => {
@@ -89,10 +105,23 @@ function FileMange() {
   };
   const handleInsert = (e) => {
     const url = e?.target?.id;
-    if (!isChangeIconImage) {
-      dispatch(insertImage(url));
-    } else {
+    if (isInsertRowImageBg) {
+      dispatch(
+        updateBackgroundImage({
+          area: backgroundImageArea,
+          url: `url('${url}')`,
+        })
+      );
+      const area = backgroundImageArea === "ROW" ? "CONTENT AREA" : "ROW";
+      removeBackgroundImage(area);
+      dispatch(changeInsertRowImageBgStatus(null));
+    } else if (isChangeIconImage) {
       dispatch(insertImageIcon(url));
+    } else if (isInsertGeneralImageBg) {
+      dispatch(updateGeneralBgImage(`url('${url}')`));
+      dispatch(changeInsertGeneralImageBgStatus(null));
+    } else {
+      dispatch(insertImage(url));
     }
     dispatch(changeUploadFileStatus(false));
   };

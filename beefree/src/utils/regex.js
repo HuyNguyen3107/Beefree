@@ -14,3 +14,11 @@ export const getYoutubeVideoId = (url) => {
   var match = url.match(regExp);
   return match && match[7].length == 11 ? match[7] : false;
 };
+
+export const isVimeoLink = (url) => {
+  return /https?:\/\/(www\.)?vimeo.com\/(\d+)(\/)?/.test(url);
+};
+
+export const isFirebaseStorageLink = (url) => {
+  return /^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/.*/.test(url);
+};
