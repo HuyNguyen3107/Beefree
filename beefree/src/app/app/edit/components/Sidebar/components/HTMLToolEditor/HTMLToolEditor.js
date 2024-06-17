@@ -17,75 +17,43 @@ function HTMLToolEditor() {
   const rowIndex = useSelector((state) => state.builder.rowIndex);
   const [code, setCode] = useState(``);
   useEffect(() => {
-    const row = data?.rows?.find((row, index) => index === +rowIndex);
-    const column = row?.columns?.find(
-      (column, index) => index === +columnIndex
-    );
-    const content = column?.contents?.find(
-      (content, index) => index === +contentIndex
-    );
-    let code = content.content;
-    code = code.slice(code.indexOf(">") + 1, code.lastIndexOf("</"));
-    setCode(code.trim());
-  }, [data]);
+    let html =
+      data?.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex]
+        ?.content;
+    html = html.slice(html.indexOf(">") + 1, html.lastIndexOf("</"));
+    setCode(html.trim());
+  }, []);
   return (
     <div className="html_tool h-screen">
       <EditOptions />
       <div className="bg-gray-50 h-[78%] overflow-auto">
         <div className="py-5 px-5">
-          {code ? (
-            <Editor
-              height="400px"
-              language="html"
-              theme="vs-dark"
-              value={code}
-              options={{
-                inlineSuggest: true,
-                fontSize: "16px",
-                formatOnType: true,
-                autoClosingBrackets: true,
-                minimap: { scale: 2 },
-                autoClosingComments: true,
-                autoClosingDelete: true,
-                autoClosingOvertype: true,
-                autoClosingQuotes: true,
-                autoDetectHighContrast: true,
-                autoIndent: true,
-                automaticLayout: true,
-                autoSurround: true,
-                trimAutoWhitespace: true,
-              }}
-              onChange={(value) => {
-                dispatch(updateHTML(value));
-              }}
-            />
-          ) : (
-            <Editor
-              height="400px"
-              language="html"
-              theme="vs-dark"
-              value={``}
-              options={{
-                inlineSuggest: true,
-                fontSize: "16px",
-                formatOnType: true,
-                autoClosingBrackets: true,
-                minimap: { scale: 2 },
-                autoClosingComments: true,
-                autoClosingDelete: true,
-                autoClosingOvertype: true,
-                autoClosingQuotes: true,
-                autoDetectHighContrast: true,
-                autoIndent: true,
-                automaticLayout: true,
-                autoSurround: true,
-                trimAutoWhitespace: true,
-              }}
-              onChange={(value) => {
-                dispatch(updateHTML(value));
-              }}
-            />
-          )}
+          <Editor
+            height="400px"
+            language="html"
+            theme="vs-dark"
+            value={code}
+            options={{
+              inlineSuggest: true,
+              fontSize: "16px",
+              formatOnType: true,
+              autoClosingBrackets: true,
+              minimap: { scale: 2 },
+              autoClosingComments: true,
+              autoClosingDelete: true,
+              autoClosingOvertype: true,
+              autoClosingQuotes: true,
+              autoDetectHighContrast: true,
+              autoIndent: true,
+              automaticLayout: true,
+              autoSurround: true,
+              trimAutoWhitespace: true,
+            }}
+            onChange={(value) => {
+              setCode(value);
+              dispatch(updateHTML(value));
+            }}
+          />
         </div>
         <div className="py-5 px-5 flex flex-col gap-y-5">
           <span className="font-bold text-[24px] opacity-60">

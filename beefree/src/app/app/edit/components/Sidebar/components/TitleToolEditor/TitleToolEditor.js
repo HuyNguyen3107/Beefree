@@ -88,15 +88,16 @@ function TitleToolEditor() {
     let style = code.match(/style=".*?"/g);
     if (style?.length) {
       style = style[0];
+      style = style.slice(7, -1);
       const obj = getStyleObjectFromString(style);
-      if (obj.color) {
+      if (obj?.color) {
         setTextColor(obj.color);
       }
-      if (obj.letterSpacing) {
+      if (obj?.letterSpacing) {
         let value = obj.letterSpacing.slice(0, -2);
         setLetterSpacing(+value);
       }
-      if (obj.padding) {
+      if (obj?.padding) {
         let value = obj.padding;
         if (value.includes("px")) {
           value = value.slice(0, -2);
@@ -109,28 +110,28 @@ function TitleToolEditor() {
         setPaddingTop(+value);
         setPaddingBottom(+value);
       }
-      if (obj.paddingLeft) {
+      if (obj?.paddingLeft) {
         const value = obj.paddingLeft.slice(0, -2);
         setPaddingLeft(+value);
       }
-      if (obj.paddingRight) {
+      if (obj?.paddingRight) {
         const value = obj.paddingRight.slice(0, -2);
         setPaddingRight(+value);
       }
-      if (obj.paddingTop) {
+      if (obj?.paddingTop) {
         const value = obj.paddingTop.slice(0, -2);
         setPaddingTop(+value);
       }
-      if (obj.paddingBottom) {
+      if (obj?.paddingBottom) {
         const value = obj.paddingBottom.slice(0, -2);
         setPaddingBottom(+value);
       }
     }
   }, []);
   return (
-    <div className={"title_tool " + (isCheck ? "h-[102%]" : "h-[105%]")}>
+    <div className={"title_tool h-screen"}>
       <EditOptions />
-      <div className="bg-gray-50 h-full overflow-auto">
+      <div className="bg-gray-50 h-[78%] overflow-auto">
         <div className="px-5 py-3">
           <Button
             color="secondary"

@@ -37,7 +37,6 @@ function SettingSidebar() {
   let widthContentArea = getStyleObjectFromString(
     data.contentGeneralStyle
   )?.width;
-  // remove px from widthContentArea
   widthContentArea = widthContentArea ? parseInt(widthContentArea) : 0;
   const [width, setWidth] = useState(widthContentArea || 745);
   const [backgroundColor, setBackgroundColor] = useState("");

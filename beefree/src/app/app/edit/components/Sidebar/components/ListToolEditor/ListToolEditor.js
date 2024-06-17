@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import { Select, SelectItem } from "@nextui-org/react";
@@ -42,9 +42,14 @@ const {
   updateFontSize,
   updateParagraphSpacing,
 } = builderSlice.actions;
+import { getStyleObjectFromString } from "@/utils/convert";
 
 function ListToolEditor() {
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.builder.data);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const contentIndex = useSelector((state) => state.builder.contentIndex);
   const [textColor, setTextColor] = useState("");
   const [linkColor, setLinkColor] = useState("");
   const [letterSpacing, setLetterSpacing] = useState(0);
@@ -94,10 +99,79 @@ function ListToolEditor() {
     "upper-latin",
     "upper-roman",
   ];
+  useEffect(() => {
+    const row = data?.rows[rowIndex];
+    const column = row?.columns[columnIndex];
+    const content = column?.contents[contentIndex];
+    let code = content?.content;
+    let aTag = code.match(/<a.*?<\/a>/g);
+    console.log(aTag);
+    if (aTag) {
+      aTag = aTag[0];
+      let style = aTag.match(/style=".*?"/g);
+      if (style?.length) {
+        style = style[0];
+        style = style.slice(7, -1);
+        const obj = getStyleObjectFromString(style);
+        if (obj.color) {
+          setLinkColor(obj.color);
+        }
+      }
+    }
+    let style = code.match(/style=".*?"/g);
+    if (style?.length) {
+      style = style[0];
+      style = style.slice(7, -1);
+      const obj = getStyleObjectFromString(style);
+      if (obj?.fontSize) {
+        setFontSize(+obj.fontSize.slice(0, -2));
+      }
+      if (obj?.color) {
+        setTextColor(obj.color);
+      }
+      if (obj?.letterSpacing) {
+        let value = obj.letterSpacing.slice(0, -2);
+        setLetterSpacing(+value);
+      }
+      if (obj?.rowGap) {
+        let value = obj.rowGap.slice(0, -2);
+        setRowGap(+value);
+      }
+      if (obj?.padding) {
+        let value = obj.padding;
+        if (value.includes("px")) {
+          value = value.slice(0, -2);
+        } else {
+          value = 0;
+        }
+        setPadding(+value);
+        setPaddingLeft(+value);
+        setPaddingRight(+value);
+        setPaddingTop(+value);
+        setPaddingBottom(+value);
+      }
+      if (obj?.paddingLeft) {
+        const value = obj.paddingLeft.slice(0, -2);
+        setPaddingLeft(+value);
+      }
+      if (obj?.paddingRight) {
+        const value = obj.paddingRight.slice(0, -2);
+        setPaddingRight(+value);
+      }
+      if (obj?.paddingTop) {
+        const value = obj.paddingTop.slice(0, -2);
+        setPaddingTop(+value);
+      }
+      if (obj?.paddingBottom) {
+        const value = obj.paddingBottom.slice(0, -2);
+        setPaddingBottom(+value);
+      }
+    }
+  }, []);
   return (
-    <div className={"list_tool " + (isCheck ? "h-[92%]" : "h-[95%]")}>
+    <div className={"list_tool h-screen"}>
       <EditOptions />
-      <div className="bg-gray-50 h-full overflow-auto">
+      <div className="bg-gray-50 h-[78%] overflow-auto">
         <div className="px-5 py-3">
           <Button
             color="secondary"
@@ -234,6 +308,7 @@ function ListToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
+                value={textColor}
                 onChange={(e) => {
                   setTextColor(e.target.value);
                   dispatch(updateTextColor(e.target.value));
@@ -252,6 +327,7 @@ function ListToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
+                value={linkColor}
                 onChange={(e) => {
                   setLinkColor(e.target.value);
                   dispatch(updateLinkColor(e.target.value));

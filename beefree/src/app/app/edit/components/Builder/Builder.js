@@ -35,7 +35,7 @@ const {
 } = builderSlice.actions;
 const { updateEditor, updateSidebar } = editorSlice.actions;
 
-function Builder({ style, dropStyle, dropId }) {
+function Builder({ style, dropStyle, dropId, overId }) {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
@@ -112,7 +112,15 @@ function Builder({ style, dropStyle, dropId }) {
               data?.contentGeneralStyle
             );
             return (
-              <Droppable id={"builder_row_" + rowIndex} key={rowIndex}>
+              <Droppable
+                id={"builder_row_" + rowIndex}
+                key={rowIndex}
+                style={
+                  overId === "builder_row_" + rowIndex
+                    ? "border-violet-700 bg-zinc-100 border-1 border-solid"
+                    : ""
+                }
+              >
                 <RowDragHandle
                   id={"drag_handle_row_" + rowIndex}
                   style={
@@ -158,7 +166,16 @@ function Builder({ style, dropStyle, dropId }) {
                                   "_column_" +
                                   columnIndex
                                 }
-                                style={colSpan}
+                                style={
+                                  colSpan +
+                                  (overId ===
+                                  "builder_row_" +
+                                    rowIndex +
+                                    "_column_" +
+                                    columnIndex
+                                    ? " border-violet-700 bg-zinc-100 border-1 border-solid"
+                                    : "")
+                                }
                                 key={columnIndex}
                               >
                                 {/* write column here */}
@@ -180,7 +197,18 @@ function Builder({ style, dropStyle, dropId }) {
                                             "_content_" +
                                             index
                                           }
-                                          style={"w-full"}
+                                          style={
+                                            "w-full" +
+                                            (overId ===
+                                            "builder_row_" +
+                                              rowIndex +
+                                              "_column_" +
+                                              columnIndex +
+                                              "_content_" +
+                                              index
+                                              ? " border-violet-700 bg-zinc-100 border-1 border-solid"
+                                              : "")
+                                          }
                                           key={index}
                                         >
                                           <DragHandle
@@ -377,7 +405,14 @@ function Builder({ style, dropStyle, dropId }) {
                                       }
                                       style={
                                         "h-full w-full border-1 border-violet-400 border-dashed px-4 py-4 flex flex-col justify-center items-center gap-y-2 m-auto text-violet-500 bg-violet-100 m-auto " +
-                                        dropStyle
+                                        dropStyle +
+                                        (overId ===
+                                        "droppable_row_" +
+                                          rowIndex +
+                                          "_column_" +
+                                          columnIndex
+                                          ? " border-violet-700 bg-zinc-100 border-1 border-solid"
+                                          : "")
                                       }
                                     >
                                       <div className="flex flex-col justify-center items-center">
@@ -395,7 +430,10 @@ function Builder({ style, dropStyle, dropId }) {
                             id={"droppable_row_" + rowIndex}
                             style={
                               "h-full w-full border-1 border-violet-400 border-dashed px-4 py-4 flex flex-col justify-center items-center gap-y-2 m-auto text-violet-500 bg-violet-100 m-auto " +
-                              dropStyle
+                              dropStyle +
+                              (overId === "droppable_row_" + rowIndex
+                                ? " border-violet-700 bg-zinc-100 border-1 border-solid"
+                                : "")
                             }
                           >
                             <div className="flex flex-col justify-center items-center">
@@ -453,7 +491,10 @@ function Builder({ style, dropStyle, dropId }) {
             <div
               className={
                 "after:content-['Row'] after:absolute after:-top-[20px] after:right-0 after:bg-violet-700 after:text-[12px] after:px-2 after:hidden relative border-transparent border-2 py-1 hover:border-violet-700 hover:bg-zinc-100 " +
-                (dropId === "builder_row_0" ? style : "")
+                (dropId === "builder_row_0" ? style : "") +
+                (overId === "builder_row_0"
+                  ? " border-violet-700 bg-zinc-100 border-1 border-solid"
+                  : "")
               }
               id="builder_content"
             >
@@ -461,7 +502,10 @@ function Builder({ style, dropStyle, dropId }) {
                 id={"droppable_row_0"}
                 style={
                   "w-4/5 border-1 border-violet-400 border-dashed px-4 py-4 flex flex-col justify-center items-center gap-y-2 m-auto text-violet-500 bg-violet-100 m-auto " +
-                  dropStyle
+                  dropStyle +
+                  (overId === "droppable_row_0"
+                    ? " border-violet-700 bg-zinc-100 border-1 border-solid"
+                    : "")
                 }
               >
                 <div className="flex flex-col justify-center items-center">

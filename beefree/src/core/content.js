@@ -44,10 +44,7 @@ export const contents = [
   {
     id: "paragraph",
     icon: <FaParagraph className="opacity-50" />,
-    content: `<div style="text-align: left;
-    width: 100%;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem; display: flex; flex-direction: column;">
+    content: `<div style="font-size: 16px; font-weight: 400; text-align: left; width: 100%; padding-left: 0.5rem; padding-right: 0.5rem; display: flex; flex-direction: column;">
     <p>
       I'm a new paragraph block.
     </p></div>`,
@@ -60,6 +57,8 @@ export const contents = [
           width: "100%",
           paddingLeft: "0.5rem",
           paddingRight: "0.5rem",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <p>I'm a new paragraph block.</p>
@@ -71,12 +70,7 @@ export const contents = [
   {
     id: "list",
     icon: <FaList className="opacity-50" />,
-    content: `<ul style="font-size: 16px;
-    font-weight: 400;
-    text-align: left;
-    list-style-type: disc;
-    width: 100%;
-    padding: 0.5rem; list-style-position: inside; display: flex; flex-direction: column;">
+    content: `<ul style="font-size: 16px; font-weight: 400; text-align: left; list-style-type: disc; width: 100%; padding: 0.5rem; list-style-position: inside; display: flex; flex-direction: column;">
       <li>This is an unordered list</li>
     </ul>`,
     contentCode: (
@@ -402,15 +396,7 @@ export const contents = [
   {
     id: "icons",
     icon: <FaRegStar className="opacity-50" />,
-    content: `<div style="display: flex; flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    row-gap: 0.5rem;
-    color: #9CA3AF;
-    font-weight: 600;
-    background-color: #f3f3f3;
-    width: 100%;
-    padding: 0.25rem; border: 1px dashed #000;">
+    content: `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; row-gap: 0.5rem; color: #9CA3AF; font-weight: 600; background-color: #f3f3f3; width: 100%; padding: 0.25rem; border: 1px dashed #000;">
       <i className="pi pi-star" style="font-size: 50px;"></i>
       Icons
     </div>`,
@@ -445,18 +431,9 @@ export const contents = [
   {
     id: "menu",
     icon: <IoMenu className="opacity-50" />,
-    content: `<div style="display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    row-gap: 0.5rem;
-    color: #9CA3AF;
-    font-weight: 600;
-    background-color: #f3f3f3;
-    width: 100%;
-    padding: 0.25rem; border: 1px dashed #000;">
+    content: `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; row-gap: 0.5rem; color: #9CA3AF; font-weight: 600; background-color: #f3f3f3; width: 100%; padding: 0.25rem; border: 1px dashed #000;">
       <i className="pi pi-bars" style="font-size: 40px;"></i>
-      Icons
+      Menu
     </div>`,
     contentCode: (
       <div

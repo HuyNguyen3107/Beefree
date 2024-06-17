@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdPhoneAndroid } from "react-icons/md";
 import { FaDesktop } from "react-icons/fa";
 import EditOptions from "../EditOptions/EditOptions";
@@ -7,10 +7,29 @@ import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
 const { updateHeight } = builderSlice.actions;
+import { getStyleObjectFromString } from "@/utils/convert";
 
 function SpaceToolEditor() {
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.builder.data);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const contentIndex = useSelector((state) => state.builder.contentIndex);
   const [height, setHeight] = useState(100);
+  useEffect(() => {
+    const dataSpace =
+      data?.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex];
+    const content = dataSpace?.content;
+    let style = content?.match(/style=".*?"/g);
+    if (style?.length) {
+      style = style[0].replace(/style="/g, "").replace(/"/g, "");
+      const obj = getStyleObjectFromString(style);
+      if (obj.height) {
+        const value = obj.height.replace("px", "");
+        setHeight(+value);
+      }
+    }
+  }, []);
   return (
     <div className="space_tool h-screen">
       <EditOptions />

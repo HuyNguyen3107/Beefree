@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Switch, Select, SelectItem } from "@nextui-org/react";
 import letterImg from "../../../../../../../assets/images/letter.png";
@@ -11,6 +11,7 @@ import { CiAlignCenterH } from "react-icons/ci";
 import EditOptions from "../EditOptions/EditOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
+import { getStyleObjectFromString } from "@/utils/convert";
 const {
   updatePadding,
   updatePaddingLeft,
@@ -27,6 +28,10 @@ const {
 
 function DivideToolEditor() {
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.builder.data);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const contentIndex = useSelector((state) => state.builder.contentIndex);
   const [padding, setPadding] = useState(0);
   const [isCheck, setCheck] = useState(false);
   const [paddingLeft, setPaddingLeft] = useState(0);
@@ -38,6 +43,54 @@ function DivideToolEditor() {
   const [lineColor, setLineColor] = useState("");
   const [width, setWidth] = useState(100);
   const styleLineList = ["solid", "dotted", "dashed"];
+
+  useEffect(() => {
+    const contentData =
+      data?.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex];
+    const content = contentData?.content;
+    const style = content.match(/style=".*?"/g);
+    if (style?.length) {
+      const preStyle = style[1]?.replace(/style="/g, "")?.replace(/"/g, "");
+      let obj = getStyleObjectFromString(preStyle);
+      if (obj?.borderWidth) {
+        setLineHeight(+obj.borderWidth.replace("px", ""));
+      }
+      if (obj?.borderColor) {
+        setLineColor(obj.borderColor);
+      }
+      if (obj?.width) {
+        setWidth(+obj.width.replace("%", ""));
+      }
+      const restStyle = style[0]?.replace(/style="/g, "")?.replace(/"/g, "");
+      obj = getStyleObjectFromString(restStyle);
+      if (obj?.padding) {
+        let value;
+        if (obj.padding.includes("px")) {
+          value = +obj.padding.replace("px", "");
+        } else {
+          value = 0;
+        }
+        setPadding(+value);
+        setPaddingLeft(+value);
+        setPaddingRight(+value);
+        setPaddingTop(+value);
+        setPaddingBottom(+value);
+      }
+      if (obj?.paddingLeft) {
+        setPaddingLeft(+obj.paddingLeft.replace("px", ""));
+      }
+      if (obj?.paddingRight) {
+        setPaddingRight(+obj.paddingRight.replace("px", ""));
+      }
+      if (obj?.paddingTop) {
+        setPaddingTop(+obj.paddingTop.replace("px", ""));
+      }
+      if (obj?.paddingBottom) {
+        setPaddingBottom(+obj.paddingBottom.replace("px", ""));
+      }
+    }
+  }, []);
+
   return (
     <div className={"divide_tool h-[130%]"}>
       <EditOptions />
@@ -122,6 +175,7 @@ function DivideToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
+                        value={lineColor}
                         onChange={(e) => {
                           setLineColor(e.target.value);
                           dispatch(updateDividerBackground(e.target.value));

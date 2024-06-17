@@ -16,6 +16,7 @@ import EditOptions from "../EditOptions/EditOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
+import { getStyleObjectFromString } from "@/utils/convert";
 const {
   updatePadding,
   updatePaddingLeft,

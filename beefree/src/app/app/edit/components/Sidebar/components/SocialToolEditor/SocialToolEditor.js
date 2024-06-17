@@ -26,6 +26,7 @@ import EditOptions from "../EditOptions/EditOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
+import { getStyleObjectFromString } from "@/utils/convert";
 const {
   updatePadding,
   updatePaddingLeft,
@@ -106,6 +107,42 @@ function SocialToolEditor() {
       });
     });
   }, [data]);
+
+  useEffect(() => {
+    const socialData =
+      data?.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex];
+    const content = socialData?.content;
+    const style = content?.match(/style=".*?"/g);
+    if (style?.length) {
+      const styleString = style[0].replace(/style="/g, "").replace(/"/g, "");
+      const styleObj = getStyleObjectFromString(styleString);
+      if (styleObj.padding) {
+        let value;
+        if (styleObj.padding.includes("px")) {
+          value = styleObj.padding.replace("px", "");
+        } else {
+          value = 0;
+        }
+        setPadding(+value);
+      }
+      if (styleObj.paddingLeft) {
+        const value = styleObj.paddingLeft.replace("px", "");
+        setPaddingLeft(+value);
+      }
+      if (styleObj.paddingRight) {
+        const value = styleObj.paddingRight.replace("px", "");
+        setPaddingRight(+value);
+      }
+      if (styleObj.paddingTop) {
+        const value = styleObj.paddingTop.replace("px", "");
+        setPaddingTop(+value);
+      }
+      if (styleObj.paddingBottom) {
+        const value = styleObj.paddingBottom.replace("px", "");
+        setPaddingBottom(+value);
+      }
+    }
+  }, []);
 
   return (
     <div className="social_tool h-screen">

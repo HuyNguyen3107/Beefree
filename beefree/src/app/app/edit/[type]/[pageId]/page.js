@@ -35,6 +35,7 @@ function EditPage() {
   const [indexDnd, setIndexDnd] = useState({});
   const [isRowDrag, setIsRowDrag] = useState(false);
   const [rowIndexDnd, setRowIndexDnd] = useState({});
+  const [overId, setOverId] = useState("");
 
   const handleDragEnd = (e) => {
     if (isDragHandle) {
@@ -90,6 +91,7 @@ function EditPage() {
     dispatch(updateColumnIndex(null));
     dispatch(updateRowIndex(null));
     dispatch(changeRowEditStatus(null));
+    setOverId("");
   };
   const handleDragMove = (e) => {
     if (isDragHandle) {
@@ -171,18 +173,18 @@ function EditPage() {
               (data.rows?.length - Math.ceil((index + 1) / 3) + 3)) *
               100
           ) {
-            setDropStyle("border-t-2 border-solid border-t-violet-700");
+            // setDropStyle("border-t-1 border-solid border-t-violet-700");
             setIsAppend(false);
           } else {
-            setDropStyle("border-b-2 border-solid border-b-violet-700");
+            // setDropStyle("border-b-1 border-solid border-b-violet-700");
             setIsAppend(true);
           }
         } else {
           if (Math.abs(+e?.delta.y) > Math.ceil((index + 1) / 3) * 100) {
-            setDropStyle("border-t-2 border-solid border-t-violet-700");
+            // setDropStyle("border-t-1 border-solid border-t-violet-700");
             setIsAppend(false);
           } else {
-            setDropStyle("border-b-2 border-solid border-b-violet-700");
+            // setDropStyle("border-b-1 border-solid border-b-violet-700");
             setIsAppend(true);
           }
         }
@@ -190,6 +192,7 @@ function EditPage() {
     }
   };
   const handleDragOver = (e) => {
+    setOverId(e?.over?.id);
     if (
       e?.over?.id.includes("builder_row_") &&
       !e?.over?.id.includes("_column_")
@@ -242,6 +245,7 @@ function EditPage() {
                     style={style}
                     dropStyle={dropStyle}
                     dropId={dropId}
+                    overId={overId}
                   />
                 </div>
               </main>

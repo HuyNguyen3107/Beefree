@@ -22,6 +22,7 @@ const {
   updateVideoTitle,
 } = builderSlice.actions;
 import { isYoutubeLink, getYoutubeVideoId } from "@/utils/regex";
+import { getStyleObjectFromString } from "@/utils/convert";
 
 function VideoToolEditor() {
   const dispatch = useDispatch();
@@ -67,6 +68,41 @@ function VideoToolEditor() {
       setCheck(false);
     }
   }, [data]);
+  useEffect(() => {
+    const videoData =
+      data?.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex];
+    const content = videoData?.content;
+    let style = content.match(/style=".*?"/g);
+    if (style?.length) {
+      style = style[0].replace(/style="|"/g, "");
+      const obj = getStyleObjectFromString(style);
+      if (obj?.padding) {
+        let value;
+        if (obj.padding.includes("px")) {
+          value = obj.padding.replace("px", "");
+        } else {
+          value = 0;
+        }
+        setPadding(+value);
+        setPaddingLeft(+value);
+        setPaddingRight(+value);
+        setPaddingTop(+value);
+        setPaddingBottom(+value);
+      }
+      if (obj?.paddingLeft) {
+        setPaddingLeft(+obj.paddingLeft.replace("px", ""));
+      }
+      if (obj?.paddingRight) {
+        setPaddingRight(+obj.paddingRight.replace("px", ""));
+      }
+      if (obj?.paddingTop) {
+        setPaddingTop(+obj.paddingTop.replace("px", ""));
+      }
+      if (obj?.paddingBottom) {
+        setPaddingBottom(+obj.paddingBottom.replace("px", ""));
+      }
+    }
+  }, []);
   return (
     <div className="video_tool h-screen">
       <EditOptions />

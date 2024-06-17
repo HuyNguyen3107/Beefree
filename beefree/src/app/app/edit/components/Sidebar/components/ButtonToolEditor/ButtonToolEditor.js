@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
@@ -23,6 +23,7 @@ import EditOptions from "../EditOptions/EditOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
+import { getStyleObjectFromString } from "@/utils/convert";
 const {
   updateFontFamily,
   updateFontWeight,
@@ -61,6 +62,19 @@ const {
 
 function ButtonToolEditor() {
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.builder.data);
+  const rowIndex = useSelector((state) => state.builder.rowIndex);
+  const columnIndex = useSelector((state) => state.builder.columnIndex);
+  const contentIndex = useSelector((state) => state.builder.contentIndex);
+  let widthButton = getStyleObjectFromString(
+    data.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex]?.content
+      ?.match(/style=".*?"/g)[0]
+      ?.slice(7, -1)
+  )?.width;
+  if (widthButton) {
+    // remove % from width
+    widthButton = widthButton.slice(0, -1);
+  }
   const [textColor, setTextColor] = useState("");
   const [backgroundColor, setBackgroundColor] = useState("");
   const [letterSpacing, setLetterSpacing] = useState(0);
@@ -84,6 +98,8 @@ function ButtonToolEditor() {
   const [borderColorTop, setBorderColorTop] = useState("");
   const [borderColorBottom, setBorderColorBottom] = useState("");
   const [isAutoWidth, setAutoWidth] = useState(false);
+  const [contentButton, setContentButton] = useState("");
+  const [width, setWidth] = useState(+widthButton || 20);
   const styleBorderList = ["solid", "dotted", "dashed"];
   const fontFamilyList = [
     "Default",
@@ -105,6 +121,115 @@ function ButtonToolEditor() {
     "Make call",
     "Send SMS",
   ];
+  useEffect(() => {
+    const dataButton =
+      data?.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex];
+    const content = dataButton?.content;
+    // get content from button tag
+    const value = content.slice(
+      content.indexOf(">") + 1,
+      content.lastIndexOf("</button>")
+    );
+    if (value) {
+      setContentButton(value);
+    }
+    let style = content.match(/style=".*?"/g);
+    if (style?.length) {
+      style = style[0].replace(/style="/g, "").replace(/"/g, "");
+      const obj = getStyleObjectFromString(style);
+      if (obj?.fontSize) {
+        const value = obj.fontSize.slice(0, -2);
+        setFontSize(+value);
+      }
+      if (obj?.color) {
+        setTextColor(obj.color);
+      }
+      if (obj?.backgroundColor) {
+        setBackgroundColor(obj.backgroundColor);
+      }
+      if (obj?.letterSpacing) {
+        const value = obj.letterSpacing.slice(0, -2);
+        setLetterSpacing(+value);
+      }
+      if (obj?.borderRadius) {
+        let value;
+        if (obj.borderRadius.includes("px")) {
+          value = obj.borderRadius.slice(0, -2);
+        } else {
+          value = 0;
+        }
+        setBorderRadius(+value);
+      }
+      if (obj?.borderWidth) {
+        const value = obj.borderWidth.slice(0, -2);
+        setBorderWidth(+value);
+        setBorderWidthLeft(+value);
+        setBorderWidthRight(+value);
+        setBorderWidthTop(+value);
+        setBorderWidthBottom(+value);
+      }
+      if (obj?.borderColor) {
+        setBorderColor(obj.borderColor);
+      }
+      if (obj?.borderTopWidth) {
+        const value = obj.borderTopWidth.slice(0, -2);
+        setBorderWidthTop(+value);
+      }
+      if (obj?.borderTopColor) {
+        setBorderColorTop(obj.borderTopColor);
+      }
+      if (obj?.borderRightWidth) {
+        const value = obj.borderRightWidth.slice(0, -2);
+        setBorderWidthRight(+value);
+      }
+      if (obj?.borderRightColor) {
+        setBorderColorRight(obj.borderRightColor);
+      }
+      if (obj?.borderBottomWidth) {
+        const value = obj.borderBottomWidth.slice(0, -2);
+        setBorderWidthBottom(+value);
+      }
+      if (obj?.borderBottomColor) {
+        setBorderColorBottom(obj.borderBottomColor);
+      }
+      if (obj?.borderLeftWidth) {
+        const value = obj.borderLeftWidth.slice(0, -2);
+        setBorderWidthLeft(+value);
+      }
+      if (obj?.borderLeftColor) {
+        setBorderColorLeft(obj.borderLeftColor);
+      }
+      if (obj?.padding) {
+        let value;
+        if (obj.padding.includes("px")) {
+          value = obj.padding.slice(0, -2);
+        } else {
+          value = 0;
+        }
+        setPadding(+value);
+        setPaddingLeft(+value);
+        setPaddingRight(+value);
+        setPaddingTop(+value);
+        setPaddingBottom(+value);
+      }
+      if (obj?.paddingTop) {
+        const value = obj.paddingTop.slice(0, -2);
+        setPaddingTop(+value);
+      }
+      if (obj?.paddingRight) {
+        const value = obj.paddingRight.slice(0, -2);
+        setPaddingRight(+value);
+      }
+      if (obj?.paddingBottom) {
+        const value = obj.paddingBottom.slice(0, -2);
+        setPaddingBottom(+value);
+      }
+      if (obj?.paddingLeft) {
+        const value = obj.paddingLeft.slice(0, -2);
+        setPaddingLeft(+value);
+      }
+    }
+  }, []);
   return (
     <div className={"title_tool " + (isCheckBorder ? "h-[44%]" : "h-[56%]")}>
       <EditOptions />
@@ -171,6 +296,10 @@ function ButtonToolEditor() {
               color="secondary"
               placeholder="Enter your content"
               className="w-full"
+              value={contentButton}
+              onChange={(e) => {
+                setContentButton(e.target.value);
+              }}
               onBlur={(e) => {
                 let value = e.target.value;
                 value = value.replaceAll(`<`, `&lt;`);
@@ -191,7 +320,7 @@ function ButtonToolEditor() {
             <Switch
               defaultSelected={false}
               color="secondary"
-              onChange={() => {
+              onChange={(value) => {
                 const status = !isAutoWidth;
                 setAutoWidth(status);
               }}
@@ -203,11 +332,12 @@ function ButtonToolEditor() {
               step={1}
               maxValue={100}
               minValue={20}
-              defaultValue={20}
+              defaultValue={width}
               className="max-w-md"
               color="secondary"
               isDisabled={isAutoWidth}
               onChange={(value) => {
+                setWidth(value);
                 dispatch(updateWidth(+value));
               }}
             />
@@ -309,9 +439,10 @@ function ButtonToolEditor() {
             Background color
           </span>
           <div className="flex-1 flex justify-end">
-            <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
+            <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-3/5">
               <input
                 type="color"
+                value={backgroundColor}
                 onChange={(e) => {
                   setBackgroundColor(e.target.value);
                   dispatch(updateBackgroundColor(e.target.value));
@@ -330,6 +461,7 @@ function ButtonToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
+                value={textColor}
                 onChange={(e) => {
                   setTextColor(e.target.value);
                   dispatch(updateTextColor(e.target.value));
@@ -541,6 +673,7 @@ function ButtonToolEditor() {
                   <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                     <input
                       type="color"
+                      value={borderColor}
                       onChange={(e) => {
                         setBorderColor(e.target.value);
                         dispatch(updateBorderColor(e.target.value));
@@ -613,6 +746,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
+                        value={borderColorTop}
                         onChange={(e) => {
                           setBorderColorTop(e.target.value);
                           dispatch(updateBorderTopColor(e.target.value));
@@ -683,6 +817,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
+                        value={borderColorRight}
                         onChange={(e) => {
                           setBorderColorRight(e.target.value);
                           dispatch(updateBorderRightColor(e.target.value));
@@ -753,6 +888,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
+                        value={borderColorBottom}
                         onChange={(e) => {
                           setBorderColorBottom(e.target.value);
                           dispatch(updateBorderBottomColor(e.target.value));
@@ -823,6 +959,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
+                        value={borderColorLeft}
                         onChange={(e) => {
                           setBorderColorLeft(e.target.value);
                           dispatch(updateBorderLeftColor(e.target.value));

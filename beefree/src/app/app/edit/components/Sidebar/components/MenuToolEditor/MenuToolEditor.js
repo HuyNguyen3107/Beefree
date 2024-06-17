@@ -16,6 +16,7 @@ import EditOptions from "../EditOptions/EditOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
+import { getStyleObjectFromString } from "@/utils/convert";
 const {
   updatePadding,
   updatePaddingLeft,
@@ -84,6 +85,64 @@ function MenuToolEditor() {
     );
     setItemList(content?.itemList);
   }, [data]);
+
+  useEffect(() => {
+    const menuData =
+      data?.rows[rowIndex]?.columns[columnIndex]?.contents[contentIndex];
+    const content = menuData?.content;
+    let style = content.match(/style=".*?"/g);
+    if (style?.length) {
+      const perStyle = style[0]?.replace(/style="/g, "")?.replace(/"/g, "");
+      let obj = getStyleObjectFromString(perStyle);
+      if (obj?.fontSize) {
+        const value = obj.fontSize.replace("px", "");
+        setFontSize(+value);
+      }
+      if (obj?.letterSpacing) {
+        const value = obj.letterSpacing.replace("px", "");
+        setLetterSpacing(+value);
+      }
+      if (obj?.color) {
+        setTextColor(obj.color);
+      }
+      if (obj?.padding) {
+        let value;
+        if (obj.padding.includes("px")) {
+          value = obj.padding.replace("px", "");
+        } else {
+          value = 0;
+        }
+        setPadding(+value);
+        setPaddingLeft(+value);
+        setPaddingRight(+value);
+        setPaddingTop(+value);
+        setPaddingBottom(+value);
+      }
+      if (obj?.paddingLeft) {
+        let value = obj.paddingLeft.replace("px", "");
+        setPaddingLeft(+value);
+      }
+      if (obj?.paddingRight) {
+        let value = obj.paddingRight.replace("px", "");
+        setPaddingRight(+value);
+      }
+      if (obj?.paddingTop) {
+        let value = obj.paddingTop.replace("px", "");
+        setPaddingTop(+value);
+      }
+      if (obj?.paddingBottom) {
+        let value = obj.paddingBottom.replace("px", "");
+        setPaddingBottom(+value);
+      }
+      const restStyle = style[1]?.replace(/style="/g, "")?.replace(/"/g, "");
+      if (restStyle) {
+        obj = getStyleObjectFromString(restStyle);
+        if (obj?.color) {
+          setLinkColor(obj.color);
+        }
+      }
+    }
+  }, []);
 
   return (
     <div className="menu_tool h-screen">
@@ -316,6 +375,7 @@ function MenuToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
+                value={textColor}
                 onChange={(e) => {
                   setTextColor(e.target.value);
                   dispatch(updateTextColor(e.target.value));
@@ -334,6 +394,7 @@ function MenuToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
+                value={linkColor}
                 onChange={(e) => {
                   setLinkColor(e.target.value);
                   dispatch(updateLinkColor(e.target.value));

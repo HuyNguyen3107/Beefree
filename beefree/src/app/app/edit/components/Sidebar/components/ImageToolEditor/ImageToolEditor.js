@@ -17,6 +17,7 @@ import { Input } from "@nextui-org/react";
 import EditOptions from "../EditOptions/EditOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
+import { getStyleObjectFromString } from "@/utils/convert";
 const {
   updatePadding,
   updatePaddingLeft,
@@ -42,6 +43,10 @@ function ImageToolEditor() {
   const contentTag = column?.contents?.find(
     (content, index) => index === +contentIndex
   ).content;
+  let widthImage = getStyleObjectFromString(
+    contentTag?.match(/style=".*?"/g)[1]?.slice(7, -1)
+  )?.width;
+  widthImage = widthImage ? +widthImage.slice(0, -1) : 75;
   const [padding, setPadding] = useState(0);
   const [isCheck, setCheck] = useState(false);
   const [paddingLeft, setPaddingLeft] = useState(0);
@@ -51,6 +56,7 @@ function ImageToolEditor() {
   const [isAutoWidth, setAutoWidth] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   const [urlStatus, setUrlStatus] = useState(true);
+  const [width, setWidth] = useState(widthImage);
   const imageLinkList = [
     "Open web page",
     "Send Email",
@@ -64,11 +70,35 @@ function ImageToolEditor() {
         .replaceAll("%2F", "/");
       setImageUrl(url);
     }
+    let style = contentTag.match(/style=".*?"/g);
+    if (style?.length) {
+      style = style[0].slice(7, -1);
+      const styleObject = getStyleObjectFromString(style);
+      if (styleObject?.padding) {
+        setPadding(+styleObject.padding.slice(0, -2));
+        setPaddingLeft(+styleObject.padding.slice(0, -2));
+        setPaddingRight(+styleObject.padding.slice(0, -2));
+        setPaddingTop(+styleObject.padding.slice(0, -2));
+        setPaddingBottom(+styleObject.padding.slice(0, -2));
+      }
+      if (styleObject?.paddingLeft) {
+        setPaddingLeft(+styleObject.paddingLeft.slice(0, -2));
+      }
+      if (styleObject?.paddingRight) {
+        setPaddingRight(+styleObject.paddingRight.slice(0, -2));
+      }
+      if (styleObject?.paddingTop) {
+        setPaddingTop(+styleObject.paddingTop.slice(0, -2));
+      }
+      if (styleObject?.paddingBottom) {
+        setPaddingBottom(+styleObject.paddingBottom.slice(0, -2));
+      }
+    }
   }, []);
   return (
-    <div className={"image_tool " + (isCheck ? "h-[90%]" : "h-[93%]")}>
+    <div className={"image_tool h-screen"}>
       <EditOptions />
-      <div className="bg-gray-50 h-full overflow-auto">
+      <div className="bg-gray-50 h-[78%] overflow-auto">
         <div className="px-5 py-3 flex flex-col text-[14px] opacity-70 font-semibold gap-y-3">
           <div className="flex items-center justify-between">
             <span>Auto width</span>
@@ -87,11 +117,12 @@ function ImageToolEditor() {
               step={1}
               maxValue={100}
               minValue={20}
-              defaultValue={75}
+              defaultValue={width}
               className="max-w-md"
               color="secondary"
               isDisabled={isAutoWidth}
               onChange={(value) => {
+                setWidth(value);
                 dispatch(updateWidthImage(+value));
               }}
             />
