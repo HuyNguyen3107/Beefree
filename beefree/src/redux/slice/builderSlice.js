@@ -5,6 +5,11 @@ import {
   getStyleStringFromObject,
   getStyleObjectFromString,
 } from "@/utils/convert";
+import {
+  updateContentAreaStyle,
+  updateRowStyle,
+  updateStyle,
+} from "@/core/builder";
 
 const initialState = {
   data: {
@@ -705,238 +710,43 @@ export const builderSlice = createSlice({
       };
     },
     updateFontFamily: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("font-family")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("font-family")) {
-                          return `font-family: &quot;${action.payload}&quot;;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("font-family")) {
-                          return `font-family: &quot;${action.payload}&quot;;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(
-                      `font-family: &quot;${action.payload}&quot;;`
-                    );
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      let temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "font-family",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateFontWeight: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("font-weight")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("font-weight")) {
-                          if (style.includes("font-weight: 700")) {
-                            if (action.payload === "Regular") {
-                              return "font-weight: 400;";
-                            }
-                          } else if (style.includes("font-weight: 400")) {
-                            if (action.payload === "Bold") {
-                              return "font-weight: 700;";
-                            }
-                          }
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("font-weight: 700")) {
-                          if (action.payload === "Regular") {
-                            return "font-weight: 400;";
-                          }
-                        } else if (style.includes("font-weight: 400")) {
-                          if (action.payload === "Bold") {
-                            return "font-weight: 700;";
-                          }
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(
-                      `font-weight: ${
-                        action.payload === "Bold" ? "700" : "400"
-                      };`
-                    );
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const value = action.payload === "Bold" ? "700" : "400";
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "font-weight",
+        value
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateTextColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find(
-                    (style) =>
-                      style.includes("color") &&
-                      !style.includes("background-color")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (
-                          style.includes("color") &&
-                          !style.includes("background-color")
-                        ) {
-                          return `color: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (
-                          style.includes("color") &&
-                          !style.includes("background-color")
-                        ) {
-                          return `color: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`color: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
@@ -960,32 +770,11 @@ export const builderSlice = createSlice({
                     ) {
                       newCode += code.slice(0, code.indexOf("style=") + 7);
                       code = code.slice(code.indexOf("style=") + 7);
-                      let styleList = code
-                        .slice(0, code.indexOf(`"`))
-                        .split("; ");
+                      let style = code.slice(0, code.indexOf(`"`));
                       code = code.slice(code.indexOf(`"`));
-                      styleList = styleList.map((style, index) => {
-                        if (index !== +styleList.length - 1) {
-                          if (
-                            style.includes("color") &&
-                            !style.includes("background-color")
-                          ) {
-                            return `color: ${action.payload};`;
-                          } else {
-                            return style.concat(";");
-                          }
-                        } else {
-                          if (
-                            style.includes("color") &&
-                            !style.includes("background-color")
-                          ) {
-                            return `color: ${action.payload};`;
-                          } else {
-                            return style;
-                          }
-                        }
-                      });
-                      newCode += styleList.join(" ");
+                      const styleObj = getStyleObjectFromString(style);
+                      styleObj.color = action.payload;
+                      newCode += getStyleStringFromObject(styleObj);
                     } else {
                       newCode +=
                         `style="color: ${action.payload};"` +
@@ -1024,793 +813,154 @@ export const builderSlice = createSlice({
       };
     },
     updateAlign: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("text-align")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("text-align")) {
-                          return `text-align: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("text-align")) {
-                          return `text-align: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`text-align: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "text-align",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateLineHeight: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("line-height")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("line-height")) {
-                          return `line-height: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("line-height")) {
-                          return `line-height: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`line-height: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "line-height",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateLetterSpacing: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("letter-spacing")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("letter-spacing")) {
-                          return `letter-spacing: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("letter-spacing")) {
-                          return `letter-spacing: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`letter-spacing: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "letter-spacing",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateFontSize: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("font-size")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("font-size")) {
-                          return `font-size: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("font-size")) {
-                          return `font-size: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`font-size: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "font-size",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateListStyleType: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("list-style-type")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("list-style-type")) {
-                          return `list-style-type: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("list-style-type")) {
-                          return `list-style-type: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`list-style-type: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "list-style-type",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateParagraphSpacing: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("row-gap")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("row-gap")) {
-                          return `row-gap: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("row-gap")) {
-                          return `row-gap: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`row-gap: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "row-gap",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updatePadding: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find(
-                    (style) =>
-                      style.includes("padding") &&
-                      !(
-                        style.includes("padding-left") ||
-                        style.includes("padding-right") ||
-                        style.includes("padding-bottom") ||
-                        style.includes("padding-top")
-                      )
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (
-                          style.includes("padding") &&
-                          !(
-                            style.includes("padding-left") ||
-                            style.includes("padding-right") ||
-                            style.includes("padding-bottom") ||
-                            style.includes("padding-top")
-                          )
-                        ) {
-                          return `padding: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (
-                          style.includes("padding") &&
-                          !(
-                            style.includes("padding-left") ||
-                            style.includes("padding-right") ||
-                            style.includes("padding-bottom") ||
-                            style.includes("padding-top")
-                          )
-                        ) {
-                          return `padding: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`padding: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "padding",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updatePaddingLeft: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("padding-left")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("padding-left")) {
-                          return `padding-left: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("padding-left")) {
-                          return `padding-left: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`padding-left: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "padding-left",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updatePaddingRight: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("padding-right")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("padding-right")) {
-                          return `padding-right: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("padding-right")) {
-                          return `padding-right: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`padding-right: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "padding-right",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updatePaddingTop: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("padding-top")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("padding-top")) {
-                          return `padding-top: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("padding-top")) {
-                          return `padding-top: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`padding-top: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "padding-top",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updatePaddingBottom: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("padding-bottom")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("padding-bottom")) {
-                          return `padding-bottom: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("padding-bottom")) {
-                          return `padding-bottom: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`padding-bottom: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "padding-bottom",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
@@ -1957,70 +1107,14 @@ export const builderSlice = createSlice({
       }
     },
     updateJustifyContent: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("justify-content")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("justify-content")) {
-                          return `justify-content: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("justify-content")) {
-                          return `justify-content: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`justify-content: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "justify-content",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
@@ -2303,1267 +1397,252 @@ export const builderSlice = createSlice({
       };
     },
     updateWidth: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find(
-                    (style) =>
-                      style.includes("width") && !style.includes("-width")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (
-                          style.includes("width") &&
-                          !style.includes("-width")
-                        ) {
-                          return `width: ${action.payload}%;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (
-                          style.includes("width") &&
-                          !style.includes("-width")
-                        ) {
-                          return `width: ${action.payload}%;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`width: ${action.payload}%;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "width",
+        `${action.payload}%`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBackgroundColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("background-color")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("background-color")) {
-                          return `background-color: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("background-color")) {
-                          return `background-color: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`background-color: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "background-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderRadius: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-radius")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-radius")) {
-                          return `border-radius: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-radius")) {
-                          return `border-radius: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-radius: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-radius",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderWidth: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-width")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-width")) {
-                          return `border-width: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-width")) {
-                          return `border-width: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-width: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-width",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderStyle: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-style")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-style")) {
-                          return `border-style: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-style")) {
-                          return `border-style: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-style: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-style",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-color")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-color")) {
-                          return `border-color: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-color")) {
-                          return `border-color: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-color: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderLeftWidth: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-left-width")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-left-width")) {
-                          return `border-left-width: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-left-width")) {
-                          return `border-left-width: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-left-width: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-left-width",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderLeftStyle: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-left-style")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-left-style")) {
-                          return `border-left-style: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-left-style")) {
-                          return `border-left-style: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-left-style: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-left-style",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderLeftColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-left-color")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-left-color")) {
-                          return `border-left-color: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-left-color")) {
-                          return `border-left-color: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-left-color: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-left-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderRightWidth: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-right-width")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-right-width")) {
-                          return `border-right-width: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-right-width")) {
-                          return `border-right-width: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-right-width: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-right-width",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderRightStyle: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-right-style")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-right-style")) {
-                          return `border-right-style: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-right-style")) {
-                          return `border-right-style: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-right-style: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-right-style",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderRightColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-right-color")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-right-color")) {
-                          return `border-right-color: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-right-color")) {
-                          return `border-right-color: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-right-color: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-right-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderTopWidth: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-top-width")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-top-width")) {
-                          return `border-top-width: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-top-width")) {
-                          return `border-top-width: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-top-width: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-top-width",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderTopStyle: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-top-style")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-top-style")) {
-                          return `border-top-style: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-top-style")) {
-                          return `border-top-style: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-top-style: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-top-style",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderTopColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-top-color")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-top-color")) {
-                          return `border-top-color: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-top-color")) {
-                          return `border-top-color: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-top-color: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-top-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderBottomWidth: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-bottom-width")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-bottom-width")) {
-                          return `border-bottom-width: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-bottom-width")) {
-                          return `border-bottom-width: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-bottom-width: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-bottom-width",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderBottomStyle: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-bottom-style")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-bottom-style")) {
-                          return `border-bottom-style: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-bottom-style")) {
-                          return `border-bottom-style: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-bottom-style: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-bottom-style",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBorderBottomColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("border-bottom-color")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("border-bottom-color")) {
-                          return `border-bottom-color: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("border-bottom-color")) {
-                          return `border-bottom-color: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`border-bottom-color: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "border-bottom-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
@@ -3869,77 +1948,14 @@ export const builderSlice = createSlice({
       };
     },
     updateHeight: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find(
-                    (style) =>
-                      style.includes("height") && !style.includes("-height")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (
-                          style.includes("height") &&
-                          !style.includes("-height")
-                        ) {
-                          return `height: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (
-                          style.includes("height") &&
-                          !style.includes("-height")
-                        ) {
-                          return `height: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`height: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "height",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
@@ -4145,70 +2161,14 @@ export const builderSlice = createSlice({
       };
     },
     updateColumnGap: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find((style) =>
-                    style.includes("column-gap")
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (style.includes("column-gap")) {
-                          return `column-gap: ${action.payload}px;`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (style.includes("column-gap")) {
-                          return `column-gap: ${action.payload}px;`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`column-gap: ${action.payload}px;`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "column-gap",
+        `${action.payload}px`
+      );
       state.data = {
         ...state.data,
         rows: temp,
@@ -5163,151 +3123,38 @@ export const builderSlice = createSlice({
       };
     },
     updateMargin: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const arr = row.columns.map((column, index) => {
-            if (index === +state.columnIndex) {
-              const arr = column.contents.map((content, index) => {
-                if (index === +state.contentIndex) {
-                  let code = content.content;
-                  const preCode = code.slice(0, code.indexOf("style=") + 7);
-                  const restCode = code.slice(code.indexOf(">") - 1);
-                  let styleList = code
-                    .slice(code.indexOf("style=") + 7, code.indexOf(">") - 1)
-                    .split("; ");
-                  const check = styleList.find(
-                    (style) =>
-                      style.includes("margin") &&
-                      !(
-                        style.includes("margin-left") ||
-                        style.includes("margin-right") ||
-                        style.includes("margin-bottom") ||
-                        style.includes("margin-top")
-                      )
-                  );
-                  if (check) {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        if (
-                          style.includes("margin") &&
-                          !(
-                            style.includes("margin-left") ||
-                            style.includes("margin-right") ||
-                            style.includes("margin-bottom") ||
-                            style.includes("margin-top")
-                          )
-                        ) {
-                          return `margin: ${action.payload};`;
-                        } else {
-                          return style.concat(";");
-                        }
-                      } else {
-                        if (
-                          style.includes("margin") &&
-                          !(
-                            style.includes("margin-left") ||
-                            style.includes("margin-right") ||
-                            style.includes("margin-bottom") ||
-                            style.includes("margin-top")
-                          )
-                        ) {
-                          return `margin: ${action.payload};`;
-                        }
-                        return style;
-                      }
-                    });
-                  } else {
-                    styleList = styleList.map((style, index) => {
-                      if (index !== +styleList.length - 1) {
-                        return style.concat(";");
-                      } else {
-                        return style;
-                      }
-                    });
-                    styleList.push(`margin: ${action.payload};`);
-                  }
-                  code = preCode + styleList.join(" ") + restCode;
-                  content.content = code;
-                  content.contentCode = HTMLReactParser(code);
-                  return content;
-                } else {
-                  return content;
-                }
-              });
-              return {
-                ...column,
-                contents: arr,
-              };
-            } else {
-              return column;
-            }
-          });
-          return {
-            ...row,
-            columns: arr,
-          };
-        } else {
-          return row;
-        }
-      });
+      const temp = updateStyle(
+        state.data.rows,
+        state.rowIndex,
+        state.columnIndex,
+        state.contentIndex,
+        "margin",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateRowBackgroundColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const check = row.rowStyle.includes("background-color");
-          if (check) {
-            const obj = getStyleObjectFromString(row.rowStyle);
-            obj.backgroundColor = action.payload;
-            row.rowStyle = getStyleStringFromObject(obj);
-          } else {
-            if (row.rowStyle) {
-              row.rowStyle = row.rowStyle.concat(
-                ` background-color: ${action.payload};`
-              );
-            } else {
-              row.rowStyle = row.rowStyle.concat(
-                `background-color: ${action.payload};`
-              );
-            }
-          }
-          return row;
-        } else {
-          return row;
-        }
-      });
+      const temp = updateRowStyle(
+        state.data.rows,
+        state.rowIndex,
+        "background-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateContentAreaBackgroundColor: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          const check = row.contentAreaStyle.includes("background-color");
-          if (check) {
-            const obj = getStyleObjectFromString(row.contentAreaStyle);
-            obj.backgroundColor = action.payload;
-            row.contentAreaStyle = getStyleStringFromObject(obj);
-          } else {
-            if (row.contentAreaStyle) {
-              row.contentAreaStyle = row.contentAreaStyle.concat(
-                ` background-color: ${action.payload};`
-              );
-            } else {
-              row.contentAreaStyle = row.contentAreaStyle.concat(
-                `background-color: ${action.payload};`
-              );
-            }
-          }
-          return row;
-        } else {
-          return row;
-        }
-      });
+      const temp = updateContentAreaStyle(
+        state.data.rows,
+        state.rowIndex,
+        "background-color",
+        action.payload
+      );
       state.data = {
         ...state.data,
         rows: temp,
@@ -5400,78 +3247,66 @@ export const builderSlice = createSlice({
       state.backgroundImageArea = action.payload;
     },
     updateBackgroundSize: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          if (action.payload.area === "ROW") {
-            if (row.rowStyle.includes("background-size")) {
-              const obj = getStyleObjectFromString(row.rowStyle);
-              obj.backgroundSize = action.payload.size;
-              row.rowStyle = getStyleStringFromObject(obj);
-            }
-          } else if (action.payload.area === "CONTENT AREA") {
-            if (row.contentAreaStyle.includes("background-size")) {
-              const obj = getStyleObjectFromString(row.contentAreaStyle);
-              obj.backgroundSize = action.payload.size;
-              row.contentAreaStyle = getStyleStringFromObject(obj);
-            }
-          }
-          return row;
-        } else {
-          return row;
-        }
-      });
+      let temp = [...state.data.rows];
+      if (action.payload.area === "ROW") {
+        temp = updateRowStyle(
+          state.data.rows,
+          state.rowIndex,
+          "background-size",
+          action.payload.size
+        );
+      } else if (action.payload.area === "CONTENT AREA") {
+        temp = updateContentAreaStyle(
+          state.data.rows,
+          state.rowIndex,
+          "background-size",
+          action.payload.size
+        );
+      }
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBackgroundRepeat: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          if (action.payload.area === "ROW") {
-            if (row.rowStyle.includes("background-repeat")) {
-              const obj = getStyleObjectFromString(row.rowStyle);
-              obj.backgroundRepeat = action.payload.repeat;
-              row.rowStyle = getStyleStringFromObject(obj);
-            }
-          } else if (action.payload.area === "CONTENT AREA") {
-            if (row.contentAreaStyle.includes("background-repeat")) {
-              const obj = getStyleObjectFromString(row.contentAreaStyle);
-              obj.backgroundRepeat = action.payload.repeat;
-              row.contentAreaStyle = getStyleStringFromObject(obj);
-            }
-          }
-          return row;
-        } else {
-          return row;
-        }
-      });
+      let temp = [...state.data.rows];
+      if (action.payload.area === "ROW") {
+        temp = updateRowStyle(
+          state.data.rows,
+          state.rowIndex,
+          "background-repeat",
+          action.payload.repeat
+        );
+      } else if (action.payload.area === "CONTENT AREA") {
+        temp = updateContentAreaStyle(
+          state.data.rows,
+          state.rowIndex,
+          "background-repeat",
+          action.payload.repeat
+        );
+      }
       state.data = {
         ...state.data,
         rows: temp,
       };
     },
     updateBackgroundPosition: (state, action) => {
-      let temp = state.data.rows.map((row, index) => {
-        if (index === +state.rowIndex) {
-          if (action.payload.area === "ROW") {
-            if (row.rowStyle.includes("background-position")) {
-              const obj = getStyleObjectFromString(row.rowStyle);
-              obj.backgroundPosition = action.payload.position;
-              row.rowStyle = getStyleStringFromObject(obj);
-            }
-          } else if (action.payload.area === "CONTENT AREA") {
-            if (row.contentAreaStyle.includes("background-position")) {
-              const obj = getStyleObjectFromString(row.contentAreaStyle);
-              obj.backgroundPosition = action.payload.position;
-              row.contentAreaStyle = getStyleStringFromObject(obj);
-            }
-          }
-          return row;
-        } else {
-          return row;
-        }
-      });
+      let temp = [...state.data.rows];
+      if (action.payload.area === "ROW") {
+        temp = updateRowStyle(
+          state.data.rows,
+          state.rowIndex,
+          "background-position",
+          action.payload.position
+        );
+      } else if (action.payload.area === "CONTENT AREA") {
+        temp = updateContentAreaStyle(
+          state.data.rows,
+          state.rowIndex,
+          "background-position",
+          action.payload.position
+        );
+      }
       state.data = {
         ...state.data,
         rows: temp,
@@ -5490,7 +3325,6 @@ export const builderSlice = createSlice({
           if (action.payload?.width || action.payload?.width === 0) {
             obj.borderWidth = `${action.payload.width}px`;
           }
-          console.log(obj);
           row.contentAreaStyle = getStyleStringFromObject(obj);
           return row;
         } else {
@@ -5699,7 +3533,6 @@ export const builderSlice = createSlice({
     updateColumnBackgroundColor: (state, action) => {
       let temp = state.data.rows.map((row, index) => {
         if (index === +state.rowIndex) {
-          console.log(index);
           row.columns.forEach((column, index) => {
             if (index === +state.columnIndex) {
               const obj = getStyleObjectFromString(column.columnStyle);

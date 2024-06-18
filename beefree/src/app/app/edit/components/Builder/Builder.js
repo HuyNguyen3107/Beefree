@@ -1,21 +1,23 @@
 "use client";
+
 import React, { useState } from "react";
-import Image from "next/image";
 import { FaArrowAltCircleUp } from "react-icons/fa";
-import { Droppable } from "../Droppable/Droppable";
-import { Draggable } from "../Draggable/Draggable";
+import { useSelector, useDispatch } from "react-redux";
 import { FaArrowsUpDownLeftRight } from "react-icons/fa6";
 import { BsChatSquare } from "react-icons/bs";
 import { CiTrash } from "react-icons/ci";
 import { FaRegSave } from "react-icons/fa";
 import { IoCopySharp } from "react-icons/io5";
+
 import logo from "../../../../../../public/logo.svg";
 import "./builder.scss";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 const TextEditor = dynamic(() => import("../TextEditor/TextEditor"), {
   ssr: false,
 });
-import { useSelector, useDispatch } from "react-redux";
+import { Droppable } from "../Droppable/Droppable";
+import { Draggable } from "../Draggable/Draggable";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
 import { DragHandle } from "../DragHandle/DragHandle";

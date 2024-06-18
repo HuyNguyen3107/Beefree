@@ -4,10 +4,11 @@ import { AiOutlineAppstore } from "react-icons/ai";
 import { GoRows } from "react-icons/go";
 import { RiPagesLine } from "react-icons/ri";
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 import { Draggable } from "../Draggable/Draggable";
 import { contents } from "@/core/content";
 import ContentSidebar from "./components/ContentSidebar/ContentSidebar";
-import { useSelector, useDispatch } from "react-redux";
 import { editorSlice } from "@/redux/slice/editorSlice";
 import { builderSlice } from "@/redux/slice/builderSlice";
 const {

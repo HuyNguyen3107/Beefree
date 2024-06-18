@@ -1,4 +1,4 @@
-const formatStringToCamelCase = (str) => {
+export const formatStringToCamelCase = (str) => {
   const splitted = str.split("-");
   if (splitted.length === 1) return splitted[0];
   return (

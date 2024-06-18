@@ -3,11 +3,12 @@
 import React, { useState } from "react";
 import { MdPhoneAndroid } from "react-icons/md";
 import { FaDesktop } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { DndContext } from "@dnd-kit/core";
+
 import Builder from "../../components/Builder/Builder";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import { DndContext } from "@dnd-kit/core";
 import { contents } from "@/core/content";
-import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
 const {
@@ -20,8 +21,9 @@ const {
   sortRow,
 } = builderSlice.actions;
 const { updateEditor } = editorSlice.actions;
-import "primeicons/primeicons.css";
 import FileMange from "../../components/FileManage/FileMange";
+
+import "primeicons/primeicons.css";
 
 function EditPage() {
   const data = useSelector((state) => state.builder.data);
