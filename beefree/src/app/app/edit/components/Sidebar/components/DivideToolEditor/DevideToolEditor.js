@@ -175,7 +175,7 @@ function DivideToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
-                        value={lineColor}
+                        defaultValue={lineColor}
                         onChange={(e) => {
                           setLineColor(e.target.value);
                           dispatch(updateDividerBackground(e.target.value));

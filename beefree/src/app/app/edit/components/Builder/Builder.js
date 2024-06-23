@@ -20,6 +20,7 @@ import { Droppable } from "../Droppable/Droppable";
 import { Draggable } from "../Draggable/Draggable";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
+import { chatSlice } from "@/redux/slice/chatSlice";
 import { DragHandle } from "../DragHandle/DragHandle";
 import { getStyleObjectFromString } from "@/utils/convert";
 import { RowDragHandle } from "../RowDragHandle/RowDragHandle";
@@ -36,8 +37,9 @@ const {
   deleteRow,
 } = builderSlice.actions;
 const { updateEditor, updateSidebar } = editorSlice.actions;
+const { updateChatStatus } = chatSlice.actions;
 
-function Builder({ style, dropStyle, dropId, overId }) {
+function Builder({ style, dropStyle, dropId, overId, device }) {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.builder.data);
   const contentIndex = useSelector((state) => state.builder.contentIndex);
@@ -94,12 +96,16 @@ function Builder({ style, dropStyle, dropId, overId }) {
         dispatch(updateRowIndex(+index));
         dispatch(changeRowEditStatus(true));
         dispatch(updateSidebar("rows"));
+        dispatch(updateChatStatus(false));
       }
     }
   };
   return (
     <div
-      className="builder px-6 py-6 h-[90%] overflow-auto"
+      className={
+        "builder h-[90%] overflow-y-auto" +
+        (device === "mobile" ? " w-[525px] mx-auto" : " px-6 py-6")
+      }
       id="builder"
       onClick={handleClick}
     >
@@ -113,6 +119,13 @@ function Builder({ style, dropStyle, dropId, overId }) {
             const generalStyleObj = getStyleObjectFromString(
               data?.contentGeneralStyle
             );
+            const objStyle = {
+              ...generalStyleObj,
+              ...areaStyleObj,
+            };
+            if (device === "mobile") {
+              objStyle.width = "475px";
+            }
             return (
               <Droppable
                 id={"builder_row_" + rowIndex}
@@ -140,13 +153,7 @@ function Builder({ style, dropStyle, dropId, overId }) {
                     id={"builder_content_" + rowIndex}
                   >
                     {/* write content area || general here */}
-                    <div
-                      className="h-full"
-                      style={{
-                        ...generalStyleObj,
-                        ...areaStyleObj,
-                      }}
-                    >
+                    <div style={objStyle} className={"h-full"}>
                       <div
                         className={
                           row?.columns?.length > 1 ? "grid grid-cols-6" : ""
@@ -337,6 +344,9 @@ function Builder({ style, dropStyle, dropId, overId }) {
                                                 dispatch(
                                                   changeRowEditStatus(null)
                                                 );
+                                                dispatch(
+                                                  updateChatStatus(false)
+                                                );
                                               }}
                                             >
                                               {tag?.contentCode}
@@ -367,9 +377,9 @@ function Builder({ style, dropStyle, dropId, overId }) {
                                                   : " hidden")
                                               }
                                             >
-                                              <div className="bg-violet-700 px-2 py-2 border">
+                                              {/* <div className="bg-violet-700 px-2 py-2 border">
                                                 <BsChatSquare />
-                                              </div>{" "}
+                                              </div>{" "} */}
                                               <div
                                                 className="bg-violet-700 px-2 py-2 border"
                                                 onClick={() => {
@@ -455,7 +465,7 @@ function Builder({ style, dropStyle, dropId, overId }) {
                         : " hidden")
                     }
                   >
-                    <div className="px-2 py-2 border-r border-white">
+                    {/* <div className="px-2 py-2 border-r border-white">
                       <BsChatSquare
                         onClick={() => {
                           alert("Still coding...");
@@ -468,7 +478,7 @@ function Builder({ style, dropStyle, dropId, overId }) {
                           alert("Still coding...");
                         }}
                       />
-                    </div>
+                    </div> */}
                     <div className="px-2 py-2 border-r border-white">
                       <CiTrash
                         onClick={() => {

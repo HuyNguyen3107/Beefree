@@ -8,6 +8,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { FaRegSave } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
+import { notifyInfo } from "@/utils/toast";
 const {
   updateContentIndex,
   updateColumnIndex,
@@ -25,10 +26,10 @@ function RowProperties() {
         ROW PROPERTIES
       </div>
       <div className="flex items-center">
-        <div
+        {/* <div
           className="px-4 py-2 border-l text-[18px] cursor-pointer"
           onClick={() => {
-            alert("Đang trong quá trình phát triển hihi =))");
+            notifyInfo("This feature is under development");
           }}
         >
           <FaRegSave />
@@ -36,11 +37,11 @@ function RowProperties() {
         <div
           className="px-4 py-2 border-l text-[18px] cursor-pointer"
           onClick={() => {
-            alert("Đang trong quá trình phát triển hihi =))");
+            notifyInfo("This feature is under development");
           }}
         >
           <BsChatSquare />
-        </div>
+        </div> */}
         <div
           className="px-4 py-2 border-l text-[18px] cursor-pointer"
           onClick={() => {

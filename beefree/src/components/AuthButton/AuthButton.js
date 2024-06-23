@@ -5,8 +5,8 @@ import Link from "next/link";
 function AuthButton() {
   return (
     <div className={styles.auth}>
-      <Link href={"#"}>Login</Link>
-      <Link href={"#"}>Get started - It's free</Link>
+      <Link href={"/app/login"}>Login</Link>
+      <Link href={"/app/register"}>Get started - It's free</Link>
     </div>
   );
 }

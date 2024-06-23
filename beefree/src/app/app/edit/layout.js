@@ -3,6 +3,7 @@ import { Providers } from "@/components/Provider/Providers";
 const inter = Inter({ subsets: ["latin"] });
 import "../app.css";
 import Header from "./components/Header/Header";
+import { ToastContainer } from "react-toastify";
 // import Sidebar from "./components/Sidebar/Sidebar";
 
 export const metadata = {
@@ -20,6 +21,7 @@ export default function EditLayout({ children }) {
             <Header />
             {children}
           </div>
+          <ToastContainer />
         </Providers>
       </body>
     </html>

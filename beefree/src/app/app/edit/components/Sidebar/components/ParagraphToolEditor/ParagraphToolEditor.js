@@ -23,6 +23,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
 import { getStyleObjectFromString } from "@/utils/convert";
+import { notifyInfo } from "@/utils/toast";
 const {
   updateTitle,
   updateFontFamily,
@@ -154,7 +155,7 @@ function ParagraphToolEditor() {
             color="secondary"
             className="font-bold text-[14px]"
             onClick={() => {
-              alert("Hông cóa đâu he he :3");
+              notifyInfo("This feature is not available yet");
             }}
           >
             <FaMagic /> Write with AI
@@ -259,7 +260,7 @@ function ParagraphToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
-                value={textColor}
+                defaultValue={textColor}
                 onChange={(e) => {
                   setTextColor(e.target.value);
                   dispatch(updateTextColor(e.target.value));
@@ -278,7 +279,7 @@ function ParagraphToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
-                value={linkColor}
+                defaultValue={linkColor}
                 onChange={(e) => {
                   setLinkColor(e.target.value);
                   dispatch(updateLinkColor(e.target.value));

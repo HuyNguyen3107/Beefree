@@ -375,7 +375,7 @@ function RowEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-3/5">
               <input
                 type="color"
-                value={rowBgColor}
+                defaultValue={rowBgColor}
                 onChange={(e) => {
                   setRowBgColor(e.target.value);
                   dispatch(updateRowBackgroundColor(e.target.value));
@@ -394,7 +394,7 @@ function RowEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-4/5">
               <input
                 type="color"
-                value={contentAreaBgColor}
+                defaultValue={contentAreaBgColor}
                 onChange={(e) => {
                   setContentAreaBgColor(e.target.value);
                   dispatch(updateContentAreaBackgroundColor(e.target.value));
@@ -1651,7 +1651,7 @@ function RowEditor() {
                   <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-3/5">
                     <input
                       type="color"
-                      value={columnBgColor}
+                      defaultValue={columnBgColor}
                       onChange={(e) => {
                         const value = e.target.value;
                         setColumnBgColor(value);
@@ -2117,7 +2117,7 @@ function RowEditor() {
                       <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                         <input
                           type="color"
-                          value={
+                          defaultValue={
                             columnBorderAll?.color ? columnBorderAll?.color : ""
                           }
                           onChange={(e) => {
@@ -2224,7 +2224,7 @@ function RowEditor() {
                         <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                           <input
                             type="color"
-                            value={
+                            defaultValue={
                               columnBorderTop?.color
                                 ? columnBorderTop.color
                                 : ""
@@ -2333,7 +2333,7 @@ function RowEditor() {
                         <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                           <input
                             type="color"
-                            value={
+                            defaultValue={
                               columnBorderRight?.color
                                 ? columnBorderRight.color
                                 : ""
@@ -2442,7 +2442,7 @@ function RowEditor() {
                         <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                           <input
                             type="color"
-                            value={
+                            defaultValue={
                               columnBorderBottom?.color
                                 ? columnBorderBottom.color
                                 : ""
@@ -2551,7 +2551,7 @@ function RowEditor() {
                         <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                           <input
                             type="color"
-                            value={
+                            defaultValue={
                               columnBorderLeft?.color
                                 ? columnBorderLeft.color
                                 : ""

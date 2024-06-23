@@ -43,6 +43,7 @@ const {
   updateParagraphSpacing,
 } = builderSlice.actions;
 import { getStyleObjectFromString } from "@/utils/convert";
+import { notifyInfo } from "@/utils/toast";
 
 function ListToolEditor() {
   const dispatch = useDispatch();
@@ -177,7 +178,7 @@ function ListToolEditor() {
             color="secondary"
             className="font-bold text-[14px]"
             onClick={() => {
-              alert("Hông cóa đâu he he :3");
+              notifyInfo("This feature is under development");
             }}
           >
             <FaMagic /> Write with AI
@@ -308,7 +309,7 @@ function ListToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
-                value={textColor}
+                defaultValue={textColor}
                 onChange={(e) => {
                   setTextColor(e.target.value);
                   dispatch(updateTextColor(e.target.value));
@@ -327,7 +328,7 @@ function ListToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
-                value={linkColor}
+                defaultValue={linkColor}
                 onChange={(e) => {
                   setLinkColor(e.target.value);
                   dispatch(updateLinkColor(e.target.value));

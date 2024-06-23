@@ -18,6 +18,7 @@ import EditOptions from "../EditOptions/EditOptions";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { getStyleObjectFromString } from "@/utils/convert";
+import { notifyInfo } from "@/utils/toast";
 const {
   updatePadding,
   updatePaddingLeft,
@@ -161,7 +162,7 @@ function ImageToolEditor() {
               defaultSelected
               color="secondary"
               onChange={() => {
-                alert("Hông cóa đou :)))");
+                notifyInfo("This feature is not available");
               }}
             />
           </div>
@@ -172,7 +173,7 @@ function ImageToolEditor() {
             <Button
               className="font-bold text-[14px]"
               onClick={() => {
-                alert("Hông cóa đou :)))");
+                notifyInfo("This feature is not available");
               }}
             >
               Apply effects

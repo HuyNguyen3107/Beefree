@@ -26,7 +26,7 @@ export function RowDragHandle(props) {
       {props.children}
       <div
         className={
-          "move-icon-content absolute bg-violet-700 text-white z-50 rounded-full px-2 py-2 top-1/4 -left-4 cursor-pointer" +
+          "move-icon-content absolute bg-violet-700 text-white z-50 rounded-full px-2 py-2 top-1/4 -left-1 cursor-pointer" +
           (props.isShow ? "" : " hidden")
         }
         {...listeners}

@@ -143,7 +143,7 @@ function SettingSidebar() {
               <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-3/5">
                 <input
                   type="color"
-                  value={backgroundColor}
+                  defaultValue={backgroundColor}
                   onChange={(e) => {
                     setBackgroundColor(e.target.value);
                     dispatch(updateGeneralBackgroundColor(e.target.value));
@@ -162,7 +162,7 @@ function SettingSidebar() {
               <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-4/5">
                 <input
                   type="color"
-                  value={contentBackground}
+                  defaultValue={contentBackground}
                   onChange={(e) => {
                     setContentBackground(e.target.value);
                     dispatch(

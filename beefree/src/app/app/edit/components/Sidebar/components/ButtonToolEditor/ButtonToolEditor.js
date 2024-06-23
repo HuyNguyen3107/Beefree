@@ -24,6 +24,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
 import { getStyleObjectFromString } from "@/utils/convert";
+import { notifyInfo } from "@/utils/toast";
 const {
   updateFontFamily,
   updateFontWeight,
@@ -242,7 +243,7 @@ function ButtonToolEditor() {
             color="secondary"
             className="font-bold text-[14px]"
             onClick={() => {
-              alert("Hông cóa đou :)))");
+              notifyInfo("Coming soon");
             }}
           >
             <FaMagic /> Write with AI
@@ -442,7 +443,7 @@ function ButtonToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-3/5">
               <input
                 type="color"
-                value={backgroundColor}
+                defaultValue={backgroundColor}
                 onChange={(e) => {
                   setBackgroundColor(e.target.value);
                   dispatch(updateBackgroundColor(e.target.value));
@@ -461,7 +462,7 @@ function ButtonToolEditor() {
             <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
               <input
                 type="color"
-                value={textColor}
+                defaultValue={textColor}
                 onChange={(e) => {
                   setTextColor(e.target.value);
                   dispatch(updateTextColor(e.target.value));
@@ -673,7 +674,7 @@ function ButtonToolEditor() {
                   <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                     <input
                       type="color"
-                      value={borderColor}
+                      defaultValue={borderColor}
                       onChange={(e) => {
                         setBorderColor(e.target.value);
                         dispatch(updateBorderColor(e.target.value));
@@ -746,7 +747,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
-                        value={borderColorTop}
+                        defaultValue={borderColorTop}
                         onChange={(e) => {
                           setBorderColorTop(e.target.value);
                           dispatch(updateBorderTopColor(e.target.value));
@@ -817,7 +818,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
-                        value={borderColorRight}
+                        defaultValue={borderColorRight}
                         onChange={(e) => {
                           setBorderColorRight(e.target.value);
                           dispatch(updateBorderRightColor(e.target.value));
@@ -888,7 +889,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
-                        value={borderColorBottom}
+                        defaultValue={borderColorBottom}
                         onChange={(e) => {
                           setBorderColorBottom(e.target.value);
                           dispatch(updateBorderBottomColor(e.target.value));
@@ -959,7 +960,7 @@ function ButtonToolEditor() {
                     <div className="bg-white px-2 py-1 rounded-md border flex gap-x-2 w-2/5">
                       <input
                         type="color"
-                        value={borderColorLeft}
+                        defaultValue={borderColorLeft}
                         onChange={(e) => {
                           setBorderColorLeft(e.target.value);
                           dispatch(updateBorderLeftColor(e.target.value));

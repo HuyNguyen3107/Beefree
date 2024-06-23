@@ -11,6 +11,7 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import { contents } from "@/core/content";
 import { builderSlice } from "@/redux/slice/builderSlice";
 import { editorSlice } from "@/redux/slice/editorSlice";
+import { chatSlice } from "@/redux/slice/chatSlice";
 const {
   addContent,
   sortContentList,
@@ -21,13 +22,17 @@ const {
   sortRow,
 } = builderSlice.actions;
 const { updateEditor } = editorSlice.actions;
+const { updateChatStatus } = chatSlice.actions;
+
 import FileMange from "../../components/FileManage/FileMange";
 
 import "primeicons/primeicons.css";
+import Preview from "../../components/Preview/Preview";
 
 function EditPage() {
   const data = useSelector((state) => state.builder.data);
   const isUploadFile = useSelector((state) => state.builder.isUploadFile);
+  const previewStatus = useSelector((state) => state.preview.previewStatus);
   const dispatch = useDispatch();
   const [style, setStyle] = useState("");
   const [dropStyle, setDropStyle] = useState("");
@@ -38,6 +43,7 @@ function EditPage() {
   const [isRowDrag, setIsRowDrag] = useState(false);
   const [rowIndexDnd, setRowIndexDnd] = useState({});
   const [overId, setOverId] = useState("");
+  const [device, setDevice] = useState("desktop");
 
   const handleDragEnd = (e) => {
     if (isDragHandle) {
@@ -94,6 +100,7 @@ function EditPage() {
     dispatch(updateRowIndex(null));
     dispatch(changeRowEditStatus(null));
     setOverId("");
+    dispatch(updateChatStatus(false));
   };
   const handleDragMove = (e) => {
     if (isDragHandle) {
@@ -221,6 +228,9 @@ function EditPage() {
       setIsRowDrag(true);
     }
   };
+  if (previewStatus) {
+    return <Preview />;
+  }
   return (
     <>
       {!isUploadFile ? (
@@ -236,10 +246,30 @@ function EditPage() {
               <main className="main h-2/3">
                 <div className="relative h-screen">
                   <div className="absolute top-5 left-5 flex items-center shadow-md z-50">
-                    <div className="bg-violet-500 text-white px-2 py-2 cursor-pointer">
+                    <div
+                      className={
+                        "text-white px-2 py-2 cursor-pointer" +
+                        (device === "desktop"
+                          ? " bg-violet-500"
+                          : " bg-gray-600")
+                      }
+                      onClick={() => {
+                        setDevice("desktop");
+                      }}
+                    >
                       <FaDesktop />
                     </div>
-                    <div className="px-2 py-2 cursor-pointer bg-white">
+                    <div
+                      className={
+                        "text-white px-2 py-2 cursor-pointer" +
+                        (device === "mobile"
+                          ? " bg-violet-500"
+                          : " bg-gray-600")
+                      }
+                      onClick={() => {
+                        setDevice("mobile");
+                      }}
+                    >
                       <MdPhoneAndroid />
                     </div>
                   </div>
@@ -248,6 +278,7 @@ function EditPage() {
                     dropStyle={dropStyle}
                     dropId={dropId}
                     overId={overId}
+                    device={device}
                   />
                 </div>
               </main>

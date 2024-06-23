@@ -12,6 +12,11 @@ import {
 } from "@/core/builder";
 
 const initialState = {
+  projectInfo: {
+    name: "New Email",
+    type: "email",
+    id: "",
+  },
   data: {
     generalStyle: "",
     contentGeneralStyle: "width: 745px; margin-left: auto; margin-right: auto;",
@@ -32,6 +37,14 @@ export const builderSlice = createSlice({
   name: "builder",
   initialState,
   reducers: {
+    updateProjectName: (state, action) => {
+      if (action.payload?.name) {
+        state.projectInfo = {
+          ...state.projectInfo,
+          name: action.payload,
+        };
+      }
+    },
     addContent: (state, action) => {
       let temp = state.data.rows;
       if (state.data.rows.length) {

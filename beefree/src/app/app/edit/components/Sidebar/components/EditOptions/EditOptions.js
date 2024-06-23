@@ -18,9 +18,9 @@ function EditOptions() {
         CONTENT PROPERTIES
       </div>
       <div className="flex items-center">
-        <div className="px-4 py-2 border-l text-[18px] cursor-pointer">
+        {/* <div className="px-4 py-2 border-l text-[18px] cursor-pointer">
           <BsChatSquare />
-        </div>
+        </div> */}
         <div
           className="px-4 py-2 border-l text-[18px] cursor-pointer"
           onClick={() => {

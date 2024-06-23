@@ -98,7 +98,7 @@ export const contents = [
     icon: <CiImageOn className="opacity-50" />,
     content: `
     <div
-    style="padding: 1rem; display: flex; flex-direction: column; align-items: center; row-gap: 10px; background-color: #f3f3f3; border: 1px dashed #000;"
+    style="padding: 16px; display: flex; flex-direction: column; align-items: center; row-gap: 10px; background-color: #f3f3f3; border: 1px dashed #000;"
   >
     <i
       className="pi pi-images"
@@ -120,7 +120,7 @@ export const contents = [
     contentCode: (
       <div
         style={{
-          padding: "1rem",
+          padding: "16px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
