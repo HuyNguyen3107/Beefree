@@ -3,19 +3,36 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "start": "node ./bin/www",
+    "postinstall": "npx sequelize-cli db:migrate",
+    "build": "npm run postinstall && npm run vercel-build"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
+    "express-session": "^1.18.0",
     "http-errors": "~1.6.3",
     "jade": "^1.9.2",
+    "jsonwebtoken": "^9.0.2",
+    "md5": "^2.3.0",
+    "moment": "^2.30.1",
     "morgan": "~1.9.1",
+    "nodemailer": "^6.9.14",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.1"
+    "sequelize": "^6.37.1",
+    "uuid": "^10.0.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.2"
