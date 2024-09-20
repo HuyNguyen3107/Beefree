@@ -1,12 +1,8 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export const middleware = async (req) => {
+export const middleware = async (req, res) => {
   const pathname = req.nextUrl.pathname;
-
-  if (pathname.includes("logout-success")) {
-    console.log("ok");
-  }
 
   if (pathname !== "/" && !pathname.startsWith("/app")) {
     return NextResponse.redirect(new URL("/", req.nextUrl));

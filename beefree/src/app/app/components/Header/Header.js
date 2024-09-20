@@ -6,8 +6,6 @@ import { cookies } from "next/headers";
 
 function Header() {
   const token = cookies().get("token");
-  console.log(token);
-
   return (
     <header className="bg-zinc-100 w-full px-4 py-4 shadow-white">
       <div className="flex justify-between items-center gap-x-3">

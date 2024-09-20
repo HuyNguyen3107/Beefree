@@ -13,24 +13,24 @@ import Link from "next/link";
 import { client } from "@/utils/client";
 import Spinner from "@/components/Spinner/Spinner";
 import { useRouter } from "next/navigation";
+import { clearCookies } from "../action";
 
 function DropdownMenuComponent({ token }) {
   const router = useRouter();
   const [isLoading, setLoading] = useState(false);
+  const formRef = React.useRef(null);
   const handleLogout = async () => {
     setLoading(true);
     const { accessToken, refreshToken } = JSON.parse(token.value);
     client.setToken(accessToken);
-    console.log("ok1");
 
-    const response = await client.post("/auth/logout", {
+    const { response, data } = await client.post("/auth/logout", {
       refreshToken,
     });
-    console.log("ok2");
-
     setLoading(false);
+
     if (response.ok) {
-      router.push("/app/logout-success");
+      formRef.current.requestSubmit();
     }
   };
   return (
@@ -71,6 +71,16 @@ function DropdownMenuComponent({ token }) {
         </DropdownMenu>
       </Dropdown>
       <Spinner isLoading={isLoading} />
+      <form
+        action={async (form) => {
+          await clearCookies();
+          router.push("/auth/login");
+        }}
+        style={{ display: "none" }}
+        ref={formRef}
+      >
+        <button></button>
+      </form>
     </>
   );
 }

@@ -1,5 +1,5 @@
 export const client = {
-  serverApi: process.env.SERVER_API,
+  serverApi: process.env.NEXT_PUBLIC_API_BASE_URL,
   token: null,
   setToken: function (token) {
     this.token = token;
