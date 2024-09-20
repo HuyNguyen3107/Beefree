@@ -5,6 +5,7 @@ import "../../../app/app.css";
 import logo from "../../../../../public/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
+import { ToastBox } from "@/utils/toast";
 
 export const metadata = {
   title: "Login - Beefree | No-code email & page design suite",
@@ -25,6 +26,7 @@ export default function LoginLayout({ children }) {
             />
           </Link>
           {children}
+          <ToastBox />
         </Providers>
       </body>
     </html>

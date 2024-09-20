@@ -3,6 +3,7 @@ import { FaGoogle } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
 import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
+import LoginForm from "./components/LoginForm";
 
 function LoginPage() {
   return (
@@ -26,42 +27,9 @@ function LoginPage() {
         <div className="mx-4 text-gray-400">or</div>
         <div className="w-full h-[1px] bg-gray-300"></div>
       </div>
-      <form action="">
-        <div className="mt-4 text-left">
-          <label className="font-semibold" htmlFor="email">
-            Email
-          </label>
-          <Input
-            className="w-full mt-2"
-            placeholder="Enter your Email"
-            type="email"
-            required
-            color="secondary"
-            id="email"
-          />
-        </div>
-        <div className="mt-4 text-left">
-          <label className="font-semibold" htmlFor="password">
-            Password
-          </label>
-          <Input
-            className="w-full mt-2"
-            placeholder="Enter your Password"
-            type="password"
-            required
-            color="secondary"
-            id="password"
-          />
-        </div>
-        <div className="text-left text-[12px] text-violet-500 mt-4">
-          <Link href="#">Forgot your password?</Link>
-        </div>
-        <Button className="w-full mt-4 font-semibold" color="secondary">
-          Login
-        </Button>
-      </form>
+      <LoginForm />
       <div className="mt-4 text-[16px]">
-        Don't have an account yet?{" "}
+        Do not have an account yet?{" "}
         <Link href="/app/register" className="text-violet-500 underline">
           Create an account
         </Link>

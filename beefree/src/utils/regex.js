@@ -22,3 +22,13 @@ export const isVimeoLink = (url) => {
 export const isFirebaseStorageLink = (url) => {
   return /^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/.*/.test(url);
 };
+
+export const isEmailValid = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+// password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, one number
+
+export const isPasswordValid = (password) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+};

@@ -10,10 +10,10 @@ module.exports = {
         primaryKey: true,
       },
       token: {
-        type: Sequelize.STRING(200),
+        type: Sequelize.TEXT,
       },
       expired: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(100),
       },
       created_at: {
         type: Sequelize.DATE,

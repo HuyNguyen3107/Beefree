@@ -25,7 +25,7 @@ module.exports = class {
   }
   find(condition = {}) {
     //Gọi hàm model
-    return this.model.findOne(condition);
+    return this.model.findOne({ where: condition });
   }
   findByPk(id) {
     //Gọi hàm model

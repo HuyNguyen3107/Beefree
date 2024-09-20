@@ -30,7 +30,7 @@ function ProjectContent({ data }) {
                 };
                 objStyle.width = "300px";
                 return (
-                  <div id={"builder_row_" + rowIndex}>
+                  <div key={rowIndex} id={"builder_row_" + rowIndex}>
                     <div id={"drag_handle_row_" + rowIndex}>
                       <div
                         style={getStyleObjectFromString(row?.rowStyle)}
@@ -52,6 +52,7 @@ function ProjectContent({ data }) {
                                   }
                                   return (
                                     <div
+                                      key={columnIndex}
                                       id={
                                         "builder_row_" +
                                         rowIndex +
@@ -71,6 +72,7 @@ function ProjectContent({ data }) {
                                               (tag, index) => {
                                                 return (
                                                   <div
+                                                    key={index}
                                                     id={
                                                       "builder_row_" +
                                                       rowIndex +

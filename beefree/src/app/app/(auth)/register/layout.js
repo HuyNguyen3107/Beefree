@@ -5,6 +5,7 @@ import "../../../app/app.css";
 import logo from "../../../../../public/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
+import { ToastBox } from "@/utils/toast";
 
 export const metadata = {
   title: "Register - Beefree | No-code email & page design suite",
@@ -30,10 +31,11 @@ export default function RegisterLayout({ children }) {
               Go from inspiration to campaign creation, fast and easy!
             </h2>
             <p>
-              Speed up email production with Beefree's drag-and-drop builder and
+              Speed up email production with Beefree drag-and-drop builder and
               free email and landing page templates.
             </p>
           </div>
+          <ToastBox />
         </Providers>
       </body>
     </html>

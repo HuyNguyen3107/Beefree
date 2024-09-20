@@ -9,17 +9,18 @@ const flash = require("connect-flash");
 const cors = require("cors");
 const passport = require("passport");
 
-const whitelist = require("./src/utils/cors");
+const whitelist = require("../src/utils/cors");
 
-const validateMiddleware = require("./src/middlewares/validate.middleware");
+const validateMiddleware = require("../src/middlewares/validate.middleware");
+// const authMiddleware = require("../src/middlewares/auth.middleware");
 
-const apiRouter = require("./src/routes/api/index");
+const apiRouter = require("../src/routes/api/index");
 var indexRouter = require("./routes/index");
 
-const userService = require("./src/services/user.service");
+const userService = require("../src/services/user.service");
 
-const passportGoogle = require("./src/passports/passport.google");
-const passportGithub = require("./src/passports/passport.github");
+const passportGoogle = require("../src/passport/passport.google");
+const passportGithub = require("../src/passport/passport.github");
 
 var corsOptions = {
   origin: function (origin, callback) {

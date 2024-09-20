@@ -15,8 +15,8 @@ function BeefreeSDK() {
           <div className="col-8">
             <span>Developer or SaaS?</span>
             <p>
-              Embed Beefree's white-label email builder into your app for
-              seamless email creation and more.
+              Embed Beefree white-label email builder into your app for seamless
+              email creation and more.
             </p>
             <Link href={"#"}>Discover Beefree SDK</Link>
           </div>

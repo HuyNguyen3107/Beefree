@@ -13,7 +13,7 @@ function Hero() {
           <div>
             <h1>The go-to HTML email builder for Higher Education</h1>
             <p>
-              Transform campus communication with Beefree's intuitive
+              Transform campus communication with Beefree intuitive
               drag-and-drop editor. Our platform streamlines email creation with
               advanced features, ensuring secure, FERPA-compliant campaigns.
             </p>

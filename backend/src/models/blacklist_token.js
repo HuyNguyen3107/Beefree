@@ -19,10 +19,10 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       token: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
       },
       expired: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
       },
     },
     {

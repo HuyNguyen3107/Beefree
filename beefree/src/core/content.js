@@ -35,7 +35,7 @@ export const contents = [
           padding: "0.5rem",
         }}
       >
-        I'm a new block title
+        I am a new block title
       </h1>
     ),
     editable: true,
@@ -61,7 +61,7 @@ export const contents = [
           flexDirection: "column",
         }}
       >
-        <p>I'm a new paragraph block.</p>
+        <p>I am a new paragraph block.</p>
       </div>
     ),
     editable: true,
@@ -338,7 +338,7 @@ export const contents = [
           padding: "0.5rem",
         }}
       >
-        <p>I'm a new HTML block.</p>
+        <p>I am a new HTML block.</p>
       </div>
     ),
     editable: false,

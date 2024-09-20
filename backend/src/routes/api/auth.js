@@ -5,18 +5,19 @@ const passport = require("passport");
 const authController = require("../../controllers/api/auth.controller");
 const userService = require("../../services/user.service");
 const providerService = require("../../services/provider.service");
-const randomCode = require("../../helpers/random2FA");
+// const randomCode = require("../../helpers/random2FA");
 const responses = require("../../helpers/response");
 const sendMail = require("../../utils/mail");
 
+const authMiddleware = require("../../middlewares/api/auth.middleware");
+
 router.post("/login", authController.login);
 router.post("/register", authController.register);
-router.post("/verify", authController.verify);
-router.post("/logout", authController.logout);
+router.post("/logout", authMiddleware, authController.logout);
 router.post("/refresh", authController.refresh);
 router.post("/forgot-password", authController.forgotPassword);
-router.get("/reset-password", authController.resetPassword);
-router.post("/reset-password", authController.handleResetPassword);
+// router.get("/reset-password", authController.resetPassword);
+// router.post("/reset-password", authController.handleResetPassword);
 
 router.get("/google", (req, res) => {
   const emptyResponse = new ServerResponse(req);

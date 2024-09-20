@@ -6,7 +6,7 @@ function AuthButton() {
   return (
     <div className={styles.auth}>
       <Link href={"/app/login"}>Login</Link>
-      <Link href={"/app/register"}>Get started - It's free</Link>
+      <Link href={"/app/register"}>Get started - Its free</Link>
     </div>
   );
 }

@@ -32,7 +32,7 @@ function PreviewContent({ data, device }) {
                   objStyle.width = "300px";
                 }
                 return (
-                  <div id={"builder_row_" + rowIndex}>
+                  <div key={rowIndex} id={"builder_row_" + rowIndex}>
                     <div id={"drag_handle_row_" + rowIndex}>
                       <div
                         style={getStyleObjectFromString(row?.rowStyle)}
@@ -54,6 +54,7 @@ function PreviewContent({ data, device }) {
                                   }
                                   return (
                                     <div
+                                      key={columnIndex}
                                       id={
                                         "builder_row_" +
                                         rowIndex +
@@ -73,6 +74,7 @@ function PreviewContent({ data, device }) {
                                               (tag, index) => {
                                                 return (
                                                   <div
+                                                    key={index}
                                                     id={
                                                       "builder_row_" +
                                                       rowIndex +
