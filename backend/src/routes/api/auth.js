@@ -16,8 +16,8 @@ router.post("/register", authController.register);
 router.post("/logout", authMiddleware, authController.logout);
 router.post("/refresh", authController.refresh);
 router.post("/forgot-password", authController.forgotPassword);
-// router.get("/reset-password", authController.resetPassword);
-// router.post("/reset-password", authController.handleResetPassword);
+router.get("/reset-password", authController.resetPassword);
+router.post("/reset-password", authController.handleResetPassword);
 
 router.get("/google", (req, res) => {
   const emptyResponse = new ServerResponse(req);

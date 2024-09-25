@@ -3,10 +3,11 @@
 import React from "react";
 import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
-import { handleLogin } from "../action";
+import { handleLogin } from "../../action";
 import { notifyWarning } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner/Spinner";
+import ModalForgotPassword from "../Modal/Modal";
 
 function LoginForm() {
   const router = useRouter();
@@ -54,7 +55,7 @@ function LoginForm() {
           />
         </div>
         <div className="text-left text-[12px] text-violet-500 mt-4">
-          <Link href="#">Forgot your password?</Link>
+          <ModalForgotPassword onSetIsLoading={setIsLoading} />
         </div>
         <Button
           className="w-full mt-4 font-semibold"

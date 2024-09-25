@@ -15,7 +15,8 @@ export const middleware = async (req, res) => {
   const isPublicPath =
     pathname === "/app/login" ||
     pathname === "/app/register" ||
-    pathname === "/";
+    pathname === "/" ||
+    pathname.includes("/app/reset-password");
   const token = cookies().get("token");
   if (!isPublicPath) {
     if (!token) {

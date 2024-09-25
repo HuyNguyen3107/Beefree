@@ -29,6 +29,18 @@ function DropdownMenuComponent({ token }) {
     });
     setLoading(false);
 
+    if (response.status === 401) {
+      // refresh token
+      const { response: refreshResponse, data: refreshData } =
+        await client.post("/auth/refresh", {
+          refreshToken,
+        });
+      if (!refreshResponse.ok) {
+        formRef.current.requestSubmit();
+        router.push("/auth/login");
+      }
+    }
+
     if (response.ok) {
       formRef.current.requestSubmit();
     }

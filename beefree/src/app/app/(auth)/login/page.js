@@ -3,7 +3,7 @@ import { FaGoogle } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
 import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
-import LoginForm from "./components/LoginForm";
+import LoginForm from "./components/LoginForm/LoginForm";
 
 function LoginPage() {
   return (

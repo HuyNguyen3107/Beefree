@@ -10,4 +10,8 @@ module.exports = {
     // return userRepository.createUser(data);
     return User.create(data);
   },
+  updateUser: (data, condition) => {
+    // return userRepository.updateUser(data, condition);
+    return User.update(data, { where: condition });
+  },
 };
