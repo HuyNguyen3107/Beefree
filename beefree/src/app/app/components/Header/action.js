@@ -18,3 +18,34 @@ export const clearCookies = async () => {
     };
   }
 };
+
+export const setCookies = async (data) => {
+  try {
+    // set user data to cookies
+    cookies().set("user", JSON.stringify(data.data), {
+      maxAge: 60 * 60 * 192,
+      path: "/",
+    });
+
+    cookies().set(
+      "token",
+      JSON.stringify({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      }),
+      {
+        maxAge: 60 * 60 * 192,
+        path: "/",
+        httpOnly: true,
+      }
+    );
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return {
+      error: error.message,
+      success: false,
+    };
+  }
+};

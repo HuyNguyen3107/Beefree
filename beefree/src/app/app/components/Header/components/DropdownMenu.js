@@ -13,17 +13,30 @@ import Link from "next/link";
 import { client } from "@/utils/client";
 import Spinner from "@/components/Spinner/Spinner";
 import { useRouter } from "next/navigation";
-import { clearCookies } from "../action";
+import { clearCookies, setCookies } from "../action";
+import { notifyError } from "@/utils/toast";
 
 function DropdownMenuComponent({ token }) {
   const router = useRouter();
   const [isLoading, setLoading] = useState(false);
-  const formRef = React.useRef(null);
-  const handleLogout = async () => {
+  const [data, setData] = useState(null);
+  const formDelRef = React.useRef(null);
+  const formSetRef = React.useRef(null);
+  const handleLogout = async (access, refresh) => {
     setLoading(true);
-    const { accessToken, refreshToken } = JSON.parse(token.value);
-    client.setToken(accessToken);
 
+    let accessToken = "";
+    let refreshToken = "";
+    if (access && refresh) {
+      accessToken = access;
+      refreshToken = refresh;
+    } else {
+      const { accessTokenParse, refreshTokenParse } = JSON.parse(token.value);
+      accessToken = accessTokenParse;
+      refreshToken = refreshTokenParse;
+    }
+
+    client.setToken(accessToken);
     const { response, data } = await client.post("/auth/logout", {
       refreshToken,
     });
@@ -36,13 +49,16 @@ function DropdownMenuComponent({ token }) {
           refreshToken,
         });
       if (!refreshResponse.ok) {
-        formRef.current.requestSubmit();
+        formDelRef.current.requestSubmit();
         router.push("/auth/login");
+      } else {
+        setData(refreshData);
+        formSetRef.current.requestSubmit();
       }
     }
 
     if (response.ok) {
-      formRef.current.requestSubmit();
+      formDelRef.current.requestSubmit();
     }
   };
   return (
@@ -89,7 +105,22 @@ function DropdownMenuComponent({ token }) {
           router.push("/auth/login");
         }}
         style={{ display: "none" }}
-        ref={formRef}
+        ref={formDelRef}
+      >
+        <button></button>
+      </form>
+      <form
+        action={async (form) => {
+          const response = await setCookies(data);
+          if (!response.success) {
+            notifyError(response.error);
+            return;
+          } else {
+            handleLogout(data.accessToken, data.refreshToken);
+          }
+        }}
+        style={{ display: "none" }}
+        ref={formSetRef}
       >
         <button></button>
       </form>
