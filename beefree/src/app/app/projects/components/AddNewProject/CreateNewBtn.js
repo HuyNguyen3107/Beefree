@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -17,8 +17,17 @@ import { FaFileArrowUp } from "react-icons/fa6";
 import CreateNewEmail from "../CreateNewEmail/CreateNewEmail";
 import CreateNewPage from "../CreateNewPage/CreateNewPage";
 
+// import { useEffect } from "react";
+// import { getSessionClient } from "@/utils/session";
+
 function CreateNewBtn() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  // useEffect(() => {
+  //   getSessionClient().then((data) => {
+  //     console.log("client", data);
+  //   });
+  // }, []);
+
   return (
     <>
       <Button color="secondary" onPress={onOpen}>

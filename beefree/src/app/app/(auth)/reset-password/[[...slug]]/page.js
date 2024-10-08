@@ -35,11 +35,6 @@ async function ResetPasswordPage({ params }) {
     const response = await checkResetToken(data);
     if (!response.success) {
       return <InvalidToken />;
-    } else {
-      // set token in cookie with 1 minutes max age
-      cookies.set("resetToken", data._token, {
-        maxAge: 60,
-      });
     }
   }
 

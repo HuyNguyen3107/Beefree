@@ -22,6 +22,7 @@ function DropdownMenuComponent({ token }) {
   const [data, setData] = useState(null);
   const formDelRef = React.useRef(null);
   const formSetRef = React.useRef(null);
+
   const handleLogout = async (access, refresh) => {
     setLoading(true);
 
@@ -31,7 +32,7 @@ function DropdownMenuComponent({ token }) {
       accessToken = access;
       refreshToken = refresh;
     } else {
-      const { accessTokenParse, refreshTokenParse } = JSON.parse(token.value);
+      const { accessTokenParse, refreshTokenParse } = JSON.parse(token);
       accessToken = accessTokenParse;
       refreshToken = refreshTokenParse;
     }

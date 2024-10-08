@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 export async function handleResetPassword(form) {
   try {
-    const { password, passwordRetype } = Object.fromEntries(form);
+    const { password, passwordRetype, email } = Object.fromEntries(form);
 
     if (!password || !passwordRetype) {
       throw new Error("Please fill in all fields");
@@ -19,7 +19,7 @@ export async function handleResetPassword(form) {
       throw new Error("Invalid reset token");
     }
 
-    const email = cookies.get("user").email;
+    // const email = cookies.get("user").email;
 
     const params = new URLSearchParams({
       _email: email,

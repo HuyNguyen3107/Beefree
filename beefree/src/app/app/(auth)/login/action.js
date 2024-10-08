@@ -29,12 +29,6 @@ export const handleLogin = async (loginInfo) => {
       throw new Error(data.errors);
     }
 
-    // set user data to cookies
-    cookies().set("user", JSON.stringify(data.data), {
-      maxAge: 60 * 60 * 192,
-      path: "/",
-    });
-
     cookies().set(
       "token",
       JSON.stringify({

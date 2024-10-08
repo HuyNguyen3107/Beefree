@@ -7,6 +7,8 @@ const UserTransformer = require("../../transformers/user.transformer");
 
 module.exports = async (req, res, next) => {
   const accessToken = req.get("Authorization")?.split(" ").slice(-1).join();
+  console.log("token", accessToken);
+
   if (!accessToken) {
     return errorResponse(res, 401, "Unauthorize");
   }

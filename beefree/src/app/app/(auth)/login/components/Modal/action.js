@@ -3,7 +3,7 @@ import { client } from "@/utils/client";
 
 export const handleResetPassword = async (email) => {
   try {
-    const { response, data } = await client.post("/auth/reset-password", {
+    const { response, data } = await client.post("/auth/forgot-password", {
       email,
     });
 

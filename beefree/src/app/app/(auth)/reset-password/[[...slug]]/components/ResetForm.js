@@ -11,7 +11,7 @@ function ResetForm() {
   return (
     <form
       className="mt-4 w-full max-w-sm"
-      action={async (form) => {
+      action={async (form, a = "abe") => {
         const response = await handleResetPassword(form);
         if (response.success) {
           router.push("/auth/login");
@@ -20,6 +20,20 @@ function ResetForm() {
         }
       }}
     >
+      <div className="mt-4 text-left">
+        <label className="font-semibold" htmlFor="email">
+          Email
+        </label>
+        <Input
+          className="w-full mt-2"
+          placeholder="Enter your email"
+          type="email"
+          color="secondary"
+          required
+          id="email"
+          name="email"
+        />
+      </div>
       <div className="mt-4 text-left">
         <label className="font-semibold" htmlFor="password">
           Password

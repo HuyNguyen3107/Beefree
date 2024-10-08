@@ -7,19 +7,35 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: "levi2k3ds@gmail.com",
-    pass: "mrwm ckbf yfii cqls",
+    user: "huynm@fullstack.edu.vn",
+    pass: "qiju ulut roha njja",
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
 module.exports = async (to, subject, message) => {
-  const info = await transporter.sendMail({
-    from: `"Beefree 🤡" <levi2k3ds@gmail.com>`, // sender address
-    to, // list of receivers
-    subject: subject, // Subject line
-    html: `
-    ${message}
-    `, // html body
-  });
-  return info;
+  try {
+    const info = await transporter.sendMail({
+      from: `"Beefree 🤡" <huynm@fullstack.edu.vn>`, // sender address
+      to, // list of receivers
+      subject: subject, // Subject line
+      html: `
+      ${message}
+      `, // html body
+    });
+    return {
+      success: true,
+      message: "Email sent successfully",
+    };
+  } catch (error) {
+    console.log(error);
+
+    // console.error(error);
+    return {
+      success: false,
+      message: "Email sent failed",
+    };
+  }
 };

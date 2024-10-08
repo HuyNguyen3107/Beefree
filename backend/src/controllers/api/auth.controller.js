@@ -75,6 +75,13 @@ module.exports = {
           if (!accessToken || !refreshToken) {
             return responses.errorResponse(res, 500, "Server Error");
           }
+          const response = await userService.updateUser(
+            { access_token: accessToken },
+            { email: email }
+          );
+          if (!response) {
+            return responses.errorResponse(res, 500, "Server Error");
+          }
           return responses.successResponse(
             res,
             200,
@@ -279,13 +286,11 @@ module.exports = {
 
     const reset_token = md5(Math.random() + new Date().getTime());
     const milliseconds = new Date().getTime();
-    // const expired_token = `${time.getFullYear()}-${
-    //   time.getMonth() + 1
-    // }-${time.getDate()} ${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}(${time})`;
 
     const passwordToken = await passwordTokenService.addPasswordToken({
       reset_token,
-      expired: milliseconds + 60000,
+      expired: `${milliseconds + 60000}`,
+      user_id: user.id,
     });
 
     if (!passwordToken) {
@@ -293,13 +298,15 @@ module.exports = {
     }
 
     const subject = `Reset your password`;
-    const message = `<a href="http://localhost:3001/app/reset-password?user_id=${user.id}&reset_token=${reset_token}">Click here to reset your password</a>`;
+    const message = `<a href="http://localhost:3001/app/reset-password/user_id-${user.id}/reset_token-${reset_token}">Click here to reset your password</a>`;
     const info = await sendMail(req.body.email, subject, message);
+    console.log(info);
 
-    if (!info) {
-      return responses.errorResponse(res, 500, "Server Error");
+    if (info.success) {
+      return responses.successResponse(res, 200, "Success");
+    } else {
+      return responses.errorResponse(res, 500, "Can't send email");
     }
-    return responses.successResponse(res, 200, "Success");
   },
   resetPassword: async (req, res, next) => {
     try {

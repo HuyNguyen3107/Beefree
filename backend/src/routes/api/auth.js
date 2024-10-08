@@ -56,7 +56,6 @@ router.get(
           message: "Bad request",
         });
       }
-
       // Nếu email đã có tài khoản thì đăng nhập tài khoản đó, nếu email chưa có tài khoản thì tạo tài khoản mới với email đó
       const user = await userService.findOne({ email: data.email });
       const provider = await providerService.findOne(data.provider);

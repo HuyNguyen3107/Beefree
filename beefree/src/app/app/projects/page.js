@@ -2,8 +2,13 @@ import React from "react";
 import { CiSearch } from "react-icons/ci";
 import CreateNewBtn from "./components/AddNewProject/CreateNewBtn";
 import ProjectList from "./components/ProjectList/ProjectList";
+import { headers } from "next/headers";
+import { getSessionServer } from "@/utils/session";
 
-function Projects() {
+async function Projects() {
+  // const session = await getSessionServer(headers().get("cookie"));
+  // console.log(session);
+
   return (
     <section className="projects px-8 py-8">
       <div className="flex justify-between">

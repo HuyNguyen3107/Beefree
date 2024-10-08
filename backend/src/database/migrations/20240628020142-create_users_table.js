@@ -37,7 +37,7 @@ module.exports = {
         allowNull: false,
       },
       access_token: {
-        type: Sequelize.STRING(200),
+        type: Sequelize.STRING(500),
       },
       created_at: {
         type: Sequelize.DATE,

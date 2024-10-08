@@ -10,7 +10,7 @@ function Header() {
     <header className="bg-zinc-100 w-full px-4 py-4 shadow-white">
       <div className="flex justify-between items-center gap-x-3">
         <WorkSpace />
-        <DropdownMenuComponent token={token} />
+        <DropdownMenuComponent token={token.value} />
       </div>
     </header>
   );

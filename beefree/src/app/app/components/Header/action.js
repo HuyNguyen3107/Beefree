@@ -21,12 +21,6 @@ export const clearCookies = async () => {
 
 export const setCookies = async (data) => {
   try {
-    // set user data to cookies
-    cookies().set("user", JSON.stringify(data.data), {
-      maxAge: 60 * 60 * 192,
-      path: "/",
-    });
-
     cookies().set(
       "token",
       JSON.stringify({
