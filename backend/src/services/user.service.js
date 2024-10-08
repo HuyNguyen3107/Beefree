@@ -12,6 +12,7 @@ module.exports = {
   },
   updateUser: (data, condition) => {
     // return userRepository.updateUser(data, condition);
+
     return User.update(data, { where: condition });
   },
 };

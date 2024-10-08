@@ -1,18 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input } from "@nextui-org/react";
 import { handleResetPassword } from "../action";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { notifyError } from "@/utils/toast";
 
 function ResetForm() {
   const router = useRouter();
+  const params = useParams();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const data = {};
+    params.slug.forEach((param) => {
+      const [key, value] = param.split("-");
+      data[`_${key}`] = value;
+    });
+    setData(data);
+  }, []);
+
   return (
     <form
       className="mt-4 w-full max-w-sm"
-      action={async (form, a = "abe") => {
-        const response = await handleResetPassword(form);
+      action={async (form) => {
+        const response = await handleResetPassword(data, form);
         if (response.success) {
           router.push("/auth/login");
         } else {
@@ -20,20 +32,6 @@ function ResetForm() {
         }
       }}
     >
-      <div className="mt-4 text-left">
-        <label className="font-semibold" htmlFor="email">
-          Email
-        </label>
-        <Input
-          className="w-full mt-2"
-          placeholder="Enter your email"
-          type="email"
-          color="secondary"
-          required
-          id="email"
-          name="email"
-        />
-      </div>
       <div className="mt-4 text-left">
         <label className="font-semibold" htmlFor="password">
           Password
@@ -62,7 +60,11 @@ function ResetForm() {
           name="passwordRetype"
         />
       </div>
-      <Button className="w-full mt-4 font-semibold" color="secondary" auto>
+      <Button
+        className="w-full mt-4 font-semibold"
+        color="secondary"
+        type="submit"
+      >
         Reset Password
       </Button>
     </form>

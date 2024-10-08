@@ -53,6 +53,8 @@ module.exports = {
         }
         const { password: hash } = user;
         const result = bcrypt.compareSync(password, hash);
+        console.log(result);
+
         if (!result) {
           return responses.errorResponse(
             res,
@@ -289,7 +291,7 @@ module.exports = {
 
     const passwordToken = await passwordTokenService.addPasswordToken({
       reset_token,
-      expired: `${milliseconds + 60000}`,
+      expired: `${milliseconds + 33360000}`,
       user_id: user.id,
     });
 
@@ -298,10 +300,8 @@ module.exports = {
     }
 
     const subject = `Reset your password`;
-    const message = `<a href="http://localhost:3001/app/reset-password/user_id-${user.id}/reset_token-${reset_token}">Click here to reset your password</a>`;
+    const message = `<a href="http://localhost:3001/app/reset-password/user_email-${req.body.email}/user_id-${user.id}/reset_token-${reset_token}">Click here to reset your password</a>`;
     const info = await sendMail(req.body.email, subject, message);
-    console.log(info);
-
     if (info.success) {
       return responses.successResponse(res, 200, "Success");
     } else {
@@ -339,7 +339,11 @@ module.exports = {
     }
   },
   handleResetPassword: async (req, res, next) => {
-    const { _email: email, _reset_token: reset_token } = req.query;
+    const {
+      _email: email,
+      _reset_token: reset_token,
+      _user_id: user_id,
+    } = req.query;
     const rule = {
       password: string()
         .test(
@@ -385,27 +389,22 @@ module.exports = {
 
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(body.password, salt);
-        const user = userService.updateUser(
+
+        const user = await userService.updateUser(
           { password: hashPassword },
           { email: email }
         );
+
         if (!user) {
           return responses.errorResponse(res, 500, "Server Error");
         }
+
         const isDeleteToken = await passwordTokenService.deletePasswordToken({
-          user_id: user.id,
+          user_id: user_id,
           reset_token: reset_token,
         });
-        if (!isDeleteToken) {
-          return responses.errorResponse(res, 500, "Server Error");
-        }
 
-        const subject = `Reset password success`;
-        const message = `
-          <a href="http://localhost:3001/app/login">Congratulations, you have successfully changed your password. Log in now!</a>
-          `;
-        const info = await sendMail(email, subject, message);
-        if (!info) {
+        if (!isDeleteToken) {
           return responses.errorResponse(res, 500, "Server Error");
         }
         return responses.successResponse(res, 200, "Success");

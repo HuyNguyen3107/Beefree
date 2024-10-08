@@ -1,10 +1,10 @@
 "use server";
 import { client } from "@/utils/client";
-import { cookies } from "next/headers";
 
-export async function handleResetPassword(form) {
+export async function handleResetPassword(data, form) {
+  const info = data;
   try {
-    const { password, passwordRetype, email } = Object.fromEntries(form);
+    const { password, passwordRetype } = Object.fromEntries(form);
 
     if (!password || !passwordRetype) {
       throw new Error("Please fill in all fields");
@@ -14,16 +14,10 @@ export async function handleResetPassword(form) {
       throw new Error("Passwords do not match");
     }
 
-    const resetToken = cookies.get("resetToken");
-    if (!resetToken) {
-      throw new Error("Invalid reset token");
-    }
-
-    // const email = cookies.get("user").email;
-
     const params = new URLSearchParams({
-      _email: email,
-      _reset_token: resetToken,
+      _email: info._user_email,
+      _reset_token: info._reset_token,
+      _user_id: info._user_id,
     }).toString();
 
     const { response, data } = await client.post(
