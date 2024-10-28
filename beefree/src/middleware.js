@@ -15,7 +15,6 @@ export const middleware = async (req, res) => {
       const { accessToken, refreshToken } = JSON.parse(token.value);
       client.setToken(accessToken);
       const { response, data } = await client.get("/user");
-
       if (!session) {
         if (response.status === 200) {
           const { sealed } = await setSession(data);

@@ -108,6 +108,8 @@ module.exports = {
 
         return responses.successResponse(res, 200, "Success");
       } else {
+        console.log(req.errors);
+
         return responses.errorResponse(res, 400, "Bad Request");
       }
     } catch (error) {
