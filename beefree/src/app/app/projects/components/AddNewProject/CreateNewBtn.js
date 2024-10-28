@@ -17,14 +17,13 @@ import { FaFileArrowUp } from "react-icons/fa6";
 import CreateNewEmail from "../CreateNewEmail/CreateNewEmail";
 import CreateNewPage from "../CreateNewPage/CreateNewPage";
 
-// import { useEffect } from "react";
-// import { getSessionClient } from "@/utils/session";
+import { getSessionClient } from "@/utils/session";
 
 function CreateNewBtn() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   // useEffect(() => {
   //   getSessionClient().then((data) => {
-  //     console.log("client", data);
+  //     console.log("client", data.data.firstName, data.data.lastName);
   //   });
   // }, []);
 

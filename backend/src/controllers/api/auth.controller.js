@@ -143,6 +143,11 @@ module.exports = {
       };
 
       const body = await req.validate(req.body, rule);
+
+      if (!body) {
+        return responses.errorResponse(res, 400, "Bad Request", req.errors);
+      }
+
       if (body) {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(body.password, salt);
@@ -150,6 +155,7 @@ module.exports = {
         const provider = await providerService.getProvider({
           name: "email",
         });
+
         if (provider) {
           await userService.createUser({
             first_name: body.firstName,

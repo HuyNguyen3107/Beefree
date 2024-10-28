@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { clearCookies, setCookies } from "../action";
 import { notifyError } from "@/utils/toast";
 
-function DropdownMenuComponent({ token }) {
+function DropdownMenuComponent({ token, data: userData }) {
   const router = useRouter();
   const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -62,6 +62,7 @@ function DropdownMenuComponent({ token }) {
       formDelRef.current.requestSubmit();
     }
   };
+
   return (
     <>
       <Dropdown>
@@ -71,7 +72,9 @@ function DropdownMenuComponent({ token }) {
             <div className="flex justify-start items-center gap-x-3">
               <AvatarComponent />
               <div className="flex flex-col">
-                <span className="font-bold">Nguyen Manh Huy</span>
+                <span className="font-bold">
+                  {userData?.firstName} {userData?.lastName}
+                </span>
                 <span className="text-sm">Huy organization</span>
               </div>
               <FaAngleDown />

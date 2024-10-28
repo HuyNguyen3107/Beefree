@@ -7,6 +7,7 @@ module.exports = (req, res, next) => {
       const body = await schema.validate(data, {
         abortEarly: false,
       });
+
       return body;
     } catch (e) {
       const errors = Object.fromEntries(
