@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { BsFillLaptopFill } from "react-icons/bs";
 import { BiMessageDetail } from "react-icons/bi";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,9 +8,45 @@ import { projectSlice } from "@/redux/slice/projectSlice";
 import { timeSince } from "@/utils/time";
 import ProjectContent from "./components/ProjectContent";
 const { addNewProject } = projectSlice.actions;
+import { client } from "@/utils/client";
 
-function ProjectList() {
+import useSWR from "swr";
+import { notifyWarning } from "@/utils/toast";
+const fetcher = (url, accessToken) =>
+  fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((res) => res.json());
+
+function ProjectList({ token }) {
+  const { accessToken } = JSON.parse(token.value);
+  const dispatch = useDispatch();
   const projects = useSelector((state) => state.project.projects);
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        client.setToken(accessToken);
+        const { response: emailResponse, data: emailData } = await client.get(
+          "/email"
+        );
+        const { response: pageResponse, data: pageData } = await client.get(
+          "/page"
+        );
+        console.log(emailData, pageData);
+
+        if (emailResponse.status !== 200 || pageResponse.status !== 200) {
+          throw new Error(
+            "Failed to fetch projects or don't have any projects"
+          );
+        }
+      } catch (error) {
+        notifyWarning(error.message);
+      }
+    }
+    fetchProjects();
+  }, []);
+
   return (
     <>
       <div className="mt-4 flex gap-x-3 items-center">

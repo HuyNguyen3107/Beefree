@@ -136,3 +136,34 @@ export const convertDataToHTML = (data) => {
 
     </html>`;
 };
+
+export const convertHTMLToData = (html) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const rows = Array.from(doc.querySelectorAll(".builder_content"));
+  const data = {
+    generalStyle: doc.querySelector(".builder").style.cssText,
+    contentGeneralStyle: doc.querySelector(".builder_content").style.cssText,
+    rows: rows.map((row) => {
+      return {
+        rowStyle: row.style.cssText,
+        contentAreaStyle: row.querySelector(".h-full").style.cssText,
+        columns: Array.from(row.querySelectorAll(".builder_column")).map(
+          (column) => {
+            return {
+              columnStyle: column.style.cssText,
+              contents: Array.from(
+                column.querySelectorAll(".builder_content")
+              ).map((content) => {
+                return {
+                  content: content.innerHTML,
+                };
+              }),
+            };
+          }
+        ),
+      };
+    }),
+  };
+  return data;
+};

@@ -2,12 +2,15 @@ import React from "react";
 import { CiSearch } from "react-icons/ci";
 import CreateNewBtn from "./components/AddNewProject/CreateNewBtn";
 import ProjectList from "./components/ProjectList/ProjectList";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getSessionServer } from "@/utils/session";
+import { ToastBox } from "@/utils/toast";
 
 async function Projects() {
   // const session = await getSessionServer(headers().get("cookie"));
   // console.log(session);
+
+  const token = cookies().get("token");
 
   return (
     <section className="projects px-8 py-8">
@@ -49,7 +52,8 @@ async function Projects() {
           </div>
         </div>
       </form>
-      <ProjectList />
+      <ProjectList token={token} />
+      <ToastBox />
     </section>
   );
 }
