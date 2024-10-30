@@ -2,10 +2,10 @@
 
 import React from "react";
 import { getStyleObjectFromString } from "@/utils/convert";
+import HTMLReactParser from "html-react-parser";
+import { minify } from "html-minifier-terser";
 
 function ProjectContent({ data }) {
-  console.log(data);
-
   const colSpans = {
     1: "col-span-1",
     2: "col-span-2",
@@ -72,7 +72,18 @@ function ProjectContent({ data }) {
                                         {column?.contents?.length
                                           ? column?.contents?.map(
                                               (tag, index) => {
-                                                console.log(tag);
+                                                function minifyHtml(html) {
+                                                  return minify(html, {
+                                                    collapseWhitespace: true,
+                                                    removeComments: true,
+                                                    minifyCSS: true,
+                                                  });
+                                                }
+
+                                                const minifiedHtml = minifyHtml(
+                                                  tag?.content
+                                                );
+                                                console.log(minifiedHtml);
 
                                                 return (
                                                   <div
@@ -109,8 +120,9 @@ function ProjectContent({ data }) {
                                                           index
                                                         }
                                                       >
-                                                        {tag?.content}
-                                                        Temp
+                                                        {HTMLReactParser(
+                                                          tag?.content
+                                                        )}
                                                       </div>
                                                     </div>
                                                   </div>
