@@ -42,6 +42,8 @@ const { updateChatStatus } = chatSlice.actions;
 function Builder({ style, dropStyle, dropId, overId, device }) {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.builder.data);
+  // console.log("data", JSON.stringify(data));
+
   const contentIndex = useSelector((state) => state.builder.contentIndex);
   const rowIndexState = useSelector((state) => state.builder.rowIndex);
   const columnIndexState = useSelector((state) => state.builder.columnIndex);

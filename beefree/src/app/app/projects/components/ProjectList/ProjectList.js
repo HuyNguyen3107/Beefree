@@ -7,17 +7,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { projectSlice } from "@/redux/slice/projectSlice";
 import { timeSince } from "@/utils/time";
 import ProjectContent from "./components/ProjectContent";
-const { addNewProject } = projectSlice.actions;
+const { setProjectsData } = projectSlice.actions;
 import { client } from "@/utils/client";
 
 import useSWR from "swr";
 import { notifyWarning } from "@/utils/toast";
-const fetcher = (url, accessToken) =>
-  fetch(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then((res) => res.json());
 
 function ProjectList({ token }) {
   const { accessToken } = JSON.parse(token.value);
@@ -33,7 +27,31 @@ function ProjectList({ token }) {
         const { response: pageResponse, data: pageData } = await client.get(
           "/page"
         );
-        console.log(emailData, pageData);
+
+        const emailProjects = emailData?.data?.map((email) => {
+          return {
+            id: email.projectId,
+            name: email.name,
+            type: email.type,
+            data: JSON.parse(email.builderData),
+            createdAt: email.createdAt,
+          };
+        });
+
+        const pageProjects = pageData?.data?.map((page) => {
+          return {
+            id: page.projectId,
+            name: page.name,
+            type: page.type,
+            data: JSON.parse(page.builderData),
+          };
+        });
+
+        const allProjects = [...emailProjects, ...pageProjects];
+
+        if (allProjects.length) {
+          dispatch(setProjectsData(allProjects));
+        }
 
         if (emailResponse.status !== 200 || pageResponse.status !== 200) {
           throw new Error(
@@ -46,6 +64,7 @@ function ProjectList({ token }) {
     }
     fetchProjects();
   }, []);
+  // console.log(projects[0]?.data);
 
   return (
     <>

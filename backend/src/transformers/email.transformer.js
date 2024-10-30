@@ -7,6 +7,7 @@ module.exports = class extends Transformer {
       name: instance.name,
       type: instance.type,
       data: instance.data,
+      builderData: instance.builder_data,
       tag: instance.tag,
       description: instance.description,
       subject: instance.subject,

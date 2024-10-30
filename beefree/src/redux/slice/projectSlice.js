@@ -38,5 +38,8 @@ export const projectSlice = createSlice({
       });
       state.projects = arr;
     },
+    setProjectsData: (state, action) => {
+      state.projects = action.payload;
+    },
   },
 });

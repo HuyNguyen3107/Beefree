@@ -36,6 +36,9 @@ module.exports = (sequelize, DataTypes) => {
       data: {
         type: DataTypes.TEXT,
       },
+      builder_data: {
+        type: DataTypes.TEXT,
+      },
       tag: {
         type: DataTypes.STRING,
       },

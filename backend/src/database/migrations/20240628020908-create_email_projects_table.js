@@ -23,6 +23,9 @@ module.exports = {
       data: {
         type: Sequelize.TEXT,
       },
+      builder_data: {
+        type: Sequelize.TEXT,
+      },
       tag: {
         type: Sequelize.STRING(200),
       },

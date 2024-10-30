@@ -4,6 +4,8 @@ import React from "react";
 import { getStyleObjectFromString } from "@/utils/convert";
 
 function ProjectContent({ data }) {
+  console.log(data);
+
   const colSpans = {
     1: "col-span-1",
     2: "col-span-2",
@@ -70,6 +72,8 @@ function ProjectContent({ data }) {
                                         {column?.contents?.length
                                           ? column?.contents?.map(
                                               (tag, index) => {
+                                                console.log(tag);
+
                                                 return (
                                                   <div
                                                     key={index}
@@ -105,7 +109,8 @@ function ProjectContent({ data }) {
                                                           index
                                                         }
                                                       >
-                                                        {tag?.contentCode}
+                                                        {tag?.content}
+                                                        Temp
                                                       </div>
                                                     </div>
                                                   </div>
