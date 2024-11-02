@@ -5,6 +5,7 @@ import { FaCheck } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
 import { builderSlice } from "@/redux/slice/builderSlice";
+import { notifyError } from "@/utils/toast";
 const { updateProjectName } = builderSlice.actions;
 
 function NameFile() {
@@ -40,11 +41,15 @@ function NameFile() {
           <div
             className="bg-violet-600 text-white text-[16px] px-1 py-1 rounded-md cursor-pointer"
             onClick={() => {
-              dispatch(
-                updateProjectName({
-                  name: name,
-                })
-              );
+              if (name.trim() !== "") {
+                dispatch(
+                  updateProjectName({
+                    name: name,
+                  })
+                );
+              } else {
+                notifyError("Name is required");
+              }
               setIsEditing(false);
             }}
           >

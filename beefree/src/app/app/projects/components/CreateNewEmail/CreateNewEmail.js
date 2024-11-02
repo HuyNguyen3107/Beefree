@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { usePathname, useRouter } from "next/navigation";
 
 import { projectSlice } from "@/redux/slice/projectSlice";
+
 const { addNewProject } = projectSlice.actions;
 
 function CreateNewEmail() {
@@ -16,9 +17,10 @@ function CreateNewEmail() {
   const handleAddEmail = () => {
     const id = uuidv4();
     const type = "Email";
-    dispatch(addNewProject({ id, type }));
     pathname = pathname.slice(0, pathname.lastIndexOf("/"));
     router.push(`${pathname}/edit/email/${id}`);
+    localStorage.setItem("mode", "create");
+    dispatch(addNewProject({ id, type }));
   };
   return (
     <div

@@ -3,7 +3,6 @@
 import React from "react";
 import { getStyleObjectFromString } from "@/utils/convert";
 import HTMLReactParser from "html-react-parser";
-import { minify } from "html-minifier-terser";
 
 function ProjectContent({ data }) {
   const colSpans = {
@@ -72,19 +71,6 @@ function ProjectContent({ data }) {
                                         {column?.contents?.length
                                           ? column?.contents?.map(
                                               (tag, index) => {
-                                                function minifyHtml(html) {
-                                                  return minify(html, {
-                                                    collapseWhitespace: true,
-                                                    removeComments: true,
-                                                    minifyCSS: true,
-                                                  });
-                                                }
-
-                                                const minifiedHtml = minifyHtml(
-                                                  tag?.content
-                                                );
-                                                console.log(minifiedHtml);
-
                                                 return (
                                                   <div
                                                     key={index}

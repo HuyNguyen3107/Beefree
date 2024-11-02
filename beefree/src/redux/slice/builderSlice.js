@@ -37,6 +37,12 @@ export const builderSlice = createSlice({
   name: "builder",
   initialState,
   reducers: {
+    updateData: (state, action) => {
+      state.data = action.payload;
+    },
+    updateProjectInfo: (state, action) => {
+      state.projectInfo = action.payload;
+    },
     updateProjectName: (state, action) => {
       if (action.payload?.name) {
         state.projectInfo = {

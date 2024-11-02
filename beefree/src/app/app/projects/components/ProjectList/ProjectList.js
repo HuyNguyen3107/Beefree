@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BsFillLaptopFill } from "react-icons/bs";
 import { BiMessageDetail } from "react-icons/bi";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,15 +10,22 @@ import ProjectContent from "./components/ProjectContent";
 const { setProjectsData } = projectSlice.actions;
 import { client } from "@/utils/client";
 
+import { builderSlice } from "@/redux/slice/builderSlice";
+const { updateData, updateProjectInfo } = builderSlice.actions;
+
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 
 import useSWR from "swr";
 import { notifyWarning } from "@/utils/toast";
+import { usePathname, useRouter } from "next/navigation";
 
 function ProjectList({ token }) {
   const { accessToken } = JSON.parse(token.value);
   const dispatch = useDispatch();
   const projects = useSelector((state) => state.project.projects);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  let pathname = usePathname();
   useEffect(() => {
     async function fetchProjects() {
       try {
@@ -54,6 +61,7 @@ function ProjectList({ token }) {
         if (allProjects.length) {
           dispatch(setProjectsData(allProjects));
         }
+        setIsLoading(false);
 
         if (emailResponse.status !== 200 || pageResponse.status !== 200) {
           throw new Error(
@@ -61,12 +69,17 @@ function ProjectList({ token }) {
           );
         }
       } catch (error) {
+        setIsLoading(false);
         notifyWarning(error.message);
       }
     }
     fetchProjects();
   }, []);
   // console.log(projects[0]?.data);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
@@ -82,12 +95,25 @@ function ProjectList({ token }) {
             return (
               <div className="mt-4" key={index}>
                 <div className="col-span-1 relative">
-                  <div className="bg-gray-100  rounded-tl-xl rounded-tr-xl h-[100px]">
+                  <div className="bg-gray-100  rounded-tl-xl rounded-tr-xl h-[250px]">
                     <Card
                       shadow="sm"
                       key={index}
                       isPressable
-                      onPress={() => console.log("item pressed")}
+                      onPress={() => {
+                        // dispatch(updateData(project?.data));
+                        // dispatch(
+                        //   updateProjectInfo({
+                        //     id: project?.id,
+                        //     name: project?.name,
+                        //     type: project?.type,
+                        //   })
+                        // );
+                        pathname = pathname.slice(0, pathname.lastIndexOf("/"));
+                        router.push(
+                          `${pathname}/edit/${project?.type}/${project?.id}`
+                        );
+                      }}
                       fullWidth={true}
                       className="h-full"
                     >

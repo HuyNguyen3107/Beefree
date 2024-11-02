@@ -75,6 +75,7 @@ module.exports = {
       }
       return responses.successResponse(res, 201, "Successfully");
     } catch (error) {
+      console.log(error);
       return responses.errorResponse(res, 500, "Server Error");
     }
   },

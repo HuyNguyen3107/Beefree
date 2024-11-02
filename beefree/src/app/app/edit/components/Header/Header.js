@@ -12,8 +12,12 @@ import MessageButton from "./components/MessageButton/MessageButton";
 import PreviewButton from "./components/PreviewButton/PreviewButton";
 import NameFile from "./components/NameFile/NameFile";
 import SaveButton from "./components/SaveButton/SaveButton";
+import { cookies } from "next/headers";
 
 function Header() {
+  const token = cookies().get("token");
+  const { accessToken } = JSON.parse(token.value);
+
   return (
     <header className="header px-3 py-3 flex justify-between items-center shadow shadow-gray-100">
       <div className="flex items-center gap-x-8">
@@ -49,7 +53,7 @@ function Header() {
         <Link href={"#"}>
           <FaRegQuestionCircle />
         </Link>
-        <SaveButton />
+        <SaveButton accessToken={accessToken} />
         <ExportButton />
       </div>
     </header>
