@@ -15,10 +15,11 @@ function CreateNewPage() {
   const router = useRouter();
   const handleAddPage = () => {
     const id = uuidv4();
-    const type = "Page";
-    dispatch(addNewProject({ id, type }));
+    const type = "page";
     pathname = pathname.slice(0, pathname.lastIndexOf("/"));
     router.push(`${pathname}/edit/page/${id}`);
+    localStorage.setItem("mode", "create");
+    dispatch(addNewProject({ id, type }));
   };
   return (
     <div

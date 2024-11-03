@@ -17,20 +17,24 @@ function SaveButton({ accessToken }) {
   const data = useSelector((state) => state.builder.data);
   const projectInfo = useSelector((state) => state.builder.projectInfo);
   const [userId, setUserId] = React.useState(null);
-  const [mode, setMode] = React.useState(null);
+  const [mode, setMode] = React.useState("edit");
   useEffect(() => {
     getSessionClient().then((data) => {
       setUserId(data?.data?.id);
     });
-    setMode(localStorage.getItem("mode"));
+    if (localStorage.getItem("mode")) {
+      setMode(localStorage.getItem("mode"));
+    }
   }, []);
   return (
     <Button
       color="secondary"
       className="font-bold"
       onClick={async () => {
-        console.log(mode);
-
+        if (!mode) {
+          notifyError("Mode not set!");
+          return;
+        }
         const arrPath = pathname.split("/");
         const type = arrPath[arrPath.length - 2];
         const projectId = arrPath[arrPath.length - 1];
@@ -55,6 +59,7 @@ function SaveButton({ accessToken }) {
             if (response.ok) {
               notifySuccess("Created!");
               setMode("edit");
+              localStorage.removeItem("mode");
             } else {
               throw new Error("Failed to create project");
             }

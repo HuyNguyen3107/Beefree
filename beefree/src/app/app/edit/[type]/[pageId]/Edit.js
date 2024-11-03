@@ -48,6 +48,7 @@ function Edit({ accessToken }) {
   const [rowIndexDnd, setRowIndexDnd] = useState({});
   const [overId, setOverId] = useState("");
   const [device, setDevice] = useState("desktop");
+  const [loading, setLoading] = useState(true);
 
   const pathname = usePathname();
 
@@ -245,6 +246,7 @@ function Edit({ accessToken }) {
       client.setToken(accessToken);
       if (type === "email") {
         const { response, data } = await client.get(`/email/${projectId}`);
+        setLoading(false);
         if (response.ok) {
           dispatch(updateData(JSON.parse(data?.data?.builderData)));
           dispatch(
@@ -257,6 +259,7 @@ function Edit({ accessToken }) {
         }
       } else if (type === "page") {
         const { response, data } = await client.get(`/page/${projectId}`);
+        setLoading(false);
         if (response.ok) {
           dispatch(updateData(JSON.parse(data?.data?.builderData)));
           dispatch(
@@ -271,6 +274,9 @@ function Edit({ accessToken }) {
     };
     fetchData();
   }, []);
+  if (loading) {
+    return <span>Loading...</span>;
+  }
   return (
     <>
       {!isUploadFile ? (

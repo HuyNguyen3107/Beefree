@@ -75,8 +75,6 @@ function ProjectList({ token }) {
     }
     fetchProjects();
   }, []);
-  // console.log(projects[0]?.data);
-
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -101,14 +99,6 @@ function ProjectList({ token }) {
                       key={index}
                       isPressable
                       onPress={() => {
-                        // dispatch(updateData(project?.data));
-                        // dispatch(
-                        //   updateProjectInfo({
-                        //     id: project?.id,
-                        //     name: project?.name,
-                        //     type: project?.type,
-                        //   })
-                        // );
                         pathname = pathname.slice(0, pathname.lastIndexOf("/"));
                         router.push(
                           `${pathname}/edit/${project?.type}/${project?.id}`

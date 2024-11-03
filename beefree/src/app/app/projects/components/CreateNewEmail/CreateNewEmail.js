@@ -16,7 +16,7 @@ function CreateNewEmail() {
   const router = useRouter();
   const handleAddEmail = () => {
     const id = uuidv4();
-    const type = "Email";
+    const type = "email";
     pathname = pathname.slice(0, pathname.lastIndexOf("/"));
     router.push(`${pathname}/edit/email/${id}`);
     localStorage.setItem("mode", "create");
