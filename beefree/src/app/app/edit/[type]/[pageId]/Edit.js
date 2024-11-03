@@ -20,6 +20,8 @@ const {
   updateContentIndex,
   changeRowEditStatus,
   sortRow,
+  updateData,
+  updateProjectInfo,
 } = builderSlice.actions;
 const { updateEditor } = editorSlice.actions;
 const { updateChatStatus } = chatSlice.actions;
@@ -243,10 +245,28 @@ function Edit({ accessToken }) {
       client.setToken(accessToken);
       if (type === "email") {
         const { response, data } = await client.get(`/email/${projectId}`);
-        console.log(response, data);
+        if (response.ok) {
+          dispatch(updateData(JSON.parse(data?.data?.builderData)));
+          dispatch(
+            updateProjectInfo({
+              name: data?.data?.name,
+              type: data?.data?.type,
+              id: data?.data?.projectId,
+            })
+          );
+        }
       } else if (type === "page") {
         const { response, data } = await client.get(`/page/${projectId}`);
-        console.log(response, data);
+        if (response.ok) {
+          dispatch(updateData(JSON.parse(data?.data?.builderData)));
+          dispatch(
+            updateProjectInfo({
+              name: data?.data?.name,
+              type: data?.data?.type,
+              id: data?.data?.projectId,
+            })
+          );
+        }
       }
     };
     fetchData();

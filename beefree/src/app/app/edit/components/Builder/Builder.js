@@ -24,6 +24,7 @@ import { chatSlice } from "@/redux/slice/chatSlice";
 import { DragHandle } from "../DragHandle/DragHandle";
 import { getStyleObjectFromString } from "@/utils/convert";
 import { RowDragHandle } from "../RowDragHandle/RowDragHandle";
+import HTMLReactParser from "html-react-parser";
 const {
   updateContent,
   changeUploadFileStatus,
@@ -349,7 +350,7 @@ function Builder({ style, dropStyle, dropId, overId, device }) {
                                                 );
                                               }}
                                             >
-                                              {tag?.contentCode}
+                                              {HTMLReactParser(tag?.content)}
                                             </div>
                                             <div
                                               className={

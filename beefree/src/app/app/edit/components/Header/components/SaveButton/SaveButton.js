@@ -29,6 +29,8 @@ function SaveButton({ accessToken }) {
       color="secondary"
       className="font-bold"
       onClick={async () => {
+        console.log(mode);
+
         const arrPath = pathname.split("/");
         const type = arrPath[arrPath.length - 2];
         const projectId = arrPath[arrPath.length - 1];
