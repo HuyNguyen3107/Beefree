@@ -7,9 +7,8 @@ import { getSessionServer } from "@/utils/session";
 import { ToastBox } from "@/utils/toast";
 
 async function Projects() {
-  // const session = await getSessionServer(headers().get("cookie"));
-  // console.log(session);
-
+  const session = await getSessionServer(headers().get("cookie"));
+  const fullName = session?.data?.firstName + session?.data?.lastName;
   const token = cookies().get("token");
 
   return (
@@ -52,7 +51,7 @@ async function Projects() {
           </div>
         </div>
       </form>
-      <ProjectList token={token} />
+      <ProjectList token={token} fullName={fullName} />
       <ToastBox />
     </section>
   );

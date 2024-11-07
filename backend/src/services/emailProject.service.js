@@ -3,8 +3,6 @@ const { Op } = require("sequelize");
 
 module.exports = {
   getEmailProjects: async (req) => {
-    console.log(req.user.id);
-
     const {
       _sort = "id",
       _order = "asc",

@@ -31,6 +31,11 @@ function SaveButton({ accessToken }) {
       color="secondary"
       className="font-bold"
       onClick={async () => {
+        if (data?.rows?.length === 0) {
+          notifyError("Please add a block to save the project!");
+          return;
+        }
+
         if (!mode) {
           notifyError("Mode not set!");
           return;
@@ -55,7 +60,22 @@ function SaveButton({ accessToken }) {
         client.setToken(accessToken);
         try {
           if (mode === "create") {
-            const { response, data } = await client.post("/email", project);
+            let response;
+            if (type === "email") {
+              const { response: emailRes, data } = await client.post(
+                "/email",
+                project
+              );
+              response = emailRes;
+            } else if (type === "page") {
+              const { response: pageRes, data } = await client.post(
+                "/page",
+                project
+              );
+              response = pageRes;
+            } else {
+              throw new Error("Invalid project type");
+            }
             if (response.ok) {
               notifySuccess("Created!");
               setMode("edit");
@@ -70,10 +90,22 @@ function SaveButton({ accessToken }) {
               data: dataHTML,
               builderData: dataJSON,
             };
-            const { response, data } = await client.patch(
-              `/email/${userId}`,
-              updateData
-            );
+            let response;
+            if (type === "email") {
+              const { response: emailRes, data } = await client.patch(
+                `/email/${projectId}`,
+                updateData
+              );
+              response = emailRes;
+            } else if (type === "page") {
+              const { response: pageRes, data } = await client.patch(
+                `/page/${projectId}`,
+                updateData
+              );
+              response = pageRes;
+            } else {
+              throw new Error("Invalid project type");
+            }
             if (response.ok) {
               notifySuccess("Updated!");
             } else {

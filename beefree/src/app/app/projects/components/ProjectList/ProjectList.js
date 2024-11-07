@@ -9,17 +9,13 @@ import { timeSince } from "@/utils/time";
 import ProjectContent from "./components/ProjectContent";
 const { setProjectsData } = projectSlice.actions;
 import { client } from "@/utils/client";
-
 import { builderSlice } from "@/redux/slice/builderSlice";
 const { updateData, updateProjectInfo } = builderSlice.actions;
-
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
-
-import useSWR from "swr";
 import { notifyWarning } from "@/utils/toast";
 import { usePathname, useRouter } from "next/navigation";
 
-function ProjectList({ token }) {
+function ProjectList({ token, fullName }) {
   const { accessToken } = JSON.parse(token.value);
   const dispatch = useDispatch();
   const projects = useSelector((state) => state.project.projects);
@@ -29,6 +25,7 @@ function ProjectList({ token }) {
   useEffect(() => {
     async function fetchProjects() {
       try {
+        localStorage.removeItem("mode");
         client.setToken(accessToken);
         const { response: emailResponse, data: emailData } = await client.get(
           "/email"
@@ -37,24 +34,32 @@ function ProjectList({ token }) {
           "/page"
         );
 
-        const emailProjects = emailData?.data?.map((email) => {
-          return {
-            id: email.projectId,
-            name: email.name,
-            type: email.type,
-            data: JSON.parse(email.builderData),
-            createdAt: email.createdAt,
-          };
-        });
+        let emailProjects = [];
+        let pageProjects = [];
 
-        const pageProjects = pageData?.data?.map((page) => {
-          return {
-            id: page.projectId,
-            name: page.name,
-            type: page.type,
-            data: JSON.parse(page.builderData),
-          };
-        });
+        if (emailResponse.ok) {
+          emailProjects = emailData?.data?.map((email) => {
+            return {
+              id: email.projectId,
+              name: email.name,
+              type: email.type,
+              data: JSON.parse(email.builderData),
+              createdAt: email.createdAt,
+            };
+          });
+        }
+
+        if (pageResponse.ok) {
+          pageProjects = pageData?.data?.map((page) => {
+            return {
+              id: page.projectId,
+              name: page.name,
+              type: page.type,
+              data: JSON.parse(page.builderData),
+              createdAt: page.createdAt,
+            };
+          });
+        }
 
         const allProjects = [...emailProjects, ...pageProjects];
 
@@ -63,7 +68,7 @@ function ProjectList({ token }) {
         }
         setIsLoading(false);
 
-        if (emailResponse.status !== 200 || pageResponse.status !== 200) {
+        if (emailResponse.status !== 200 && pageResponse.status !== 200) {
           throw new Error(
             "Failed to fetch projects or don't have any projects"
           );
@@ -110,9 +115,6 @@ function ProjectList({ token }) {
                       <CardBody className="overflow-visible p-0">
                         <ProjectContent data={project?.data} />
                       </CardBody>
-                      <CardFooter className="text-small justify-between">
-                        Footer
-                      </CardFooter>
                     </Card>
                     <div className="absolute top-4 right-4 flex items-center gap-x-3 bg-sky-950 px-1 py-1 text-indigo-600 rounded-lg">
                       <BsFillLaptopFill />
@@ -125,7 +127,7 @@ function ProjectList({ token }) {
                       <BiMessageDetail />
                     </div>
                     <div className="flex items-center justify-between mt-4">
-                      <span>Nguyen Manh Huy</span>
+                      <span>{fullName}</span>
                       <span>{timeSince(project?.createdAt)}</span>
                     </div>
                   </div>

@@ -10,7 +10,6 @@ export const client = {
       "Content-Type": "application/json",
     };
     if (this.token) {
-      //   headers["X-Api-Key"] = `${this.token}`;
       headers["Authorization"] = `Bearer ${this.token}`;
     }
     const options = {
@@ -21,6 +20,8 @@ export const client = {
     if (body) {
       options.body = JSON.stringify(body);
     }
+
+    // options.cache = "no-store";
 
     const response = await fetch(url, options);
 

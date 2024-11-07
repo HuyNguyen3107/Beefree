@@ -1,6 +1,5 @@
 import React from "react";
 import { FaAngleLeft } from "react-icons/fa6";
-import { MdEmail } from "react-icons/md";
 import Link from "next/link";
 import { FaRegFileCode } from "react-icons/fa";
 import { VscSend } from "react-icons/vsc";
@@ -13,11 +12,11 @@ import PreviewButton from "./components/PreviewButton/PreviewButton";
 import NameFile from "./components/NameFile/NameFile";
 import SaveButton from "./components/SaveButton/SaveButton";
 import { cookies } from "next/headers";
+import TypeProject from "./components/TypeProject/TypeProject";
 
 function Header() {
   const token = cookies().get("token");
   const { accessToken } = JSON.parse(token.value);
-
   return (
     <header className="header px-3 py-3 flex justify-between items-center shadow shadow-gray-100">
       <div className="flex items-center gap-x-8">
@@ -29,9 +28,7 @@ function Header() {
             <FaAngleLeft />
           </Link>
           <NameFile />
-          <span className="flex items-center bg-indigo-300 px-1 py-1 gap-x-2 text-sm rounded-md">
-            <MdEmail /> Email
-          </span>
+          <TypeProject />
         </div>
         <div className="flex items-center gap-x-5">
           <PreviewButton />|{" "}
