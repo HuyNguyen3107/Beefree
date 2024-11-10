@@ -1,13 +1,13 @@
-import { initializeApp } from "firebase/app";
-import { getStorage } from "firebase/storage";
+import {initializeApp} from "firebase/app";
+import {getStorage} from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA1lh4yRUEodF2aFq-ftV34HTQ62IcA6jQ",
-  authDomain: "beefree-6ba5d.firebaseapp.com",
-  projectId: "beefree-6ba5d",
-  storageBucket: "beefree-6ba5d.appspot.com",
-  messagingSenderId: "929826205216",
-  appId: "1:929826205216:web:4b25612952fc8de2ea5645",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);

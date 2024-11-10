@@ -1,18 +1,16 @@
 import React from "react";
-import { FaAngleLeft } from "react-icons/fa6";
+import {FaAngleLeft} from "react-icons/fa6";
 import Link from "next/link";
-import { FaRegFileCode } from "react-icons/fa";
-import { VscSend } from "react-icons/vsc";
-import { FaPen } from "react-icons/fa";
-import { AiOutlineGlobal } from "react-icons/ai";
-import { FaRegQuestionCircle } from "react-icons/fa";
+import {FaPen, FaRegQuestionCircle} from "react-icons/fa";
+import {AiOutlineGlobal} from "react-icons/ai";
 import ExportButton from "./components/ExportButton/ExportButton";
 import MessageButton from "./components/MessageButton/MessageButton";
 import PreviewButton from "./components/PreviewButton/PreviewButton";
 import NameFile from "./components/NameFile/NameFile";
 import SaveButton from "./components/SaveButton/SaveButton";
-import { cookies } from "next/headers";
+import {cookies} from "next/headers";
 import TypeProject from "./components/TypeProject/TypeProject";
+import SendEmail from "@/app/app/edit/components/Header/components/SendEmail/SendEmail";
 
 function Header() {
   const token = cookies().get("token");
@@ -33,7 +31,7 @@ function Header() {
         <div className="flex items-center gap-x-5">
           <PreviewButton />|{" "}
           <div className="hover:bg-violet-200 px-2 py-2 rounded-md cursor-pointer">
-            <VscSend />
+            <SendEmail accessToken={accessToken}/>
           </div>{" "}
           |{" "}
           <div className="hover:bg-violet-200 px-2 py-2 rounded-md cursor-pointer">

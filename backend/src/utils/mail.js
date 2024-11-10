@@ -1,14 +1,15 @@
 "use strict";
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
+  host: process.env.NODE_MAILER_HOST,
+  port: process.env.NODE_MAILER_PORT,
   secure: true,
   auth: {
     // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: "huynm@fullstack.edu.vn",
-    pass: "qiju ulut roha njja",
+    user: process.env.NODE_MAILER_USER,
+    pass: process.env.NODE_MAILER_PASSWORD,
   },
   tls: {
     rejectUnauthorized: false,
@@ -30,9 +31,6 @@ module.exports = async (to, subject, message) => {
       message: "Email sent successfully",
     };
   } catch (error) {
-    console.log(error);
-
-    // console.error(error);
     return {
       success: false,
       message: "Email sent failed",

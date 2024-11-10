@@ -1,31 +1,15 @@
 "use client";
 
-import React, { useEffect } from "react";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-} from "@nextui-org/react";
-import { FaPlus } from "react-icons/fa";
-import { notifyInfo } from "@/utils/toast";
-import { FaFolderPlus } from "react-icons/fa";
-import { FaFileArrowUp } from "react-icons/fa6";
+import React from "react";
+import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure,} from "@nextui-org/react";
+import {FaFolderPlus, FaPlus} from "react-icons/fa";
+import {notifyInfo} from "@/utils/toast";
+import {FaFileArrowUp} from "react-icons/fa6";
 import CreateNewEmail from "../CreateNewEmail/CreateNewEmail";
 import CreateNewPage from "../CreateNewPage/CreateNewPage";
 
-import { getSessionClient } from "@/utils/session";
-
 function CreateNewBtn() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  // useEffect(() => {
-  //   getSessionClient().then((data) => {
-  //     console.log("client", data.data.firstName, data.data.lastName);
-  //   });
-  // }, []);
 
   return (
     <>
