@@ -35,7 +35,7 @@ import {
 } from "firebase/storage";
 import { storage } from "@/utils/firebase";
 
-function FileMange() {
+function FileMange({userId}) {
   const isChangeIconImage = useSelector(
     (state) => state.builder.isChangeIconImage
   );
@@ -56,7 +56,7 @@ function FileMange() {
     dispatch(changeInsertRowImageBgStatus(null));
     dispatch(changeInsertGeneralImageBgStatus(null));
   };
-  const imagesListRef = ref(storage, "images/user_id");
+  const imagesListRef = ref(storage, `images/${userId}`);
   const handleUpload = (e) => {
     const imageUpload = e?.target?.files[0];
     const date = new Date();
@@ -69,7 +69,7 @@ function FileMange() {
     }S${date.getFullYear()}`;
     const imageRef = ref(
       storage,
-      `images/user_id/${imageUpload?.name}withId${v4()}withInfo${
+      `images/${userId}/${imageUpload?.name}withId${v4()}withInfo${
         imageUpload.size
       }and${uploadTime}`
     );
@@ -129,6 +129,10 @@ function FileMange() {
     const newImageUrls = [];
     let count = 0;
     listAll(imagesListRef).then((response) => {
+      if (!response.items.length) {
+        setImageUrls(["You don't have any images"]);
+        return;
+      }
       response.items.forEach((item) => {
         getDownloadURL(item).then((url) => {
           if (!newImageUrls.includes(url)) {
@@ -234,132 +238,136 @@ function FileMange() {
           (+imageUrls.length > 6 ? " h-[470px] overflow-auto" : "")
         }
       >
-        {imageUrls?.length
-          ? imageUrls?.map((url, index) => {
-              return (
-                <div
-                  className="px-4 py-4 shadow-md rounded-lg flex w-1/3 gap-x-4"
-                  key={index}
-                >
-                  <div className="relative">
-                    {/* <Image src={avatar} alt="avatar" width={150} height={150} /> */}
-                    <img
-                      src={url}
-                      alt=""
-                      style={{
-                        width: "150px",
-                        height: "150px",
-                      }}
-                    />
-                    <div className="absolute bg-white w-fit h-fit px-1 py-1 top-0 left-0 rounded-br-md">
-                      <input type="checkbox" />
-                    </div>
-                  </div>
-                  <div className="flex flex-col justify-between flex-1">
-                    <div className="flex flex-col ">
+        {
+          imageUrls[0] === "You don't have any images" ? imageUrls[0] : (
+              imageUrls?.length
+                  ? imageUrls?.map((url, index) => {
+                    return (
+                        <div
+                            className="px-4 py-4 shadow-md rounded-lg flex w-1/3 gap-x-4"
+                            key={index}
+                        >
+                          <div className="relative">
+                            {/* <Image src={avatar} alt="avatar" width={150} height={150} /> */}
+                            <img
+                                src={url}
+                                alt=""
+                                style={{
+                                  width: "150px",
+                                  height: "150px",
+                                }}
+                            />
+                            <div className="absolute bg-white w-fit h-fit px-1 py-1 top-0 left-0 rounded-br-md">
+                              <input type="checkbox" />
+                            </div>
+                          </div>
+                          <div className="flex flex-col justify-between flex-1">
+                            <div className="flex flex-col ">
                       <span className="text-[14px] text-gray-500">
                         {url
-                          .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
-                          .replaceAll("%2F", "/")
-                          .slice(
-                            url
-                              .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
-                              .replaceAll("%2F", "/")
-                              .indexOf("withInfo") + 8
-                          )
-                          .split("and")[1]
-                          .replaceAll("S", "/")}
-                      </span>
-                      <span className="font-bold opacity-85">
-                        {url
-                          .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
-                          .replaceAll("%2F", "/")
-                          .slice(
-                            url
-                              .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
-                              .replaceAll("%2F", "/")
-                              .lastIndexOf("/") + 1,
-                            url
-                              .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
-                              .replaceAll("%2F", "/")
-                              .indexOf("withId")
-                          )}
-                      </span>
-                      <div className="flex gap-x-2 text-[14px] text-gray-500">
-                        <span>
-                          {
-                            url
-                              .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
-                              .replaceAll("%2F", "/")
-                              .slice(
-                                url
-                                  .slice(
-                                    url.lastIndexOf("/") + 1,
-                                    url.indexOf("?")
-                                  )
-                                  .replaceAll("%2F", "/")
-                                  .indexOf("withInfo") + 8
-                              )
-                              .split("and")[0]
-                          }{" "}
-                          bytes
-                        </span>
-                        <span>|</span>
-                        <span>
-                          {url
                             .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
                             .replaceAll("%2F", "/")
                             .slice(
-                              url
-                                .slice(
-                                  url.lastIndexOf("/") + 1,
-                                  url.indexOf("?")
-                                )
-                                .replaceAll("%2F", "/")
-                                .indexOf(".") + 1,
-                              url
-                                .slice(
-                                  url.lastIndexOf("/") + 1,
-                                  url.indexOf("?")
-                                )
-                                .replaceAll("%2F", "/")
-                                .indexOf("withId")
+                                url
+                                    .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
+                                    .replaceAll("%2F", "/")
+                                    .indexOf("withInfo") + 8
+                            )
+                            .split("and")[1]
+                            .replaceAll("S", "/")}
+                      </span>
+                              <span className="font-bold opacity-85">
+                        {url
+                            .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
+                            .replaceAll("%2F", "/")
+                            .slice(
+                                url
+                                    .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
+                                    .replaceAll("%2F", "/")
+                                    .lastIndexOf("/") + 1,
+                                url
+                                    .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
+                                    .replaceAll("%2F", "/")
+                                    .indexOf("withId")
                             )}
+                      </span>
+                              <div className="flex gap-x-2 text-[14px] text-gray-500">
+                        <span>
+                          {
+                            url
+                                .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
+                                .replaceAll("%2F", "/")
+                                .slice(
+                                    url
+                                        .slice(
+                                            url.lastIndexOf("/") + 1,
+                                            url.indexOf("?")
+                                        )
+                                        .replaceAll("%2F", "/")
+                                        .indexOf("withInfo") + 8
+                                )
+                                .split("and")[0]
+                          }{" "}
+                          bytes
                         </span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-y-2">
-                      <hr />
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-x-2 text-[18px] text-gray-700 cursor-pointer">
-                          <Link href={url} target="_blank">
-                            <LuArrowUpRightSquare />
-                          </Link>
-                          <FaTrashAlt
-                            id={url
+                                <span>|</span>
+                                <span>
+                          {url
                               .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
-                              .replaceAll("%2F", "/")}
-                            onClick={(e) => {
-                              handleDelete(e);
-                            }}
-                          />
+                              .replaceAll("%2F", "/")
+                              .slice(
+                                  url
+                                      .slice(
+                                          url.lastIndexOf("/") + 1,
+                                          url.indexOf("?")
+                                      )
+                                      .replaceAll("%2F", "/")
+                                      .indexOf(".") + 1,
+                                  url
+                                      .slice(
+                                          url.lastIndexOf("/") + 1,
+                                          url.indexOf("?")
+                                      )
+                                      .replaceAll("%2F", "/")
+                                      .indexOf("withId")
+                              )}
+                        </span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-y-2">
+                              <hr />
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-x-2 text-[18px] text-gray-700 cursor-pointer">
+                                  <Link href={url} target="_blank">
+                                    <LuArrowUpRightSquare />
+                                  </Link>
+                                  <FaTrashAlt
+                                      id={url
+                                          .slice(url.lastIndexOf("/") + 1, url.indexOf("?"))
+                                          .replaceAll("%2F", "/")}
+                                      onClick={(e) => {
+                                        handleDelete(e);
+                                      }}
+                                  />
+                                </div>
+                                <button
+                                    className="bg-violet-500 text-white px-4 py-1 font-semibold text-[14px] rounded-sm"
+                                    onClick={(e) => {
+                                      handleInsert(e);
+                                    }}
+                                    id={url}
+                                >
+                                  Insert
+                                </button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <button
-                          className="bg-violet-500 text-white px-4 py-1 font-semibold text-[14px] rounded-sm"
-                          onClick={(e) => {
-                            handleInsert(e);
-                          }}
-                          id={url}
-                        >
-                          Insert
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          : "Loading..."}
+                    );
+                  })
+                  : "Loading..."
+          )
+        }
       </div>
     </div>
   );

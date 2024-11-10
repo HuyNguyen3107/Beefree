@@ -33,7 +33,7 @@ import Preview from "../../components/Preview/Preview";
 import { usePathname } from "next/navigation";
 import { client } from "@/utils/client";
 
-function Edit({ accessToken }) {
+function Edit({ accessToken, userId }) {
   const data = useSelector((state) => state.builder.data);
   const isUploadFile = useSelector((state) => state.builder.isUploadFile);
   const previewStatus = useSelector((state) => state.preview.previewStatus);
@@ -235,9 +235,6 @@ function Edit({ accessToken }) {
       setIsRowDrag(true);
     }
   };
-  if (previewStatus) {
-    return <Preview />;
-  }
   useEffect(() => {
     const fetchData = async () => {
       const pathArr = pathname.split("/");
@@ -274,6 +271,9 @@ function Edit({ accessToken }) {
     };
     fetchData();
   }, []);
+  if (previewStatus) {
+    return <Preview />;
+  }
   if (loading) {
     return <span>Loading...</span>;
   }
@@ -335,7 +335,7 @@ function Edit({ accessToken }) {
           </div>
         </DndContext>
       ) : (
-        <FileMange />
+        <FileMange userId={userId}/>
       )}
     </>
   );

@@ -10,12 +10,13 @@ module.exports = {
       _limit = 10,
       _page = 1,
     } = req.query;
-    const where = {};
+    const where = {
+      user_id: req.user.id,
+    };
     if (q) {
       where[Op.or] = [
         { name: { [Op.like]: `%${q}%` } },
         { type: { [Op.like]: `%${q}%` } },
-        { user_id: { [Op.like]: `%${req.user.id}%` } },
       ];
     }
     const offset = (_page - 1) * _limit;

@@ -1,13 +1,15 @@
 import React from "react";
 import Edit from "./Edit";
-import { cookies } from "next/headers";
+import {cookies, headers} from "next/headers";
+import {getSessionServer} from "@/utils/session";
 
-function EditPage() {
+async function EditPage() {
   const token = cookies().get("token");
   const { accessToken } = JSON.parse(token.value);
+  const session = await getSessionServer(headers().get("cookie"));
   return (
     <>
-      <Edit accessToken={accessToken} />
+      <Edit accessToken={accessToken} userId={session?.data?.id}/>
     </>
   );
 }
