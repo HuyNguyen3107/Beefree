@@ -21,7 +21,7 @@ function SendEmail({accessToken}) {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const [email, setEmail] = React.useState("");
     const data = useSelector((state) => state.builder.data);
-    const  [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
     return (
         <>
             <VscSend onClick={onOpen}/>
@@ -57,25 +57,35 @@ function SendEmail({accessToken}) {
                                 <Button color="foreground" variant="light" onPress={onClose}>
                                     Close
                                 </Button>
-                                <Button className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20" isDisabled={loading} onPress={async () => {
-                                    if (isEmailValid(email)) {
-                                        setLoading(true);
-                                        const html = convertDataToHTML(data);
-                                        client.setToken(accessToken);
-                                        const {response} = await client.post("/send", {
-                                            to: email,
-                                            subject: "Email from Beefree",
-                                            message: html,
-                                        })
-                                        setLoading(false);
-                                        if (response.status === 200) {
-                                            notifySuccess("Email sent successfully");
-                                        } else {
-                                            notifyError("Can't send email");
+                                <Button
+                                    className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20" isDisabled={loading}
+                                    onPress={async () => {
+                                        if (!email) {
+                                            notifyError("Please enter your email");
+                                            onClose();
+                                            return;
                                         }
-                                    }
-                                    onClose();
-                                }}>
+                                        if (isEmailValid(email)) {
+                                            setLoading(true);
+                                            const html = convertDataToHTML(data);
+                                            client.setToken(accessToken);
+                                            const {response} = await client.post("/send", {
+                                                to: email,
+                                                subject: "Email from Beefree",
+                                                message: html,
+                                            })
+                                            setLoading(false);
+                                            if (response.status === 200) {
+                                                notifySuccess("Email sent successfully");
+                                            } else {
+                                                notifyError("Can't send email");
+                                            }
+                                        } else {
+                                            notifyError("Invalid email");
+                                        }
+                                        onClose();
+                                    }}
+                                >
                                     {loading ? "Sending..." : "Send"}
                                 </Button>
                             </ModalFooter>

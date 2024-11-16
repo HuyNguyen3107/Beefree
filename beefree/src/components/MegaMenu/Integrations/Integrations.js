@@ -6,7 +6,7 @@ import Acumbamail from "../../../assets/images/logo/acumbamail_logo.jpg";
 import ActiveCampaign from "../../../assets/images/logo/ActiveCampaign_logo.png";
 import Amazon from "../../../assets/images/logo/amazon.webp";
 import Braze from "../../../assets/images/logo/Braze_logo.png";
-import Brevo from "../../../assets/images/logo/Brevo-logo.png";
+import Brevo from "../../../assets/images/logo/Brevo-Logo.png";
 import CampaignMonitor from "../../../assets/images/logo/Campaign_Monitor_logo.jpg";
 import Gmail from "../../../assets/images/logo/mail_logo.png";
 import HubSpot from "../../../assets/images/logo/HubSpot_logo.jpg";
@@ -18,7 +18,7 @@ import Pardot from "../../../assets/images/logo/Salesforce_logo.png";
 import SendGrid from "../../../assets/images/logo/SendGrid_logo.png";
 import Veeva from "../../../assets/images/logo/Veeva_logo.png";
 import exploreSvg from "../../../../public/explore.svg";
-import { FaAngleRight } from "react-icons/fa6";
+import {FaAngleRight} from "react-icons/fa6";
 
 function Integrations() {
   return (
