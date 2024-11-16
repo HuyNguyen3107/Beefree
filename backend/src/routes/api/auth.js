@@ -5,11 +5,14 @@ const passport = require("passport");
 const authController = require("../../controllers/api/auth.controller");
 const userService = require("../../services/user.service");
 const providerService = require("../../services/provider.service");
+const userTokenService = require("../../services/userToken.service");
 // const randomCode = require("../../helpers/random2FA");
 const responses = require("../../helpers/response");
 const sendMail = require("../../utils/mail");
 
 const authMiddleware = require("../../middlewares/api/auth.middleware");
+const {createAccessToken, createRefreshToken} = require("../../utils/jwt");
+const UserTransformer = require("../../transformers/user.transformer");
 
 router.post("/login", authController.login);
 router.post("/register", authController.register);
@@ -57,39 +60,57 @@ router.get(
         });
       }
       // Nếu email đã có tài khoản thì đăng nhập tài khoản đó, nếu email chưa có tài khoản thì tạo tài khoản mới với email đó
-      const user = await userService.findOne({ email: data.email });
-      const provider = await providerService.findOne(data.provider);
-
-      if (user.provider_id !== provider.id) {
-        return res.status(400).json({
-          status: 400,
-          message: "Tài khoản không được liên kết với mạng xã hội này",
-        });
-      }
+      const user = await userService.getUser({ email: data.email });
+      const provider = await providerService.getProvider({name: data.provider.toLocaleLowerCase()});
+      const temp = data.name.split(" ");
       if (!user) {
         if (provider) {
-          await userService.add(data.name, data.email, null, provider.id);
+          await userService.createUser({
+            first_name: temp.slice(0, -1).join(" "),
+            last_name: temp.slice(-1).join(""),
+            email: data.email,
+            password: null,
+            avatar: data?.thumbnail,
+            status: "active",
+            provider_id: provider.id,
+          });
         } else {
-          const googleProvider = await providerService.add(data.provider);
-          await userService.add(data.name, data.email, null, googleProvider.id);
+          const googleProvider = await providerService.createProvider({
+            name: data.provider,
+          });
+          await userService.createUser({
+            first_name: temp.slice(0, -1).join(" "),
+            last_name: temp.slice(-1).join(""),
+            email: data.email,
+            password: null,
+            avatar: data?.thumbnail,
+            status: "active",
+            provider_id: googleProvider.id,
+          });
         }
       } else {
         if (provider) {
-          await userService.update(
+          await userService.updateUser(
             {
-              name: data.name,
+              first_name: temp.slice(0, -1).join(" "),
+              last_name: temp.slice(-1).join(""),
               provider_id: provider.id,
+              avatar: data?.thumbnail,
             },
             {
               email: data.email,
             }
           );
         } else {
-          const googleProvider = await providerService.add(data.provider);
-          await userService.update(
+          const googleProvider = await providerService.createProvider({
+            name: data.provider,
+          });
+          await userService.updateUser(
             {
-              name: data.name,
+              first_name: temp.slice(0, -1).join(" "),
+              last_name: temp.slice(-1).join(""),
               provider_id: googleProvider.id,
+              avatar: data?.thumbnail,
             },
             {
               email: data.email,
@@ -97,16 +118,26 @@ router.get(
           );
         }
       }
-
-      const verifyCode = randomCode();
-      const subject = `Here is your verify code`;
-      const message = `<h3>${verifyCode}</h3>`;
-      const check2FA = await sendMail(data.email, subject, message);
-      if (check2FA) {
-        req.flash("userEmail", data.email);
-        req.flash("verifyCode", verifyCode);
-        return responses.successResponse(res, 200, "Send email success");
-      }
+      const info = await userService.getUser({ email: data.email });
+      const accessToken = createAccessToken({
+        userId: info.id,
+        userFirstName: info.first_name,
+        userLastName: info.last_name,
+        userEmail: info.email,
+      });
+      const refreshToken = createRefreshToken();
+      await userTokenService.addUserToken({
+        refresh_token: refreshToken,
+        user_id: info.id,
+      })
+      await userService.updateUser(
+          { access_token: accessToken },
+          { email: info.email }
+      );
+      return responses.successResponse(res, 200, "Login success", new UserTransformer(info), {
+        accessToken,
+        refreshToken,
+      })
     } catch (e) {
       return responses.errorResponse(res, 500, "Server Error");
     }
@@ -151,55 +182,84 @@ router.get(
       }
 
       // Nếu email đã có tài khoản thì đăng nhập tài khoản đó, nếu email chưa có tài khoản thì tạo tài khoản mới với email đó
-      const user = await userService.findOne({ email: data.email });
-      const provider = await providerService.findOne(data.provider);
-      if (user.provider_id !== provider.id) {
-        return res.status(400).json({
-          status: 400,
-          message: "Tài khoản không được liên kết với mạng xã hội này",
-        });
-      }
+      const user = await userService.getUser({ email: data.email });
+      const provider = await providerService.getProvider({name: data.provider.toLocaleLowerCase()});
+      const temp = data.name.split(" ");
       if (!user) {
         if (provider) {
-          await userService.add(data.name, data.email, null, provider.id);
+          await userService.createUser({
+            first_name: temp.slice(0, -1).join(" "),
+            last_name: temp.slice(-1).join(""),
+            email: data.email,
+            password: null,
+            avatar: data?.thumbnail,
+            status: "active",
+            provider_id: provider.id,
+          });
         } else {
-          const githubProvider = await providerService.add(data.provider);
-          await userService.add(data.name, data.email, null, githubProvider.id);
+          const githubProvider = await providerService.createProvider({
+            name: data.provider,
+          });
+          await userService.createUser({
+            first_name: temp.slice(0, -1).join(" "),
+            last_name: temp.slice(-1).join(""),
+            email: data.email,
+            password: null,
+            avatar: data?.thumbnail,
+            status: "active",
+            provider_id: githubProvider.id,
+          });
         }
       } else {
         if (provider) {
-          await userService.update(
-            {
-              name: data.name,
-              provider_id: provider.id,
-            },
-            {
-              email: data.email,
-            }
+          await userService.updateUser(
+              {
+                first_name: temp.slice(0, -1).join(" "),
+                last_name: temp.slice(-1).join(""),
+                provider_id: provider.id,
+                avatar: data?.thumbnail,
+              },
+              {
+                email: data.email,
+              }
           );
         } else {
-          const githubProvider = await providerService.add(data.provider);
-          await userService.update(
-            {
-              name: data.name,
-              provider_id: githubProvider.id,
-            },
-            {
-              email: data.email,
-            }
+          const githubProvider = await providerService.createProvider({
+            name: data.provider,
+          });
+          await userService.updateUser(
+              {
+                first_name: temp.slice(0, -1).join(" "),
+                last_name: temp.slice(-1).join(""),
+                provider_id: githubProvider.id,
+                avatar: data?.thumbnail,
+              },
+              {
+                email: data.email,
+              }
           );
         }
       }
-
-      const verifyCode = randomCode();
-      const subject = `Here is your verify code`;
-      const message = `<h3>${verifyCode}</h3>`;
-      const check2FA = await sendMail(data.email, subject, message);
-      if (check2FA) {
-        req.flash("userEmail", data.email);
-        req.flash("verifyCode", verifyCode);
-        return responses.successResponse(res, 200, "Send email success");
-      }
+      const info = await userService.getUser({ email: data.email });
+      const accessToken = createAccessToken({
+        userId: info.id,
+        userFirstName: info.first_name,
+        userLastName: info.last_name,
+        userEmail: info.email,
+      });
+      const refreshToken = createRefreshToken();
+      await userTokenService.addUserToken({
+        refresh_token: refreshToken,
+        user_id: info.id,
+      })
+      await userService.updateUser(
+          { access_token: accessToken },
+          { email: info.email }
+      );
+      return responses.successResponse(res, 200, "Login success", new UserTransformer(info), {
+        accessToken,
+        refreshToken,
+      })
     } catch (e) {
       return responses.errorResponse(res, 500, "Server Error");
     }

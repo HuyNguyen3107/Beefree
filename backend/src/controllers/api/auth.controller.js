@@ -43,18 +43,8 @@ module.exports = {
           "Email hoặc mật khẩu không chính xác"
         );
       } else {
-        if (user.provider_id !== provider.id) {
-          return responses.errorResponse(
-            res,
-            400,
-            "Bad Request",
-            "Tài khoản này đã được liên kết với mạng xã hội"
-          );
-        }
         const { password: hash } = user;
         const result = bcrypt.compareSync(password, hash);
-        console.log(result);
-
         if (!result) {
           return responses.errorResponse(
             res,
