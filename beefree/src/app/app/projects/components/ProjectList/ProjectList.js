@@ -9,9 +9,10 @@ import {timeSince} from "@/utils/time";
 import ProjectContent from "./components/ProjectContent";
 import {client} from "@/utils/client";
 import {builderSlice} from "@/redux/slice/builderSlice";
-import {Card, CardBody} from "@nextui-org/react";
-import {notifyWarning} from "@/utils/toast";
+import {Button, Card, CardBody, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/react";
+import {notifyError, notifySuccess, notifyWarning} from "@/utils/toast";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {SlOptionsVertical} from "react-icons/sl";
 
 const {setProjectsData} = projectSlice.actions;
 
@@ -138,9 +139,41 @@ function ProjectList({token, fullName}) {
                                             <span className="font-semibold">{project?.name}</span>
                                             <BiMessageDetail/>
                                         </div>
-                                        <div className="flex items-center justify-between mt-4">
-                                            <span>{fullName}</span>
-                                            <span>{timeSince(project?.createdAt)}</span>
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex flex-col mt-4">
+                                                <span>{fullName}</span>
+                                                <span>{timeSince(project?.createdAt)}</span>
+                                            </div>
+                                            <div>
+                                                <Dropdown>
+                                                    <DropdownTrigger>
+                                                        <Button
+                                                            variant="bordered"
+                                                        >
+                                                            <SlOptionsVertical/>
+                                                        </Button>
+                                                    </DropdownTrigger>
+                                                    <DropdownMenu aria-label="Static Actions">
+                                                        <DropdownItem
+                                                            key="delete" className="text-danger" color="danger"
+                                                            onClick={async () => {
+                                                                const accessToken = JSON.parse(token.value).accessToken;
+                                                                client.setToken(accessToken);
+                                                                const {response} = await client.delete(`/${project?.type}/${project?.id}`);
+                                                                if (response.ok) {
+                                                                    const newProjects = projects.filter((p) => p.id !== project.id);
+                                                                    dispatch(setProjectsData(newProjects));
+                                                                    notifySuccess("Project deleted successfully");
+                                                                } else {
+                                                                    notifyError("Failed to delete project");
+                                                                }
+                                                            }}
+                                                        >
+                                                            Delete project
+                                                        </DropdownItem>
+                                                    </DropdownMenu>
+                                                </Dropdown>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
