@@ -2,9 +2,9 @@ import {client} from "@/utils/client";
 import {accessLinks, redirectLinks} from "@/config";
 
 export const handleGetRedirect = async (provider) => {
-    const response = await client.get(`${redirectLinks[provider]}`);
+    const {response, data} = await client.get(`${redirectLinks[provider]}`);
     if (response.ok) {
-        const {result} = await response.json();
+        const {result} = data;
         const {urlRedirect} = result;
         return urlRedirect;
     }

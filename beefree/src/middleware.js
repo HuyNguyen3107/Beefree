@@ -56,7 +56,9 @@ export const middleware = async (req, res) => {
             return NextResponse.redirect(new URL("/", req.nextUrl));
         }
     }
-
+    if (pathname.includes("callback")) {
+        return next;
+    }
     if (pathname !== "/" && !pathname.startsWith("/app")) {
         return NextResponse.redirect(new URL("/", req.nextUrl));
     }

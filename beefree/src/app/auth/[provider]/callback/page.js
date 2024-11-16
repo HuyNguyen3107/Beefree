@@ -16,20 +16,20 @@ function Auth({params}) {
         } else {
             router.push("/auth/login");
         }
-    }
+    };
     useEffect(() => {
         if (info === null) {
             getData();
         } else {
-            formRef.current.submit();
+            formRef.current.requestSubmit();
         }
     }, [info]);
     return (
-        <div>
-            Redirecting...
+        <div className="flex items-center justify-center min-h-screen">
+            <span className="text-violet-600 text-2xl italic">Redirecting...</span>
             <form
                 action={async (form) => {
-                    const res = await setCookies(info);
+                    const res = await setCookies(info.data);
                     if (res.success) {
                         router.push("/app/projects");
                     } else {
