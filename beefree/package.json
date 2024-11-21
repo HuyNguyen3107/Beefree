@@ -37,6 +37,7 @@
     "sass": "^1.71.1",
     "sharp": "^0.33.5",
     "swr": "^2.2.5",
+    "tw-to-css": "^0.0.12",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

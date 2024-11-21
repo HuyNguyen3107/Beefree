@@ -58,11 +58,11 @@ function DropdownMenuComponent({token, data: userData}) {
     };
 
     return (
-        <>
+        <div className="flex justify-end gap-x-5 items-center">
+            <FaRegBell className="text-xl cursor-pointer"/>
             <Dropdown>
                 <DropdownTrigger>
                     <div className="flex items-center gap-x-6 cursor-pointer">
-                        <FaRegBell className="text-xl cursor-pointer"/>
                         <div className="flex justify-start items-center gap-x-3">
                             <AvatarComponent/>
                             <div className="flex flex-col">
@@ -122,7 +122,7 @@ function DropdownMenuComponent({token, data: userData}) {
             >
                 <button></button>
             </form>
-        </>
+        </div>
     );
 }
 

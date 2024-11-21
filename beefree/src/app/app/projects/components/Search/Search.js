@@ -60,11 +60,11 @@ function Search() {
                     <input
                         type="text"
                         placeholder="Search in Your Workspace"
-                        className="px-2 py-2"
+                        className="px-2 py-2 outline-0"
                         onChange={(e) => setName(e.target.value)}
                     />
                     <div
-                        className="bg-indigo-300 h-full px-2 py-2 flex items-center justify-center text-indigo-600"
+                        className="bg-indigo-300 h-full px-2 py-2 flex items-center justify-center text-indigo-600 cursor-pointer"
                         onClick={() => {
                             if (name === "") {
                                 notifyWarning("Please enter a name project to search");
