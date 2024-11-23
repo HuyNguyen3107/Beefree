@@ -11,7 +11,7 @@ async function Header() {
     const session = await getSessionServer(headers().get("cookie"));
     // console.log(session);
     return (
-        <header className="bg-zinc-100 w-full px-4 py-4 shadow-white h-[8%] relative z-50">
+        <header className="bg-zinc-100 w-full px-4 py-4 shadow-white h-[10%] relative z-50">
             <div className="flex justify-between items-center gap-x-3">
                 <WorkSpace/>
                 <DropdownMenuComponent token={token.value} data={session.data}/>

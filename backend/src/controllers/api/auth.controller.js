@@ -103,7 +103,7 @@ module.exports = {
           .min(5, "Tên phải từ năm ký tự")
           .required("Tên bắt buộc phải nhập"),
         lastName: string()
-          .min(3, "Tên phải từ năm ký tự")
+          .min(3, "Tên phải từ ba ký tự")
           .required("Tên bắt buộc phải nhập"),
         email: string()
           .required("Email bắt buộc phải nhập")
@@ -123,9 +123,9 @@ module.exports = {
         password: string()
           .test(
             "validate-password",
-            "Tối thiểu tám ký tự, ít nhất một chữ cái và một số:))",
+            "Từ 6 đến 20 ký tự, ít nhất một số, một chữ cái viết hoa và một chữ cái viết thường",
             (value) => {
-              const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+              const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
               return pattern.test(value);
             }
           )

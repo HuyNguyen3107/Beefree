@@ -11,5 +11,5 @@ module.exports = {
       newObj[camelToSnake(key)] = obj[key];
     }
     return newObj;
-  },
+  }
 };

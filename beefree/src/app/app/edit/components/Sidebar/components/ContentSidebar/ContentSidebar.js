@@ -11,7 +11,7 @@ function ContentSidebar() {
         <>
             {!editor ? (
                 <div className="h-screen">
-                    <div className="grid grid-cols-3 px-4 py-4 gap-3 bg-slate-50 h-[90%]">
+                    <div className="grid grid-cols-3 px-4 py-4 gap-3 bg-slate-50 h-[85%]">
                         {contents.map((item, index) => {
                             return (
                                 <Draggable id={item.id} key={index}>

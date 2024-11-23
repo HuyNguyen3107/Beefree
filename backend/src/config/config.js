@@ -45,3 +45,18 @@ module.exports = {
     // dialectModule: pg,
   },
 };
+
+// const { Sequelize } = require('sequelize');
+//
+// // Sử dụng URL kết nối của Neon
+// const sequelize = new Sequelize(process.env.DATABASE_URL, {
+//   dialect: 'postgres',
+//   dialectOptions: {
+//     ssl: {
+//       require: true, // Neon yêu cầu SSL
+//       rejectUnauthorized: false,
+//     },
+//   },
+// });
+//
+// module.exports = sequelize;

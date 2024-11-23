@@ -10,6 +10,7 @@ import {projectSlice} from "@/redux/slice/projectSlice";
 import Image from "next/image";
 import {notifyWarning} from "@/utils/toast";
 import bankAccountImage from "../../../../../assets/images/bank-account.jpg";
+import Spinner from "@/components/Spinner/Spinner";
 
 const {addNewProject} = projectSlice.actions;
 
@@ -19,6 +20,7 @@ function CreateNewPage() {
     const router = useRouter();
     const projectList = useSelector((state) => state.project.projects);
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [isLoading, setIsLoading] = React.useState(false);
     const handleAddPage = () => {
         if (projectList.length === 10) {
             notifyWarning("Update your account to create more projects.");
@@ -31,12 +33,14 @@ function CreateNewPage() {
         router.push(`${pathname}/edit/page/${id}`);
         localStorage.setItem("mode", "create");
         dispatch(addNewProject({id, type}));
+        setIsLoading(false);
     };
     return (
         <>
             <div
                 className="flex items-center gap-x-2 cursor-pointer border-1 px-2 py-2"
                 onClick={() => {
+                    setIsLoading(true);
                     handleAddPage();
                 }}
             >
@@ -91,6 +95,7 @@ function CreateNewPage() {
                     )}
                 </ModalContent>
             </Modal>
+            <Spinner isLoading={isLoading}/>
         </>
     );
 }
